@@ -1,0 +1,287 @@
+---
+title: Welcome to Jurassic Park - A tour of Trex.
+author: 
+- name: Nick Borcherding
+  email: ncborch@gmail.com
+  affiliation: Washington University in St. Louis, School of Medicine, St. Louis, MO, USA
+date: "July 29,2022"
+output:
+  BiocStyle::html_document:
+    toc_float: true
+package: Trex
+vignette: >
+  %\VignetteEngine{knitr::knitr}
+  %\VignetteIndexEntry{Running from Trex}
+  %\usepackage[UTF-8]{inputenc}
+---
+
+```{r, echo=FALSE, results="hide", message=FALSE}
+knitr::opts_chunk$set(error=FALSE, message=FALSE, warning=FALSE)
+library(BiocStyle)
+```
+
+# Introduction
+
+## Load Libraries
+
+```{r}
+suppressMessages(library(Seurat))
+suppressMessages(library(ggplot2))
+suppressMessages(library(Trex))
+suppressMessages(library(viridis))
+suppressMessages(library(patchwork))
+```
+
+
+## The Data Set
+
+To show the multiple options of Trex, the example data is derived from [GSE167118](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE167118) - a cohort of CITE-seq data derived from severe COVID-19 patients. The [corresponding manuscript](https://pubmed.ncbi.nlm.nih.gov/33622974/) is excellent. The data example built into the package (trex_example) is derived from randomly sampling the single-cells from patient 17. 
+
+This is a standard workflow based on the [WNN](https://satijalab.org/seurat/articles/weighted_nearest_neighbor_analysis.html) Seurat process. However, Trex will work for Bioconductor/Single-Cell Experiment workflows as well. The major exception is the addition of ```quietTCRgenes()```, which removed T cell receptor genes from the variable gene list used for ```runPCA()```. In addition, the final 2 rows of the ADT assay are removed, as they are antibodies for specific TCRV products. This prevents the weighting of the embedding based on both genes and clonotype information. Removing T cell receptor genes is also a common practice before dimensional reduction. 
+
+
+```{r, eval=FALSE}
+suppressMessages(library(scRepertoire))
+##################################
+#scRNA/ADT loading and processing
+#################################
+tmp <-  Read10X("~/Patient17/filtered_feature_bc_matrix")
+
+Pt17 <- Createtrex_exampleect(counts = tmp$`Gene Expression`)
+#Removing TCR-specific antibody
+adt_assay <- CreateAssayObject(counts = tmp$`Antibody Capture`[1:37,])
+Pt17[["ADT"]] <- adt_assay
+Pt17 <- subset(Pt17, subset = nFeature_RNA > 100) 
+Pt17  <- RenameCells(object = Pt17 , new.names = paste0("Pt17_", rownames(Pt17[[]])))
+Pt17[["mito.genes"]] <- PercentageFeatureSet(Pt17, pattern = "^MT-")
+    
+#Filtering step
+standev <- sd(log(Pt17$nFeature_RNA))*2.5 #cutting off above standard deviation of 2.5
+mean <- mean(log(Pt17$nFeature_RNA))
+cut <- round(exp(standev+mean))
+Pt17 <- subset(Pt17, subset = mito.genes < 10 & nFeature_RNA < cut)
+
+#Processing RNA
+DefaultAssay(Pt17) <- 'RNA'
+Pt17 <- NormalizeData(Pt17) %>% FindVariableFeatures() %>% 
+  quietTCRgenes() %>% ScaleData() %>% RunPCA(verbose = FALSE)
+
+#Processing ADT
+DefaultAssay(Pt17) <- 'ADT'
+VariableFeatures(Pt17) <- rownames(Pt17[["ADT"]])
+Pt17 <- NormalizeData(Pt17, normalization.method = 'CLR', margin = 2) %>% 
+  ScaleData() %>% RunPCA(reduction.name = 'apca')
+
+
+##################################
+#Processing and Adding Contig Info
+##################################
+
+contigs <- read.csv("~/Patient17/filtered_contig_annotations.csv")
+clones <- combineTCR(contigs, samples = "Pt17", cells = "T-AB", filterMulti = TRUE, removeNA = TRUE)
+Pt17 <- combineExpression(clones, Pt17, cloneCall="aa")
+saveRDS(Pt17, file = "Trex_FullExample.rds")
+
+###################################
+#Making Example Data Set for Trex
+#################################
+meta <- Pt17[[]]
+meta <- meta[sample(nrow(meta), nrow(meta)*0.1),]
+trex_example <- subset(Pt17, cells = rownames(meta))
+save(trex_example, file = "trex_example.rda", compress = "xz")
+```
+
+## Loading the Data
+
+```{r}
+data("trex_example")
+```
+
+****************
+
+# Running Trex
+
+The idea behind Trex is to combine TCR cdr3 amino acid information with phenotypic RNA/protein data to direct the use of single-cell sequencing towards antigen-specific discoveries.  This is a growing field - specifically [TESSA](https://github.com/jcao89757/TESSA) uses amino acid characteristics and autoencoder as a means to get a dimensional reduction. Another option is [CoNGA](https://github.com/phbradley/conga), which produces an embedding using TCR and RNA. Trex was designed to make a customizable approach to this combined approach using R.
+
+## maTrex Function
+
+Trex has 2 major functions - the first being ```maTrex()```, which is the backbone of the algorithm and returns the encoded values based on the selection of variables. Unlike ```runTrex()``` below, ```maTrex()``` does not filter the input for only T cells with attached TCR data. 
+
+**chains**  
+* "TRA" for TCR A  
+* "TRB" for TCR B  
+
+**AA.properties**  
+* "AF" to use Atchley factors  
+* "KF" to use Kidera factors  
+* "both" to use both  
+* "OHE" for a One Hot Autoencoder
+
+```{r}
+Trex_vectors <- maTrex(trex_example, 
+                       chains = "TRA",
+                      AA.properties = "OHE")
+
+qplot(data = as.data.frame(Trex_vectors), Trex_2, Trex_3) + theme_classic()
+```
+
+
+## runTrex
+
+Additionally, ```runTrex()``` can be used to append the Seurat or Single-cell Experiment object with the Trex vectors and allow for further analysis. Importantly, ```runTrex()``` will remove single cells that do not have recovered TCR data in the metadata of the object. 
+
+```{r}
+trex_example <- runTrex(trex_example, 
+                    chains = "TRB",
+                    AA.properties = "KF", 
+                    reduction.name = "Trex.KF")
+```
+
+## Using Trex Vectors
+
+After ```runTrex()``` we have the encoded values stored under **"Trex..."**. Using the Trex reduction stored in Seurat, we can calculate the nearest neighbor and shared nearest neighbor indexes and generate a UMAP.
+
+```{r}
+#Generating UMAP from Trex Neighbors
+trex_example <- RunUMAP(trex_example, 
+                        reduction = "Trex.KF",
+                        dims = 1:30,
+                        reduction.name = 'Trex.umap', 
+                        reduction.key = 'trexUMAP_')
+#Trex UMAP
+plot1 <- DimPlot(trex_example, reduction = "Trex.umap") + NoLegend()
+plot2 <- DimPlot(trex_example, group.by = "CTaa", reduction = "Trex.umap") + 
+  scale_color_viridis(discrete = TRUE, option = "B") + 
+  NoLegend()
+
+plot1 + plot2
+```
+
+
+We now can use this in a similar way as other single-cell modalities and calculate weighted nearest neighbor (WNN). To check out more on WNN, please read the Satija's group [paper](https://pubmed.ncbi.nlm.nih.gov/34062119/). We will use the RNA, ADT protein levels, and Trex vectors for the WNN calculations. 
+
+```{r}
+trex_example <- FindMultiModalNeighbors(
+  trex_example, reduction.list = list("pca", "apca", "Trex.KF"), 
+  dims.list = list(1:30, 1:20, 1:30), modality.weight.name = "RNA.weight"
+)
+trex_example <- RunUMAP(trex_example, 
+                        nn.name = "weighted.nn", 
+                        reduction.name = "wnn.umap", 
+                        reduction.key = "wnnUMAP_")
+
+trex_example <- FindClusters(trex_example, 
+                             graph.name = "wsnn",
+                             resolution = 0.6,
+                             algorithm = 3, 
+                             verbose = FALSE)
+
+#WNN UMAP
+plot3 <- DimPlot(trex_example, reduction = "wnn.umap")
+plot4 <- DimPlot(trex_example, reduction = "wnn.umap", group.by = "CTaa") + 
+  scale_color_manual(values = viridis_pal(option = "B")(length(unique(trex_example$CTaa)))) + 
+  NoLegend()
+
+plot3 + plot4
+```
+
+## Comparing the outcome to just one modality
+
+We can also look at the differences in the UMAP generated from RNA, ADT, or Trex as individual components. Remember, the clusters that we are displaying in UMAP are based on clusters defined by the weighted nearest neighbors calculated above. 
+
+```{r}
+trex_example <- RunUMAP(trex_example, 
+                        reduction = 'pca', 
+                        dims = 1:30, 
+                        assay = 'RNA', 
+                        reduction.name = 'rna.umap', 
+                        reduction.key = 'rnaUMAP_')
+
+trex_example <- RunUMAP(trex_example, 
+                        reduction = 'apca', 
+                        dims = 1:20, 
+                        assay = 'ADT', 
+                        reduction.name = 'adt.umap', 
+                        reduction.key = 'adtUMAP_')
+
+plot5 <- DimPlot(trex_example, reduction = "rna.umap") + NoLegend()
+plot6 <- DimPlot(trex_example, reduction = "adt.umap") + NoLegend()
+plot7 <- DimPlot(trex_example, reduction = "Trex.umap") + NoLegend()
+
+plot5 + plot6 + plot7
+```
+
+## Regressing shared feature space
+
+There is a high degree of overlap in the feature space of expanded clonotypes, not only in the adaptive receptor genes that form the clonotype, but also in potentially functional genes. To identify divergent clusters in shared clonotypes using ```clonalCommunity()```, we can use the Trex dimensions to identify clusters in order to then regress out closely associated clonotypes.
+
+```{r}
+library(harmony)
+library(bluster)
+
+#Cluster clones
+trex_example <- clonalCommunity(trex_example, 
+                            reduction.name = "Trex.KF", 
+                            cluster.parameter=NNGraphParam(k=20))
+
+#Run Harmony and new UMAP for RNA
+DefaultAssay(trex_example) <- "RNA"
+trex_example<- RunHarmony(trex_example, "trex.clusters", verbose = FALSE)
+trex_example <- RunUMAP(trex_example, 
+                     reduction = "harmony", 
+                     dims = 1:20, 
+                     reduction.key = "RC_UMAP_", 
+                     reduction.name = "regressClone_RNA")
+
+
+plot8 <- DimPlot(trex_example, 
+                 reduction = "rna.umap", 
+                 group.by = "CTaa") + 
+                 NoLegend() + 
+                 scale_color_viridis(option="B", discrete = TRUE)
+
+plot9 <- DimPlot(trex_example, 
+                 reduction = "regressClone_RNA", 
+                 group.by = "CTaa") + 
+                 NoLegend() + 
+                 scale_color_viridis(option="B", discrete = TRUE)
+
+plot8 + plot9
+```
+
+# CoNGA Reduction
+
+Recent [work](https://pubmed.ncbi.nlm.nih.gov/34426704/) has proposed using representative cells for the characterization of clonotype and gene expression relationships. In order to generate these representative cells, either a mean expression across a clone or using the PCA dimensional space to identify a single cell that has the minimum euclidean distance across a clone. 
+
+In order to generate a single-cell object based on the CoNGA approach, Trex offers the function ```CoNGAfy()```. For **method**, select either "mean" or "dist" as described above. After performing ```CoNGAfy()```, the user can use any of the above reduction strategies. 
+
+```{r}
+CoNGA.seurat <- CoNGAfy(trex_example, 
+                         method = "dist")
+
+CoNGA.seurat <- runTrex(CoNGA.seurat, 
+                    AA.properties = "KF", 
+                    reduction.name = "Trex.KF")
+
+CoNGA.seurat <- CoNGA.seurat %>%
+                  FindNeighbors(reduction = "Trex.KF") %>%
+                  FindClusters(algorithm = 3, resolution = 0.9)
+
+CoNGA.seurat <- RunUMAP(CoNGA.seurat, 
+                     reduction = "Trex.KF", 
+                     dims = 1:20, 
+                     reduction.name = 'Trex.umap', 
+                     reduction.key = 'trexUMAP_')
+
+DimPlot(CoNGA.seurat, reduction = "Trex.umap") + NoLegend()
+```
+
+# Conclusion
+
+This has been a general overview of the capabilities of Trex for incorporating BCR information into the embedding space of single-cell data. If you have any questions, comments, or suggestions, feel free to visit the github repository or [email me](mailto:ncborch@gmail.com).
+
+## Session Info
+
+```{r}
+sessionInfo()
+```
