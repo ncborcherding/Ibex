@@ -17,37 +17,42 @@ if (inherits(x=sc, what ="Seurat")) {
 }
   return(sc)
 }
-  
-#Function to pull and organize TCR depending on the chain selected
+
+
+###################################
+#Need to edit for position of BCR chains
+##################################
+
+#Function to pull and organize BCR depending on the chain selected
 #' @importFrom stringr str_split
-getTCR <- function(sc, chains) {
+getBCR <- function(sc, chains) {
   meta <- grabMeta(sc)
   tmp <- data.frame(barcode = rownames(meta), 
                     str_split(meta[,"CTaa"], "_", simplify = TRUE), 
                     str_split(meta[,"CTgene"], "_", simplify = TRUE))
   if (length(chains) == 1 && chains != "both") {
-    if (chains %in% c("TRA", "TRD")) {
+    if (chains %in% c("TRA", "TRD")) { #here
       pos <- list(c(2,4))
-    } else if (chains %in% c("TRB", "TRG")) {
+    } else if (chains %in% c("TRB", "TRG")) { #here
       pos <- list(c(3,5))
     }
   } else {
     pos <- list(one = c(2,4), two = c(3,5))
-    ch.1 <- grep("TRB|TRA",sc[[]]$CTgene[1])
-    chains <- c("TRA", "TRB")
+    ch.1 <- grep("TRB|TRA",sc[[]]$CTgene[1]) #here
+    chains <- c("TRA", "TRB") #here
   }
-  TCR <- NULL
+  BCR <- NULL
   for (i in seq_along(pos)) {
     sub <- as.data.frame(tmp[,c(1,pos[[i]])])
     colnames(sub) <- c("barcode", "cdr3_aa", "genes")
     sub$v <- str_split(sub$genes, "[.]", simplify = TRUE)[,1]
     sub$j <- str_split(sub$genes, "[.]", simplify = TRUE)[,2]
     sub[sub == ""] <- NA
-    TCR[[i]] <- sub
+    BCR[[i]] <- sub
     sub <- NULL
   }
-  names(TCR) <- chains
-  return(TCR)
+  names(BCR) <- chains
+  return(BCR)
 }
 
 #This is to grab the metadata from a Seurat or SCE object
@@ -98,14 +103,14 @@ aa.model.loader <- function(chain, AA.properties) {
   quiet(tensorflow::tf$compat$v1$disable_eager_execution())
     select  <- system.file("extdata", paste0(chain, "_", 
                                AA.properties, "_Encoder.h5"), 
-                          package = "Trex")
+                          package = "Ibex")
   model <- quiet(load_model_hdf5(select, compile = FALSE))
   return(model)
 }
 
 #Selects columns to normalize input data based on the inputs to the model
-aa.range.loader <- function(chain, AA.properties, Trex.Data) {
-  range <- Trex.Data[["model.ranges"]][[chain]]
+aa.range.loader <- function(chain, AA.properties, Ibex.Data) {
+  range <- Ibex.Data[["model.ranges"]][[chain]]
   min <- range[["min"]]
   max <- range[["max"]]
   ref <- seq(1, 900, 15)
@@ -123,7 +128,7 @@ aa.range.loader <- function(chain, AA.properties, Trex.Data) {
 }
 
 one.hot.organizer <- function(refer) {
-  reference <- Trex.Data[[1]]
+  reference <- Ibex.Data[[1]]
   int <- matrix(ncol = length(reference$aa) + 1, nrow = length(refer))
   for(i in seq_along(refer)) {
     if (is.na(refer[i])) {

@@ -1,5 +1,5 @@
 Package: Ibex
-Title: Methods for TCR single-cell embedding 
+Title: Methods for BCR single-cell embedding 
 Version: 0.99.0
 Date: 2022-8-1
 Authors@R: c(

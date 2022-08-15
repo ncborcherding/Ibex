@@ -45,11 +45,11 @@ Check out this [vignette](https://ncborcherding.github.io/vignettes/Trex.html) f
 
 ## Autoencoded Matrix
 
-The Trex algorithm allows users to select BCR-based metrics to return autoencoded values to be used in dimensional reduction. If single-cell objects are not filtered for B cells with BCR,  `maTrex()` will still return values, however IBEX_1 will be based on the disparity of BCR-containing and BCR-non-containing cells based on the Trex algorithm. 
+The Trex algorithm allows users to select BCR-based metrics to return autoencoded values to be used in dimensional reduction. If single-cell objects are not filtered for B cells with BCR,  `Ibex.matrix()` will still return values, however IBEX_1 will be based on the disparity of BCR-containing and BCR-non-containing cells based on the Trex algorithm. 
 
 ```r
 library(Ibex)
-my_trex <- maTrex(singleObject)
+my_trex <- Ibex.matrix(singleObject)
 ```
 
 ## Seurat or Single-Cell Experiment
