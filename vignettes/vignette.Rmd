@@ -122,7 +122,6 @@ Ibex_vectors <- Ibex.matrix(ibex_example,
 qplot(data = as.data.frame(Ibex_vectors), Ibex_2, Ibex_3) + theme_classic()
 ```
 
-
 ## runIbex
 
 Additionally, ```runIbex()``` can be used to append the Seurat or Single-cell Experiment object with the Ibex vectors and allow for further analysis. Importantly, ```runIbex()``` will remove single cells that do not have recovered BCR data in the metadata of the object. 
