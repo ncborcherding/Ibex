@@ -10,7 +10,7 @@ R package to assist in the interaction of immune receptor and gene expression se
 
 # System requirements 
 
-Trex has been tested on R versions >= 4.0. Please consult the DESCRIPTION file for more details on required R packages - it is specifically designed to work with single-cell objects that have had BCRs added using [scRepertoire](https://github.com/ncborcherding/scRepertoire). Trex has been tested on OS X and Windows platforms.
+Ibex has been tested on R versions >= 4.0. Please consult the DESCRIPTION file for more details on required R packages - it is specifically designed to work with single-cell objects that have had BCRs added using [scRepertoire](https://github.com/ncborcherding/scRepertoire). TIbex has been tested on OS X and Windows platforms.
 
 **keras** is necessary to use the autoencoder function (this includes the set up of the tensorflow environment in R):
 
@@ -27,7 +27,7 @@ install_tensorflow()
 
 # Installation
 
-To run Ibex, open R and install Trex from github: 
+To run Ibex, open R and install Ibex from github: 
 
 ```r
 devtools::install_github("ncborcherding/Ibex@dev")
@@ -35,7 +35,7 @@ devtools::install_github("ncborcherding/Ibex@dev")
 
 # Usage/Demos
 
-Trex should be able to be run in popular R-based single-cell workflows, including Seurat and Bioconductor/Single-Cell Experiment formats.
+Ibex should be able to be run in popular R-based single-cell workflows, including Seurat and Bioconductor/Single-Cell Experiment formats.
 
 ## Quick Start 
 
@@ -47,27 +47,25 @@ Check out this [vignette](https://ncborcherding.github.io/vignettes/Trex.html) f
 
 ## Autoencoded Matrix
 
-The Trex algorithm allows users to select BCR-based metrics to return autoencoded values to be used in dimensional reduction. If single-cell objects are not filtered for B cells with BCR,  `Ibex.matrix()` will still return values, however IBEX_1 will be based on the disparity of BCR-containing and BCR-non-containing cells based on the Trex algorithm. 
+The Ibex algorithm allows users to select BCR-based metrics to return autoencoded values to be used in dimensional reduction. If single-cell objects are not filtered for B cells with BCR,  `Ibex.matrix()` will still return values, however IBEX_1 will be based on the disparity of BCR-containing and BCR-non-containing cells based on the Ibex algorithm. 
 
 ```r
 library(Ibex)
-my_trex <- Ibex.matrix(singleObject)
+my_ibex <- Ibex.matrix(singleObject)
 ```
 
 ## Seurat or Single-Cell Experiment
 
-You can run Trex within your Seurat or Single-Cell Experiemt workflow. **Importantly** `runIbex()` will automatically filter single-cells that do not contain BCR information in the meta data of the single-cell object. 
+You can run Ibex within your Seurat or Single-Cell Experiemt workflow. **Importantly** `runIbex()` will automatically filter single-cells that do not contain BCR information in the meta data of the single-cell object. 
 
 ```r
-seuratObj_Tonly <- runTrex(seuratObj, #The single cell object
-                   chains = "Heavy", #Use of "TRA" or "TRB" 
-                   AA.properties = c("AF", "KF", "both"), 
-                   AA.method = "auto", #Use "auto" for Autoencoder or 
-                   #"mean" for mean properties across cdr3 sequence
+seuratObj_Tonly <- runIbex(seuratObj, #The single cell object
+                   chains = "Heavy", #Use of "Heavy" or "Light" 
+                   AA.properties = c("AF", "KF", "both", "OHE"), 
                    reduction.name = "Ibex", #Name designation for 
                    #the vectors to be added to the single-cell object)
                    
-seuratObj_Tonly <- runTrex(seuratObj, reduction.name = "Ibex")
+seuratObj_Tonly <- runIbex(seuratObj, reduction.name = "Ibex")
 ```
 
 ## After Running Ibex
@@ -81,7 +79,7 @@ seuratObj <- RunUMAP(seuratObj, reduction = "Ibex",  reduction.key = "Ibex_")
 
 If using Seurat package, the Ibex embedding information and gene expression PCA can be used to find the [Weighted Nearest Neighbors](https://pubmed.ncbi.nlm.nih.gov/34062119/). Before applying the WNN approach, best practice would be to remove the BCR-related genes from the list of variable genes and rerunning the PCA analysis. 
 
-### Recaluclate PCA without BCR genes with queitBCRgenes() function in Trex.
+### Recaluclate PCA without BCR genes with queitBCRgenes() function in Ibex.
 ```r
 seuratObj <- quietBCRgenes(seuratObj)
 seuratObj <- RunPCA(seuratObj)
@@ -90,7 +88,7 @@ seuratObj <- RunPCA(seuratObj)
 ### Running WNN approach
 ```r
 seuratObj <- FindMultiModalNeighbors(
-  seuratObj, reduction.list = list("pca", "Ibrex"), 
+  seuratObj, reduction.list = list("pca", "Ibex"), 
   dims.list = list(1:30, 1:20), modality.weight.name = "RNA.weight"
 )
 seuratObj <- RunUMAP(seuratObj, nn.name = "weighted.nn", reduction.name = "wnn.umap", reduction.key = "wnnUMAP_")
