@@ -4,7 +4,7 @@
 aaProperty <- function(BCR, 
                        AA.properties = AA.properties) { 
   return <- list() ### Need to add reference data
-  reference <- Ibex.Data[[1]] #AA properties
+  reference <- ibex.data[[1]] #AA properties
   col.ref <- grep(tolower(paste(AA.properties, collapse = "|")), colnames(reference))
   length <- NULL
   if (AA.properties == " both") {
@@ -18,7 +18,7 @@ aaProperty <- function(BCR,
     names <- membership$barcode
     array.reshape <- NULL
     aa.model <- quiet(aa.model.loader(chain[[i]], AA.properties))
-    range <- aa.range.loader(chain[[i]], AA.properties, Ibex.Data) 
+    range <- aa.range.loader(chain[[i]], AA.properties, ibex.data) 
     local.min <- range[[1]]
     local.max <- range[[2]]
     }

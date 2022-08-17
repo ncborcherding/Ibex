@@ -1,6 +1,6 @@
 #' Amino acid properties and ranges for
 #' the autoencoder models along tensor
-#' @name Trex.Data
+#' @name ibex.data
 #' @docType data
 #'
 #'

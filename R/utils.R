@@ -18,11 +18,6 @@ if (inherits(x=sc, what ="Seurat")) {
   return(sc)
 }
 
-
-###################################
-#Need to edit for position of BCR chains
-##################################
-
 #Function to pull and organize BCR depending on the chain selected
 #' @importFrom stringr str_split
 getBCR <- function(sc, chains) {
@@ -31,9 +26,9 @@ getBCR <- function(sc, chains) {
                     str_split(meta[,"CTaa"], "_", simplify = TRUE), 
                     str_split(meta[,"CTgene"], "_", simplify = TRUE))
   if (length(chains) == 1 && chains != "both") {
-    if (chains %in% c("heavy")) { #here
+    if (chains %in% c("Heavy")) { #here
       pos <- list(c(2,4))
-    } else if (chains %in% c("light")) { #here
+    } else if (chains %in% c("Light")) { #here
       pos <- list(c(3,5))
     }
   } else {
@@ -109,11 +104,11 @@ aa.model.loader <- function(chain, AA.properties) {
 }
 
 #Selects columns to normalize input data based on the inputs to the model
-aa.range.loader <- function(chain, AA.properties, Ibex.Data) {
-  range <- Ibex.Data[["model.ranges"]][[chain]]
+aa.range.loader <- function(chain, AA.properties, ibex.data) {
+  range <- ibex.data[["model.ranges"]][[chain]]
   min <- range[["min"]]
   max <- range[["max"]]
-  ref <- seq(1, 900, 15)
+  ref <- seq(1, 1050, 15)
   if (AA.properties == "AF") {
     ref2 <- sort(c(ref, ref+1, ref+2, ref+3, ref+4))
     min <- min[ref2]
@@ -128,7 +123,7 @@ aa.range.loader <- function(chain, AA.properties, Ibex.Data) {
 }
 
 one.hot.organizer <- function(refer) {
-  reference <- Ibex.Data[[1]]
+  reference <- ibex.data[[1]]
   int <- matrix(ncol = length(reference$aa) + 1, nrow = length(refer))
   for(i in seq_along(refer)) {
     if (is.na(refer[i])) {

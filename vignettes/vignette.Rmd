@@ -35,7 +35,7 @@ suppressMessages(library(patchwork))
 
 ## The Data Set
 
-To show the multiple options of Ibex, the example data is derived from [GSE167118](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE167118) - a cohort of CITE-seq data derived from severe COVID-19 patients. The [corresponding manuscript](https://pubmed.ncbi.nlm.nih.gov/33622974/) is excellent. The data example built into the package (ibex_example) is derived from randomly sampling the single-cells from patient 17. 
+To show the multiple options of Ibex, the example data is derived from [this preprint](https://www.biorxiv.org/content/10.1101/2022.06.24.497299v1) - a multimodal atlas of Human Tonsils. The data example built into the package (ibex_example) is derived from randomly sampling the single-cells from patient 33.
 
 This is a standard workflow based on the [WNN](https://satijalab.org/seurat/articles/weighted_nearest_neighbor_analysis.html) Seurat process. However, Ibex will work for Bioconductor/Single-Cell Experiment workflows as well. The major exception is the addition of ```quietBCRgenes()```, which removed B cell receptor genes from the variable gene list used for ```runPCA()```. 
 
@@ -45,48 +45,63 @@ suppressMessages(library(scRepertoire))
 ##################################
 #scRNA/ADT loading and processing
 #################################
-tmp <-  Read10X("~/Patient17/filtered_feature_bc_matrix")
+tmp <-  Read10X("~/BCLLATLAS_33/count/sample_feature_bc_matrix")
 
-Pt17 <- CreateSeuratObject(counts = tmp$`Gene Expression`)
-Pt17 <- subset(Pt17, subset = nFeature_RNA > 100) 
-Pt17  <- RenameCells(object = Pt17 , new.names = paste0("Pt17_", rownames(Pt17[[]])))
-Pt17[["mito.genes"]] <- PercentageFeatureSet(Pt17, pattern = "^MT-")
+Pt33 <- CreateSeuratObject(counts = tmp$`Gene Expression`)
+#Removing TCR-specific antibody
+adt_assay <- CreateAssayObject(counts = tmp$`Antibody Capture`[1:37,])
+Pt33[["ADT"]] <- adt_assay
+Pt33 <- subset(Pt33, subset = nFeature_RNA > 100) 
+Pt33  <- RenameCells(object = Pt33 , new.names = paste0("Pt33_", rownames(Pt33[[]])))
+Pt33[["mito.genes"]] <- PercentageFeatureSet(Pt33, pattern = "^MT-")
     
 #Filtering step
-standev <- sd(log(Pt17$nFeature_RNA))*2.5 #cutting off above standard deviation of 2.5
-mean <- mean(log(Pt17$nFeature_RNA))
+standev <- sd(log(Pt33$nFeature_RNA))*2.5 #cutting off above standard deviation of 2.5
+mean <- mean(log(Pt33$nFeature_RNA))
 cut <- round(exp(standev+mean))
-Pt17 <- subset(Pt17, subset = mito.genes < 10 & nFeature_RNA < cut)
+Pt33 <- subset(Pt33, subset = mito.genes < 10 & nFeature_RNA < cut)
+
+#Looking at only B cells
+scGate_models_DB <- get_scGateDB()
+Pt33  <- scGate(Pt33, model = scGate_models_DB$human$generic$Bcell)
+Pt33 <- subset(Pt33, is.pure == "Pure")
 
 #Processing RNA
-DefaultAssay(Pt17) <- 'RNA'
-Pt17 <- NormalizeData(Pt17) %>% FindVariableFeatures() %>% 
-  quietBCRgenes() %>% ScaleData() %>% RunPCA(verbose = FALSE)
+DefaultAssay(Pt33) <- 'RNA'
+Pt33 <- NormalizeData(Pt33) %>% 
+  FindVariableFeatures() %>% 
+  quietBCRgenes() %>% 
+  ScaleData() %>% 
+  RunPCA(verbose = FALSE)
 
 #Processing ADT
-DefaultAssay(Pt17) <- 'ADT'
-VariableFeatures(Pt17) <- rownames(Pt17[["ADT"]])
-Pt17 <- NormalizeData(Pt17, normalization.method = 'CLR', margin = 2) %>% 
-  ScaleData() %>% RunPCA(reduction.name = 'apca')
+DefaultAssay(Pt33) <- 'ADT'
+VariableFeatures(Pt33) <- rownames(Pt33[["ADT"]])
+Pt33 <- NormalizeData(Pt33, normalization.method = 'CLR', margin = 2) %>% 
+  ScaleData() %>% 
+  RunPCA(reduction.name = 'apca')
 
 
 ##################################
 #Processing and Adding Contig Info
 ##################################
 
-contigs <- read.csv("~/Patient17/filtered_contig_annotations.csv")
-clones <- combineBCR(contigs, samples = "Pt17", cells = "T-AB", filterMulti = TRUE, removeNA = TRUE)
-Pt17 <- combineExpression(clones, Pt17, cloneCall="aa")
-saveRDS(Pt17, file = "Ibex_FullExample.rds")
+contigs <- read.csv("~/BCLLATLAS_33/vdj_b/filtered_contig_annotations.csv")
+clones <- combineBCR(contigs, samples = "Pt33", 
+                     removeNA = TRUE)
+Pt33 <- combineExpression(clones, Pt33, cloneCall="strict")
+saveRDS(Pt33, file = "Ibex_FullExample.rds")
 
 ###################################
 #Making Example Data Set for Ibex
 #################################
-meta <- Pt17[[]]
-meta <- meta[sample(nrow(meta), nrow(meta)*0.1),]
-ibex_example <- subset(Pt17, cells = rownames(meta))
+meta <- Pt33[[]]
+meta <- meta[!is.na(meta$CTaa),]
+meta <- meta[sample(nrow(meta), nrow(meta)*0.3),]
+ibex_example <- subset(Pt33, cells = rownames(meta))
 save(ibex_example, file = "ibex_example.rda", compress = "xz")
 ```
+
 
 ## Loading the Data
 
