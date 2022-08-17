@@ -6,7 +6,7 @@
 #' adapted to R. Please read and cite the author's work. 
 #' 
 #' @examples
-#' trex_values <- CoNGAfy(trex_example, 
+#' ibex.clones <- CoNGAfy(ibex_example, 
 #'                         method = "dist",
 #'                         features = NULL)
 #'                         

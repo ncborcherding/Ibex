@@ -4,7 +4,7 @@ author:
 - name: Nick Borcherding
   email: ncborch@gmail.com
   affiliation: Washington University in St. Louis, School of Medicine, St. Louis, MO, USA
-date: "July 29,2022"
+date: "August 17, 2022"
 output:
   BiocStyle::html_document:
     toc_float: true
@@ -73,6 +73,11 @@ Pt33 <- NormalizeData(Pt33) %>%
   quietBCRgenes() %>% 
   ScaleData() %>% 
   RunPCA(verbose = FALSE)
+
+Pt33 <- Pt33 %>%
+  FindNeighbors() %>%
+  FindClusters(algorithm = 4, 
+               resolution = 0.6)
 
 #Processing ADT
 DefaultAssay(Pt33) <- 'ADT'
@@ -143,7 +148,7 @@ Additionally, ```runIbex()``` can be used to append the Seurat or Single-cell Ex
 
 ```{r}
 ibex_example <- runIbex(ibex_example, 
-                    chains = "TRB",
+                    chains = "Heavy",
                     AA.properties = "KF", 
                     reduction.name = "Ibex.KF")
 ```
@@ -184,7 +189,7 @@ ibex_example <- RunUMAP(ibex_example,
 ibex_example <- FindClusters(ibex_example, 
                              graph.name = "wsnn",
                              resolution = 0.6,
-                             algorithm = 3, 
+                             algorithm = 4, 
                              verbose = FALSE)
 
 #WNN UMAP
@@ -276,7 +281,8 @@ CoNGA.seurat <- runIbex(CoNGA.seurat,
 
 CoNGA.seurat <- CoNGA.seurat %>%
                   FindNeighbors(reduction = "Ibex.KF") %>%
-                  FindClusters(algorithm = 3, resolution = 0.9)
+                  FindClusters(algorithm = 4, 
+                               resolution = 0.6)
 
 CoNGA.seurat <- RunUMAP(CoNGA.seurat, 
                      reduction = "Ibex.KF", 
