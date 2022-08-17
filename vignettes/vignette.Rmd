@@ -1,5 +1,5 @@
 ---
-title: Welcome to Jurassic Park - A tour of Ibex.
+title: A tour of Ibex.
 author: 
 - name: Nick Borcherding
   email: ncborch@gmail.com
