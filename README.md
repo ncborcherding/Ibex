@@ -41,7 +41,9 @@ Trex should be able to be run in popular R-based single-cell workflows, includin
 
 Check out this [vignette](https://ncborcherding.github.io/vignettes/Trex.html) for a quick start tutorial. 
 
-<img align="center" src="https://github.com/ncborcherding/Ibex/blob/dev/www/graphicalAbstract.png">
+<img align="center" src="https://github.com/ncborcherding/Ibex/blob/main/www/graphicalAbstract.png">
+
+
 
 ## Autoencoded Matrix
 
