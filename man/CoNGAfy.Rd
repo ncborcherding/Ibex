@@ -35,7 +35,7 @@ in \href{https://pubmed.ncbi.nlm.nih.gov/34426704/}{CoNGA} and was
 adapted to R. Please read and cite the author's work.
 }
 \examples{
-trex_values <- CoNGAfy(trex_example, 
+ibex.clones <- CoNGAfy(ibex_example, 
                         method = "dist",
                         features = NULL)
                         

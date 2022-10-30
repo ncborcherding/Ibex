@@ -35,7 +35,7 @@ suppressMessages(library(patchwork))
 
 ## The Data Set
 
-To show the multiple options of Ibex, the example data is derived from [this preprint](https://www.biorxiv.org/content/10.1101/2022.06.24.497299v1) - a multimodal atlas of Human Tonsils. The data example built into the package (ibex_example) is derived from randomly sampling the single-cells from patient 33.
+To show the multiple options of Ibex, the example data is derived from [this manuscript (https://pubmed.ncbi.nlm.nih.gov/33891889/) - multimodal single-cell characterization of COVID19-associated multisystem inflammatory syndrome in children. The data example built into the package (ibex_example) is derived from randomly sampling cells from Patient 1.
 
 This is a standard workflow based on the [WNN](https://satijalab.org/seurat/articles/weighted_nearest_neighbor_analysis.html) Seurat process. However, Ibex will work for Bioconductor/Single-Cell Experiment workflows as well. The major exception is the addition of ```quietBCRgenes()```, which removed B cell receptor genes from the variable gene list used for ```runPCA()```. 
 
@@ -45,65 +45,54 @@ suppressMessages(library(scRepertoire))
 ##################################
 #scRNA/ADT loading and processing
 #################################
-tmp <-  Read10X("~/BCLLATLAS_33/count/sample_feature_bc_matrix")
+tmp <-  Read10X("~/data/GSM5073055_P1.1_filtered_feature_bc_matrix")
 
-Pt33 <- CreateSeuratObject(counts = tmp$`Gene Expression`)
-#Removing TCR-specific antibody
-adt_assay <- CreateAssayObject(counts = tmp$`Antibody Capture`[1:37,])
-Pt33[["ADT"]] <- adt_assay
-Pt33 <- subset(Pt33, subset = nFeature_RNA > 100) 
-Pt33  <- RenameCells(object = Pt33 , new.names = paste0("Pt33_", rownames(Pt33[[]])))
-Pt33[["mito.genes"]] <- PercentageFeatureSet(Pt33, pattern = "^MT-")
+MIS.sample <- CreateSeuratObject(counts = tmp$`Gene Expression`)
+rownames(tmp$`Antibody Capture`) <- stringr::str_remove_all(rownames(tmp$`Antibody Capture`), "anti_human_")
+rownames(tmp$`Antibody Capture`) <- stringr::str_remove_all(rownames(tmp$`Antibody Capture`), "anti_mousehuman_")
+rownames(tmp$`Antibody Capture`) <- substr(rownames(tmp$`Antibody Capture`), 6, nchar(rownames(tmp$`Antibody Capture`)))
+
+adt_assay <- CreateAssayObject(counts = tmp$`Antibody Capture`)
+
+
+MIS.sample[["ADT"]] <- adt_assay
+MIS.sample <- subset(MIS.sample, subset = nFeature_RNA > 100) 
+MIS.sample  <- RenameCells(object = MIS.sample , new.names = paste0("MIS.sample_", rownames(MIS.sample[[]])))
+MIS.sample[["mito.genes"]] <- PercentageFeatureSet(MIS.sample, pattern = "^MT-")
     
 #Filtering step
-standev <- sd(log(Pt33$nFeature_RNA))*2.5 #cutting off above standard deviation of 2.5
-mean <- mean(log(Pt33$nFeature_RNA))
+standev <- sd(log(MIS.sample$nFeature_RNA))*2.5 #cutting off above standard deviation of 2.5
+mean <- mean(log(MIS.sample$nFeature_RNA))
 cut <- round(exp(standev+mean))
-Pt33 <- subset(Pt33, subset = mito.genes < 10 & nFeature_RNA < cut)
+MIS.sample <- subset(MIS.sample, subset = mito.genes < 10 & nFeature_RNA < cut)
 
-#Looking at only B cells
-scGate_models_DB <- get_scGateDB()
-Pt33  <- scGate(Pt33, model = scGate_models_DB$human$generic$Bcell)
-Pt33 <- subset(Pt33, is.pure == "Pure")
+#Processing and Adding Contig Info
+contigs <- read.csv("~/data/GSM5073091_PBMC_P1.1_MIS-C_Severe_BCR_filtered_contig_annotations.csv.gz")
+clones <- combineBCR(contigs, samples = "MIS.sample", removeNA = TRUE)
+MIS.sample <- combineExpression(clones, MIS.sample, cloneCall="aa")
+
+#Subset only B cells (by contigs)
+MIS.sample$BCR.recoverd <- "No"
+MIS.sample$BCR.recoverd[!is.na(MIS.sample$CTaa)] <- "Yes"
+MIS.sample <- subset(MIS.sample, BCR.recoverd == "Yes")
 
 #Processing RNA
-DefaultAssay(Pt33) <- 'RNA'
-Pt33 <- NormalizeData(Pt33) %>% 
-  FindVariableFeatures() %>% 
-  quietBCRgenes() %>% 
-  ScaleData() %>% 
-  RunPCA(verbose = FALSE)
-
-Pt33 <- Pt33 %>%
-  FindNeighbors() %>%
-  FindClusters(algorithm = 4, 
-               resolution = 0.6)
+DefaultAssay(MIS.sample) <- 'RNA'
+MIS.sample <- NormalizeData(MIS.sample) %>% FindVariableFeatures() %>% 
+  quietBCRgenes() %>% ScaleData() %>% RunPCA(verbose = FALSE)
 
 #Processing ADT
-DefaultAssay(Pt33) <- 'ADT'
-VariableFeatures(Pt33) <- rownames(Pt33[["ADT"]])
-Pt33 <- NormalizeData(Pt33, normalization.method = 'CLR', margin = 2) %>% 
-  ScaleData() %>% 
-  RunPCA(reduction.name = 'apca')
-
-
-##################################
-#Processing and Adding Contig Info
-##################################
-
-contigs <- read.csv("~/BCLLATLAS_33/vdj_b/filtered_contig_annotations.csv")
-clones <- combineBCR(contigs, samples = "Pt33", 
-                     removeNA = TRUE)
-Pt33 <- combineExpression(clones, Pt33, cloneCall="strict")
-saveRDS(Pt33, file = "Ibex_FullExample.rds")
+DefaultAssay(MIS.sample) <- 'ADT'
+VariableFeatures(MIS.sample) <- rownames(MIS.sample[["ADT"]])
+MIS.sample <- NormalizeData(MIS.sample, normalization.method = 'CLR', margin = 2) %>% 
+  ScaleData() %>% RunPCA(reduction.name = 'apca')
 
 ###################################
-#Making Example Data Set for Ibex
+#Making Example Data Set for Trex
 #################################
-meta <- Pt33[[]]
-meta <- meta[!is.na(meta$CTaa),]
-meta <- meta[sample(nrow(meta), nrow(meta)*0.3),]
-ibex_example <- subset(Pt33, cells = rownames(meta))
+meta <- MIS.sample[[]]
+meta <- meta[sample(nrow(meta), nrow(meta)*0.33),]
+ibex_example <- subset(MIS.sample, cells = rownames(meta))
 save(ibex_example, file = "ibex_example.rda", compress = "xz")
 ```
 
@@ -137,7 +126,7 @@ Ibex has 2 major functions - the first being ```Ibex.matrix()```, which is the b
 ```{r}
 Ibex_vectors <- Ibex.matrix(ibex_example, 
                        chains = "Heavy",
-                      AA.properties = "OHE")
+                       AA.properties = "OHE")
 
 qplot(data = as.data.frame(Ibex_vectors), Ibex_2, Ibex_3) + theme_classic()
 ```
