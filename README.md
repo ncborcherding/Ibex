@@ -10,7 +10,7 @@ R package to assist in the interaction of immune receptor and gene expression se
 
 # System requirements 
 
-Ibex has been tested on R versions >= 4.0. Please consult the DESCRIPTION file for more details on required R packages - it is specifically designed to work with single-cell objects that have had BCRs added using [scRepertoire](https://github.com/ncborcherding/scRepertoire). TIbex has been tested on OS X and Windows platforms.
+Ibex has been tested on R versions >= 4.0. Please consult the DESCRIPTION file for more details on required R packages - it is specifically designed to work with single-cell objects that have had BCRs added using [scRepertoire](https://github.com/ncborcherding/scRepertoire). Ibex has been tested on OS X and Windows platforms.
 
 **keras** is necessary to use the autoencoder function (this includes the set up of the tensorflow environment in R):
 
@@ -30,7 +30,7 @@ install_tensorflow()
 To run Ibex, open R and install Ibex from github: 
 
 ```r
-devtools::install_github("ncborcherding/Ibex@dev")
+devtools::install_github("ncborcherding/Ibex")
 ```
 
 # Usage/Demos
