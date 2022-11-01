@@ -60,10 +60,10 @@ You can run Ibex within your Seurat or Single-Cell Experiemt workflow. **Importa
 
 ```r
 seuratObj_Tonly <- runIbex(seuratObj, #The single cell object
-                   chains = "Heavy", #Use of "Heavy" or "Light" 
-                   AA.properties = c("AF", "KF", "both", "OHE"), 
-                   reduction.name = "Ibex", #Name designation for 
-                   #the vectors to be added to the single-cell object)
+                           chains = "Heavy", #Use of "Heavy" or "Light" 
+                           AA.properties = c("AF", "KF", "both", "OHE"), 
+                           reduction.name = "Ibex", #Name designation for 
+                           #the vectors to be added to the single-cell object)
                    
 seuratObj_Tonly <- runIbex(seuratObj, reduction.name = "Ibex")
 ```
