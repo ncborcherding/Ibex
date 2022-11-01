@@ -87,11 +87,15 @@ seuratObj <- RunPCA(seuratObj)
 
 ### Running WNN approach
 ```r
-seuratObj <- FindMultiModalNeighbors(
-  seuratObj, reduction.list = list("pca", "Ibex"), 
-  dims.list = list(1:30, 1:20), modality.weight.name = "RNA.weight"
-)
-seuratObj <- RunUMAP(seuratObj, nn.name = "weighted.nn", reduction.name = "wnn.umap", reduction.key = "wnnUMAP_")
+seuratObj <- FindMultiModalNeighbors(seuratObj, 
+                                     reduction.list = list("pca", "Ibex"), 
+                                     dims.list = list(1:30, 1:20), 
+                                     modality.weight.name = "RNA.weight")
+                                     
+seuratObj <- RunUMAP(seuratObj, 
+                     nn.name = "weighted.nn", 
+                     reduction.name = "wnn.umap", 
+                     reduction.key = "wnnUMAP_")
 ```
 ***
 
