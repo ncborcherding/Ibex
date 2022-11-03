@@ -83,7 +83,7 @@ runIbex <- function(sc,
 #' @return Seurat object or vector list with BCR genes removed.
 quietBCRgenes <- function(sc, 
                           assay = NULL) {
-    unwanted_genes <- "^IG[HLV][VDJ]"
+    unwanted_genes <- "^IG[HLK][VDJ]"
     if (inherits(x=sc, what ="Seurat")) {
         if (is.null(assay)) {
             assay <- DefaultAssay(sc)
