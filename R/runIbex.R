@@ -19,9 +19,10 @@
 #' 
 #' @return Ibex encoded values from the autoencoder
 Ibex.matrix <- function(sc, 
-                    chains = "Heavy", 
-                    AA.properties = "AF") {
+                        chains = "Heavy", 
+                        AA.properties = "AF") {
     BCR <- getBCR(sc, chains)
+    checkLength(BCR[[1]])
     if (AA.properties %in% c("AF", "KF", "both", "all", "OHE")) {
         print("Calculating the Amino Acid Properties...")
         reduction <- aaProperty(BCR, AA.properties)

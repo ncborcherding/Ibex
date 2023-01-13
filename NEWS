@@ -1,3 +1,7 @@
+CHANGES IN VERSION 0.99.1
+------------------------
+* Added detection of chain length to function call
+
 
 CHANGES IN VERSION 0.99.0
 ------------------------
