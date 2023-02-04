@@ -8,7 +8,8 @@
 #'                         chains = "Heavy",
 #'                         AA.properties = "AF")
 #'                         
-#' @param sc Single Cell Object in Seurat or SingleCell Experiment format
+#' @param sc Single Cell Object in Seurat or SingleCell Experiment format or
+#' the output of combineBCR() in scRepertoire
 #' @param chains Heavy or Light
 #' @param AA.properties Amino acid properties to use for distance calculation: 
 #' "AF" = Atchley factors, "KF" = Kidera factors, "both" = AF and KF, or "OHE" for
@@ -54,7 +55,7 @@ runIbex <- function(sc,
                     chains = "Heavy", 
                     AA.properties = "AF",
                     reduction.name = "Ibex") {
-
+    checkSingleObject(sc)
     cells.chains <- rownames(sc[[]][!is.na(sc[["CTaa"]]),])
     sc <- subset(sc, cells = cells.chains)
     reduction <- Ibex.matrix(sc,
@@ -84,16 +85,18 @@ runIbex <- function(sc,
 #' @return Seurat object or vector list with BCR genes removed.
 quietBCRgenes <- function(sc, 
                           assay = NULL) {
-    unwanted_genes <- "^IG[HLK][VDJ]"
+    unwanted_genes <- "^IG[HLK][VDJCAGM]"
     if (inherits(x=sc, what ="Seurat")) {
         if (is.null(assay)) {
             assay <- DefaultAssay(sc)
         }
         unwanted_genes <- grep(pattern = unwanted_genes, x = sc[[assay]]@var.features, value = TRUE)
+        unwanted_genes <- c(unwanted_genes , "JCHAIN")
         sc[[assay]]@var.features <- sc[[assay]]@var.features[sc[[assay]]@var.features %!in% unwanted_genes]
     } else {
         #Bioconductor scran pipelines uses vector of variable genes for DR
         unwanted_genes <- grep(pattern = unwanted_genes, x = sc, value = TRUE)
+        unwanted_genes <- c(unwanted_genes , "JCHAIN")
         sc <- sc[sc %!in% unwanted_genes]
     }
     return(sc)

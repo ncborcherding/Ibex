@@ -1,6 +1,8 @@
 CHANGES IN VERSION 0.99.1
 ------------------------
 * Added detection of chain length to function call
+* Added support for direct output of combineBCR()
+* Modified quietBCR() to include constant regions and J-chains
 
 
 CHANGES IN VERSION 0.99.0

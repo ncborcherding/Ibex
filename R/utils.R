@@ -21,7 +21,12 @@ if (inherits(x=sc, what ="Seurat")) {
 #Function to pull and organize BCR depending on the chain selected
 #' @importFrom stringr str_split
 getBCR <- function(sc, chains) {
-  meta <- grabMeta(sc)
+  if (inherits(x=sc, what ="Seurat") | inherits(x=sc, what ="SingleCellExperiment")) {
+    meta <- grabMeta(sc)
+  } else {
+    meta <- do.call(rbind,sc)
+    rownames(meta) <- meta[,"barcode"]
+  }
   tmp <- data.frame(barcode = rownames(meta), 
                     str_split(meta[,"CTaa"], "_", simplify = TRUE), 
                     str_split(meta[,"CTgene"], "_", simplify = TRUE))

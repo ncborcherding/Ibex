@@ -7,7 +7,8 @@
 Ibex.matrix(sc, chains = "Heavy", AA.properties = "AF")
 }
 \arguments{
-\item{sc}{Single Cell Object in Seurat or SingleCell Experiment format}
+\item{sc}{Single Cell Object in Seurat or SingleCell Experiment format or
+the output of combineBCR() in scRepertoire}
 
 \item{chains}{Heavy or Light}
 
