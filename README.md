@@ -59,13 +59,13 @@ my_ibex <- Ibex.matrix(singleObject)
 You can run Ibex within your Seurat or Single-Cell Experiemt workflow. **Importantly** `runIbex()` will automatically filter single-cells that do not contain BCR information in the meta data of the single-cell object. 
 
 ```r
-seuratObj_Tonly <- runIbex(seuratObj, #The single cell object
+seuratObj_Bonly <- runIbex(seuratObj, #The single cell object
                            chains = "Heavy", #Use of "Heavy" or "Light" 
                            AA.properties = c("AF", "KF", "both", "OHE"), 
                            reduction.name = "Ibex", #Name designation for 
                            #the vectors to be added to the single-cell object)
                    
-seuratObj_Tonly <- runIbex(seuratObj, reduction.name = "Ibex")
+seuratObj_Bonly <- runIbex(seuratObj, reduction.name = "Ibex")
 ```
 
 ## After Running Ibex

@@ -4,7 +4,7 @@ author:
 - name: Nick Borcherding
   email: ncborch@gmail.com
   affiliation: Washington University in St. Louis, School of Medicine, St. Louis, MO, USA
-date: "Janaury 26th, 2023"
+date: "April 6, 2023"
 output:
   BiocStyle::html_document:
     toc_float: true
