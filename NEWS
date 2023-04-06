@@ -1,3 +1,9 @@
+CHANGES IN VERSION 0.99.2
+------------------------
+* Updated models to include radam optimization, early stop for min 10 epochs, and all trained on 800,000 unique cdr3s
+* quietBCRgenes() now does not remove human Ig pseudogenes
+
+
 CHANGES IN VERSION 0.99.1
 ------------------------
 * Added detection of chain length to function call
