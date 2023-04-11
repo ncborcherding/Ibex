@@ -39,7 +39,7 @@ Ibex should be able to be run in popular R-based single-cell workflows, includin
 
 ## Quick Start 
 
-Check out this [vignette](https://ncborcherding.github.io/vignettes/Ibex.html) for a quick start tutorial. 
+Check out this [vignette](https://www.borch.dev/uploads/ibex) for a quick start tutorial. 
 
 <img align="center" src="https://github.com/ncborcherding/Ibex/blob/main/www/graphicalAbstract.png">
 
