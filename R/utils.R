@@ -107,7 +107,6 @@ checkLength <- function(x) {
 #' @importFrom tensorflow tf
 #' @importFrom keras load_model_hdf5
 aa.model.loader <- function(chain, AA.properties) {
-  quiet(tensorflow::tf$compat$v1$disable_eager_execution())
     select  <- system.file("extdata", paste0(chain, "_", 
                                AA.properties, "_Encoder.h5"), 
                           package = "Ibex")
@@ -181,7 +180,7 @@ auto.embedder <- function(array.reshape, aa.model, local.max, local.min, AA.prop
     }
   }
   array.reshape[is.na(array.reshape)] <- 0
-  score <- stats::predict(aa.model, t(array.reshape))
+  score <- stats::predict(aa.model, t(array.reshape), verbose = 0)
   return(score)
 }
 

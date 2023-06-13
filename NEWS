@@ -1,3 +1,18 @@
+
+CHANGES IN VERSION 0.99.3
+------------------------
+* Updated models for manuscript revision
+ 	- Architecture: 256-128-30-128-256
+	- Parameters: 
+		Batch Size = 64
+		Learning Rate = 0.001
+		Latent Dimensions = 30
+		Epochs = 50
+		Loss = Mean Squared Error
+	- Optimizers: RAdam (for amino acid properties) and RMSprop (for OHE)
+	- Early stopping was set to patients of 10 for minimal validation loss and restoration of best weights
+
+
 CHANGES IN VERSION 0.99.2
 ------------------------
 * Updated models to include radam optimization, early stop for min 10 epochs, and all trained on 800,000 unique cdr3s

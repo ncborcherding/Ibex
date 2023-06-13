@@ -1,6 +1,6 @@
 Package: Ibex
 Title: Methods for BCR single-cell embedding 
-Version: 0.99.2
+Version: 0.99.3
 Date: 2023-4-6
 Authors@R: c(
     person(given = "Nick", family = "Borcherding", role = c("aut", "cre"), email = "ncborch@gmail.com"))
