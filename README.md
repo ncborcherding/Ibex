@@ -99,7 +99,7 @@ seuratObj <- RunUMAP(seuratObj,
 ```
 ***
 ### Citation
-More information on Ibex is available at our [Biorxiv preprint](https://www.biorxiv.org/content/10.1101/2022.11.09.515787v1). Please contact us (below) if you have any suggestions!
+More information on Ibex is available at our [Biorxiv preprint](https://www.biorxiv.org/content/10.1101/2022.11.09.515787v2). Please contact us (below) if you have any suggestions!
 ***
 ### Contact
 Questions, comments, suggestions, please feel free to contact Nick Borcherding via this repository, [email](mailto:ncborch@gmail.com), or using [twitter](https://twitter.com/theHumanBorch). 
