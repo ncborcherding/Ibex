@@ -116,7 +116,7 @@ aa.model.loader <- function(chain, AA.properties) {
 
 #Selects columns to normalize input data based on the inputs to the model
 aa.range.loader <- function(chain, AA.properties, ibex.data) {
-  range <- ibex.data[["model.ranges"]][[chain]]
+  range <- ibex.data[["model.ranges"]][[tolower(chain)]]
   min <- range[["min"]]
   max <- range[["max"]]
   ref <- seq(1, 1050, 15)
