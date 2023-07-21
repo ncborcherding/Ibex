@@ -18,6 +18,12 @@ if (inherits(x=sc, what ="Seurat")) {
   return(sc)
 }
 
+#All the receptor chains shall be capitlized
+#' @importFrom stringr str_to_title
+chain.checker <- function(chain) {
+  chain <- str_to_title(chain)
+}
+
 #Function to pull and organize BCR depending on the chain selected
 #' @importFrom stringr str_split
 getBCR <- function(sc, chains) {

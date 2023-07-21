@@ -1,3 +1,6 @@
+CHANGES IN VERSION 0.99.4
+------------------------
+* Added chain.checker() function to allow for uncapitlized chain calls
 
 CHANGES IN VERSION 0.99.3
 ------------------------

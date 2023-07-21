@@ -22,6 +22,7 @@
 Ibex.matrix <- function(sc, 
                         chains = "Heavy", 
                         AA.properties = "AF") {
+    chains <- chain.checker(chains)
     BCR <- getBCR(sc, chains)
     checkLength(BCR[[1]])
     if (AA.properties %in% c("AF", "KF", "both", "all", "OHE")) {
