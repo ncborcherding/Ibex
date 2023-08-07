@@ -1,7 +1,7 @@
 # Ibex
 Using BCR sequences for graph embedding
 
-<img align="right" src="https://github.com/ncborcherding/Ibex/blob/main/www/ibex_hex.png" width="305" height="352">
+<img align="right" src="https://github.com/ncborcherding/Ibex/blob/main/www/ibex_hex.png" width="352" height="352">
 
 ## Introduction
 Single-cell sequencing is now a integral tool in the field of immunology and oncology that allows researchers to couple RNA quantification and other modalities, 
