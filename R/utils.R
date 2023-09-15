@@ -112,31 +112,12 @@ checkLength <- function(x) {
 #Returns appropriate model for autoencoder
 #' @importFrom tensorflow tf
 #' @importFrom keras load_model_hdf5
-aa.model.loader <- function(chain, AA.properties) {
+aa.model.loader <- function(chain, encoder.input, encoder.model) {
     select  <- system.file("extdata", paste0(chain, "_", 
-                               AA.properties, "_Encoder.h5"), 
+                               encoder.input, "_", encoder.model, ".h5"), 
                           package = "Ibex")
   model <- quiet(load_model_hdf5(select, compile = FALSE))
   return(model)
-}
-
-#Selects columns to normalize input data based on the inputs to the model
-aa.range.loader <- function(chain, AA.properties, ibex.data) {
-  range <- ibex.data[["model.ranges"]][[tolower(chain)]]
-  min <- range[["min"]]
-  max <- range[["max"]]
-  ref <- seq(1, 1050, 15)
-  if (AA.properties == "AF") {
-    ref2 <- sort(c(ref, ref+1, ref+2, ref+3, ref+4))
-    min <- min[ref2]
-    max <- max[ref2]
-  } else if (AA.properties == "KF") {
-    ref2 <- sort(c(ref+5, ref+6, ref+7, ref+8, ref+9, ref+10, ref+11, ref+12, ref+13, ref+14))
-    min <- min[ref2]
-    max <- max[ref2]
-  }
-  range <- list(min = min, max = max)
-  return(range)
 }
 
 one.hot.organizer <- function(refer) {
@@ -177,14 +158,7 @@ AF.col <- c(2,3,4,5,6)
 KF.col <- c(7,8,9,10,11,12,13,14,15,16)
 
 #Generates the 30 vector based on autoencoder model 
-#First normalizes the value by the min and max of the autoencoder training data
-auto.embedder <- function(array.reshape, aa.model, local.max, local.min, AA.properties) {
-  #OHE is already min/max normalized - each aa residue has 1 value and 19 0s
-  if(AA.properties != "OHE") {
-    for(i in seq_len(length(array.reshape))) {
-      (array.reshape[i] - local.min[i])/(local.max[i] - local.min[i])
-    }
-  }
+auto.embedder <- function(array.reshape, aa.model, encoder.input) {
   array.reshape[is.na(array.reshape)] <- 0
   score <- stats::predict(aa.model, t(array.reshape), verbose = 0)
   return(score)
@@ -200,4 +174,3 @@ dist.convert <- function(dist_obj, k) {
   v1 <- dist_obj[f(j, i, dist_obj)]
   return(v1)
 }
-

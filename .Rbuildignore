@@ -1,3 +1,9 @@
 ^_pkgdown\.yml$
 ^docs$
 ^pkgdown$
+^www$
+^‘__autograph_generated_file3mbjv7rr\.py’$
+^‘__pycache__’$
+^__autograph_generated_fileuzetj_u2\.py$
+^__pycache__$
+^__autograph_generated_filezt06eymn\.py$

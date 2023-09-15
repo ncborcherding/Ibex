@@ -4,16 +4,30 @@
 \alias{runIbex}
 \title{Ibex single cell calculation}
 \usage{
-runIbex(sc, chains = "Heavy", AA.properties = "AF", reduction.name = "Ibex")
+runIbex(
+  sc,
+  chains = "Heavy",
+  method = "encoder",
+  encoder.model = "VAE",
+  encoder.input = "AF",
+  theta = pi,
+  reduction.name = "Ibex"
+)
 }
 \arguments{
 \item{sc}{Single Cell Object in Seurat or SingleCell Experiment format}
 
 \item{chains}{Heavy or Light}
 
-\item{AA.properties}{Amino acid properties to use for distance calculation: 
-"AF" = Atchley factors, "KF" = Kidera factors, "both" = AF and KF, or "OHE" for
+\item{method}{"encoder" = using deep learning autoencoders or 
+"geometric" = geomteric transformations based on BLOSUM62 matrix}
+
+\item{encoder.model}{"AE" = dense autoencoder or "VAE" = variation autoencoder}
+
+\item{encoder.input}{"AF" = Atchley factors, "KF" = Kidera factors, "both" = AF and KF, or "OHE" for
 One Hot Autoencoder}
+
+\item{theta}{angle to use for geometric transformation}
 
 \item{reduction.name}{Keyword to save Ibex reduction. Useful if you want
 to try Ibex with multiple parameters}
@@ -27,7 +41,9 @@ Run Ibex algorithm with Seurat or SingleCellExperiment pipelines
 }
 \examples{
 ibex_example <- runIbex(ibex_example, 
-                        AA.properties = "AF", 
-                        reduction.name = "Ibex.AF")
+                        chains = "Heavy",
+                        method = "encoder",
+                        encoder.model = "VAE",
+                        encoder.input = "AF")
                         
 }

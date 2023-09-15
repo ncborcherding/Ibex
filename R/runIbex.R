@@ -5,15 +5,25 @@
 #' 
 #' @examples
 #'ibex_values <- Ibex.matrix(ibex_example, 
-#'                         chains = "Heavy",
-#'                         AA.properties = "AF")
+#'                           chains = "Heavy",
+#'                           method = "encoder",
+#'                           encoder.model = "VAE",
+#'                           encoder.input = "AF")
+#'                           
+#'ibex_values <- Ibex.matrix(ibex_example, 
+#'                           chains = "Heavy",
+#'                           method = "geometric",
+#'                           theta = pi)
 #'                         
 #' @param sc Single Cell Object in Seurat or SingleCell Experiment format or
 #' the output of combineBCR() in scRepertoire
 #' @param chains Heavy or Light
-#' @param AA.properties Amino acid properties to use for distance calculation: 
-#' "AF" = Atchley factors, "KF" = Kidera factors, "both" = AF and KF, or "OHE" for
+#' @param method "encoder" = using deep learning autoencoders or 
+#' "geometric" = geomteric transformations based on BLOSUM62 matrix
+#' @param encoder.model "AE" = dense autoencoder or "VAE" = variation autoencoder
+#' @param encoder.input "AF" = Atchley factors, "KF" = Kidera factors, "both" = AF and KF, or "OHE" for
 #' One Hot Autoencoder
+#' @param theta angle to use for geometric transformation
 #' 
 #' @export
 #' @importFrom SeuratObject CreateDimReducObject
@@ -21,13 +31,19 @@
 #' @return Ibex encoded values from the autoencoder
 Ibex.matrix <- function(sc, 
                         chains = "Heavy", 
-                        AA.properties = "AF") {
+                        method = "encoder",
+                        encoder.model = "VAE", 
+                        encoder.input = "AF",
+                        theta = pi) {
     chains <- chain.checker(chains)
     BCR <- getBCR(sc, chains)
     checkLength(BCR[[1]])
-    if (AA.properties %in% c("AF", "KF", "both", "all", "OHE")) {
-        print("Calculating the Amino Acid Properties...")
-        reduction <- aaProperty(BCR, AA.properties)
+    if (method == "encoder" && encoder.input %in% c("AF", "KF", "both", "all", "OHE")) {
+        print("Calculating the encoding values...")
+        reduction <- .encoder(BCR, encoder.input, encoder.model)
+    } else if (method == "geometric") {
+        print("Performing geometric transformation...")
+        reduction <- .geometric.encoding(BCR, theta)
     }
     return(reduction)
 }
@@ -38,14 +54,20 @@ Ibex.matrix <- function(sc,
 #'
 #' @examples
 #' ibex_example <- runIbex(ibex_example, 
-#'                         AA.properties = "AF", 
-#'                         reduction.name = "Ibex.AF")
+#'                         chains = "Heavy",
+#'                         method = "encoder",
+#'                         encoder.model = "VAE",
+#'                         encoder.input = "AF")
 #'                         
 #' @param sc Single Cell Object in Seurat or SingleCell Experiment format
 #' @param chains Heavy or Light
-#' @param AA.properties  Amino acid properties to use for distance calculation: 
-#' "AF" = Atchley factors, "KF" = Kidera factors, "both" = AF and KF, or "OHE" for
+#' @param chains Heavy or Light
+#' @param method "encoder" = using deep learning autoencoders or 
+#' "geometric" = geomteric transformations based on BLOSUM62 matrix
+#' @param encoder.model "AE" = dense autoencoder or "VAE" = variation autoencoder
+#' @param encoder.input "AF" = Atchley factors, "KF" = Kidera factors, "both" = AF and KF, or "OHE" for
 #' One Hot Autoencoder
+#' @param theta angle to use for geometric transformation
 #' @param reduction.name Keyword to save Ibex reduction. Useful if you want
 #' to try Ibex with multiple parameters 
 #' @export
@@ -54,159 +76,21 @@ Ibex.matrix <- function(sc,
 #' 
 runIbex <- function(sc, 
                     chains = "Heavy", 
-                    AA.properties = "AF",
+                    method = "encoder",
+                    encoder.model = "VAE", 
+                    encoder.input = "AF",
+                    theta = pi,
                     reduction.name = "Ibex") {
     checkSingleObject(sc)
     cells.chains <- rownames(sc[[]][!is.na(sc[["CTaa"]]),])
     sc <- subset(sc, cells = cells.chains)
-    reduction <- Ibex.matrix(sc,
-                        chains, 
-                        AA.properties)
+    reduction <- Ibex.matrix(sc = sc,
+                             chains = chains, 
+                             method = method,
+                             encoder.model = encoder.model, 
+                             encoder.input = encoder.input,
+                             theta = theta)
     BCR <- getBCR(sc, chains)
     sc <- adding.DR(sc, reduction, reduction.name)
     return(sc)
-}
-
-#' Remove BCR genes from variable gene results
-#'
-#'Most single-cell workflows use highly-expressed and highly-variable
-#'genes for the initial calculation of PCA and subsequent dimensional
-#'reduction. This function will remove the BCR genes from the variable
-#'features in the Seurat object or from a vector generated by
-#'the Bioconductor scran workflow. 
-#'
-#' @examples
-#' x <- quietBCRgenes(ibex_example)
-#' 
-#' @param sc Single-cell object in Seurat format or vector of variable genes to use in reduction
-#' @param assay The Seurat assay slot to use to remove BCR genes from, NULL value will default to
-#' the default assay
-#' @importFrom SeuratObject DefaultAssay
-#' @export
-#' @return Seurat object or vector list with BCR genes removed.
-quietBCRgenes <- function(sc, 
-                          assay = NULL) {
-    unwanted_genes <- "^IG[HLK][VDJCAGM]"
-    if (inherits(x=sc, what ="Seurat")) {
-        if (is.null(assay)) {
-            assay <- DefaultAssay(sc)
-        }
-        unwanted_genes <- grep(pattern = unwanted_genes, x = sc[[assay]]@var.features, value = TRUE)
-        unwanted_genes <- c(unwanted_genes , "JCHAIN")
-        unwanted_genes <- unwanted_genes[unwanted_genes %!in% pseudogenes]
-        sc[[assay]]@var.features <- sc[[assay]]@var.features[sc[[assay]]@var.features %!in% unwanted_genes]
-    } else {
-        #Bioconductor scran pipelines uses vector of variable genes for DR
-        unwanted_genes <- grep(pattern = unwanted_genes, x = sc, value = TRUE)
-        unwanted_genes <- c(unwanted_genes , "JCHAIN")
-        unwanted_genes <- unwanted_genes[unwanted_genes %!in% pseudogenes]
-        sc <- sc[sc %!in% unwanted_genes]
-    }
-    return(sc)
-}
-
-#List of Human Ig pseudogenes not to remove in quietBCRgenes()
-pseudogenes <- unique(c("IGHJ1P", "IGHJ2P", "IGHJ3P", "IGLC4", "IGLC5", "IGHEP1", "IGHEP2",
-                 "IGHV1-12","IGHV1-14", "IGHV1-17", "IGHV1-67", "IGHV1-68",
-                 "IGHV2-10", "IGHV3-6", "IGHV3-19", "IGHV3-22", "IGHV3-25",
-                 "IGHV3-29", "IGHV3-32", "IGHV3-36", "IGHV3-37", "IGHV3-41",
-                 "IGHV3-42", "IGHV3-47", "IGHV3-50", "IGHV3-52", "IGHV3-54",
-                 "IGHV3-57", "IGHV3-60", "IGHV3-62", "IGHV3-63", "IGHV3-65",
-                 "IGHV3-71", "IGHV3-75", "IGHV3-76", "IGHV3-79", "IGHV4-55",
-                 "IGHV4-80", "IGHV5-78", "IGHV7-27", "IGHV7-40", "IGHV7-56", 
-                 "IGHVIII-44", "IGHVIII-82", "IGKV1-22", "IGKV1-32", "IGKV1-35",
-                 "IGKV1D-22", "IGKV1D-27", "IGKV1D-32", "IGKV1D-35", "IGKVOR-2",
-                 "IGKVOR-3", "IGKVOR-4", "IGKV2-4", "IGKV2-10", "IGKV2-14", "IGKV2-18",
-                 "IGKV2-19", "IGKV2-23", "IGKV2-26", "IGKV2-36", "IGKV2-38",
-                 "IGKV2D-10", "IGKV2D-14", "IGKV2D-18", "IGKV2D-19", "IGKV2D-23",
-                 "IGKV2D-36", "IGKV2D-38", "IGKV3-25", "IGKV3-31", "IGKV3-34",
-                 "IGKV7-3", "IGLCOR22-1", "IGLCOR22-2", "IGLJCOR18", "IGLV1-41", 
-                 "IGLV1-62", "IGLV2-5", "IGLV2-28", "IGLV2-34", "IGLV3-2", 
-                 "IGLV3-4", "IGLV3-6", "IGLV3-7", "IGLV3-13", "IGLV3-15",
-                 "IGLV3-17", "IGLV3-24", "IGLV3-26", "IGLV3-29", "IGLV3-30",
-                 "IGLV3-31", "IGLV7-35", "IGLV10-67", "IGLVI-20", "IGLVI-38",
-                 "IGLVI-42", "IGLVI-56", "IGLVI-63", "IGLVI-68", "IGLVI-70", 
-                 "IGLVIV-53", "IGLVIV-59", "IGLVIV-64", "IGLVIV-65", "IGLVV-58",
-                 "IGLVV-66", "IGHV1OR15-2", "IGHV1OR15-3", "IGHV1OR15-4", "IGHV1OR15-6",
-                 "IGHV1OR16-1", "IGHV1OR16-2", "IGHV1OR16-3", "IGHV1OR16-4", "IGHV3-30-2", 
-                 "IGHV3-33-2", "IGHV3-69-1", "IGHV3OR15-7", "IGHV3OR16-6", "IGHV3OR16-7",
-                 "IGHV3OR16-11", "IGHV3OR16-14", "IGHV3OR16-15", "IGHV3OR16-16", "IGHV7-34-1",
-                 "IGHVII-1-1", "IGHVII-15-1", "IGHVII-20-1", "IGHVII-22-1", "IGHVII-26-2",
-                 "IGHVII-28-1", "IGHVII-30-1", "IGHVII-30-21", "IGHVII-31-1", "IGHVII-33-1", 
-                 "IGHVII-40-1", "IGHVII-43-1", "IGHVII-44-2", "IGHVII-46-1", "IGHVII-49-1",
-                 "IGHVII-51-2", "IGHVII-53-1", "IGHVII-60-1", "IGHVII-62-1", "IGHVII-65-1", 
-                 "IGHVII-67-1", "IGHVII-74-1", "IGHVII-78-1", "IGHVIII-2-1", "IGHVIII-5-1",
-                 "IGHVIII-5-2", "IGHVIII-11-1", "IGHVIII-13-1", "IGHVIII-16-1", "IGHVIII-22-2",
-                 "IGHVIII-25-1", "IGHVIII-26-1", "IGHVIII-38-1", "IGHVIII-47-1", "IGHVIII-67-2",
-                 "IGHVIII-67-3", "IGHVIII-67-4", "IGHVIII-76-1", "IGHVIV-44-1", "IGKV1OR1-1", 
-                 "IGKV1OR2-1", "IGKV1OR2-2", "IGKV1OR2-3", "IGKV1OR2-6", "IGKV1OR2-9",
-                 "IGKV1OR2-11", "IGKV1OR2-118", "IGKV1OR9-1", "IGKV1OR9-2", "IGKV1OR10-1", 
-                 "IGKV1OR15-118", "IGKV1OR22-1", "IGKV1OR22-5", "IGKV1ORY-1", "IGKV2OR2-1",
-                 "IGKV2OR2-2", "IGKV2OR2-4", "IGKV2OR2-7", "IGKV2OR2-7D", "IGKV2OR2-8",
-                 "IGKV2OR2-10", "IGKV2OR22-3", "IGKV2OR22-4", "IGKV3OR2-5", "IGKV3OR22-2",
-                 "IGKV8OR8-1", "IGLVIV-66-1", "IGLVIVOR22-1", "IGLVIVOR22-2", "IGLVVI-22-1", 
-                 "IGLVVI-25-1", "IGLVVII-41-1"))
-
-#' Cluster clones using the Ibex dimensional reductions
-#' 
-#' Use this to return clusters for clonotypes based on 
-#' the \link[bluster]{bluster} clustering parameters.
-#' 
-#' @examples
-#' \dontrun{
-#' sc <- clonalCommunity(sc, 
-#'                       reduction.name = NULL, 
-#'                       cluster.parameter = KNNGraphParam())
-#' }
-#' @param sc Single Cell Object in Seurat or SingleCell Experiment format. In addition, the outputs of distReduction()
-#' and aaReduction() can be used.
-#' @param reduction.name Name of the dimensional reduction output from runIbex()
-#' @param cluster.parameter The community detection algorithm in \link[bluster]{bluster}
-#' @param ... For the generic, further arguments to pass to specific methods.
-#' @importFrom bluster clusterRows NNGraphParam HclustParam KmeansParam KNNGraphParam PamParam SNNGraphParam SomParam DbscanParam
-#' @importFrom igraph simplify spectrum graph_from_edgelist E `E<-`
-#' @importFrom SingleCellExperiment reducedDim
-#' @export
-#' @return Single-Cell Object with ibex.clusters in the meta.data
-clonalCommunity <- function(sc, 
-                            reduction.name = NULL, 
-                            cluster.parameter=KNNGraphParam(k=30, ...), 
-                            ...) {
-    if (inherits(x=sc, what ="Seurat")) { 
-        dim.red <- sc[[reduction.name]] 
-        dim.red <- dim.red@cell.embeddings
-    } else if (inherits(x=sc, what ="SingleCellExperiment")){
-        dim.red <- reducedDim(sc, reduction.name)
-    } else {
-        if(inherits(x=sc, what ="dist")) {
-            mat <- sc
-            #mat[is.na(mat)] <- 0
-            dimension <- attr(mat, "Size")
-            edge <- NULL
-            for (j in seq_len(dimension)[-1]) {
-                row <- dist.convert(mat,j)
-                tmp.edge <- data.frame("from" = j, "to" = seq_len(j)[-j], weight = row)
-                edge <- rbind(edge, tmp.edge)
-            }
-            edge <- na.omit(edge)
-            g <- graph.edgelist(as.matrix(edge[,c(1,2)]), directed = FALSE)
-            E(g)$weights <- edge$weight
-            g <- simplify(g)
-            eigen <- spectrum(g, 
-                              which = list(howmany = 30), 
-                              algorithm = "arpack")
-            dim.red <- eigen$vectors
-        } else {
-            dim.red <- sc
-        }
-    }
-    clusters <- suppressWarnings(clusterRows(dim.red, BLUSPARAM=cluster.parameter))
-    clus.df <- data.frame("ibex.clusters" = paste0("ibex.", clusters))
-    if (inherits(x=sc, what ="Seurat") | inherits(x=sc, what ="SingleCellExperiment")) {
-        rownames(clus.df) <- rownames(dim.red)
-        sc <- add.meta.data(sc, clus.df, colnames(clus.df))
-        return(sc)
-    } 
-    return(clus.df)
-    
 }

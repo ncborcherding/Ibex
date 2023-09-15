@@ -1,3 +1,20 @@
+CHANGES IN VERSION 0.99.5
+------------------------
+* Added geometric encoding using the BLOSUM62 matrix
+* Trained classical and variational autoencoders for light/heavy chains with 1.5 million cdr sequences
+ 	- Architecture: 256-128-30-128-256
+	- Parameters: 
+		Batch Size = 64
+		Latent Dimensions = 30
+		Epochs = 100
+		Loss = Mean Squared Error
+	- Optimizers: Adam
+	- Early stopping was set to patients of 10 for minimal validation loss and restoration of best weights
+	- learn rate varied by models
+	- classical auto encoders have batch normalization layers between the dense layers. 
+    
+
+
 CHANGES IN VERSION 0.99.4
 ------------------------
 * Added chain.checker() function to allow for uncapitlized chain calls

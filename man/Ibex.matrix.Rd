@@ -4,7 +4,14 @@
 \alias{Ibex.matrix}
 \title{Main Ibex interface}
 \usage{
-Ibex.matrix(sc, chains = "Heavy", AA.properties = "AF")
+Ibex.matrix(
+  sc,
+  chains = "Heavy",
+  method = "encoder",
+  encoder.model = "VAE",
+  encoder.input = "AF",
+  theta = pi
+)
 }
 \arguments{
 \item{sc}{Single Cell Object in Seurat or SingleCell Experiment format or
@@ -12,9 +19,15 @@ the output of combineBCR() in scRepertoire}
 
 \item{chains}{Heavy or Light}
 
-\item{AA.properties}{Amino acid properties to use for distance calculation: 
-"AF" = Atchley factors, "KF" = Kidera factors, "both" = AF and KF, or "OHE" for
+\item{method}{"encoder" = using deep learning autoencoders or 
+"geometric" = geomteric transformations based on BLOSUM62 matrix}
+
+\item{encoder.model}{"AE" = dense autoencoder or "VAE" = variation autoencoder}
+
+\item{encoder.input}{"AF" = Atchley factors, "KF" = Kidera factors, "both" = AF and KF, or "OHE" for
 One Hot Autoencoder}
+
+\item{theta}{angle to use for geometric transformation}
 }
 \value{
 Ibex encoded values from the autoencoder
@@ -25,7 +38,14 @@ the form of a matrix or if you prefer.
 }
 \examples{
 ibex_values <- Ibex.matrix(ibex_example, 
-                        chains = "Heavy",
-                        AA.properties = "AF")
+                          chains = "Heavy",
+                          method = "encoder",
+                          encoder.model = "VAE",
+                          encoder.input = "AF")
+                          
+ibex_values <- Ibex.matrix(ibex_example, 
+                          chains = "Heavy",
+                          method = "geometric",
+                          theta = pi)
                         
 }

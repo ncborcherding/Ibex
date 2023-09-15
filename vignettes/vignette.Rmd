@@ -117,18 +117,43 @@ Ibex has 2 major functions - the first being ```Ibex.matrix()```, which is the b
 * "Heavy" for Ig Heavy Chain 
 * "Light" for Ig Light Chain 
 
-**AA.properties**  
+**method**  
+* "encoder" for a convolution neural network (CNN) based encoding. 
+* "geometric" for a geometric transformation  
+
+**encoder.model**  
+* "VAE" for a variational autoencoder  
+* "AE" for a traditional autoencoder  
+
+**encoder.input**  
 * "AF" to use Atchley factors  
 * "KF" to use Kidera factors  
 * "both" to use both  
 * "OHE" for a One Hot Autoencoder
 
-```{r}
-Ibex_vectors <- Ibex.matrix(ibex_example, 
-                       chains = "Heavy",
-                       AA.properties = "OHE")
+**theta**  
+If choosing the geometric transformation, what value of theta to use (default is pi)
 
-qplot(data = as.data.frame(Ibex_vectors), Ibex_2, Ibex_3) + theme_classic()
+```{r}
+Ibex_vectors <- 
+  Ibex.matrix(ibex_example, 
+                       chains = "Heavy",
+                       method = "encoder",
+                       encoder.model = "VAE", 
+                       encoder.input = "OHE")
+
+ggplot(data = as.data.frame(Ibex_vectors), aes(Ibex_1, Ibex_2)) + 
+  geom_point() + 
+  theme_classic()
+
+Ibex_vectors2 <- Ibex.matrix(ibex_example, 
+                       chains = "Heavy",
+                       method = "geometric",
+                       theta = pi)
+
+ggplot(as.data.frame(Ibex_vectors2), aes(x = Ibex_1, y = Ibex_2)) + 
+  geom_point() + 
+  theme_classic()
 ```
 
 ## runIbex
@@ -137,9 +162,9 @@ Additionally, ```runIbex()``` can be used to append the Seurat or Single-cell Ex
 
 ```{r}
 ibex_example <- runIbex(ibex_example, 
-                    chains = "Heavy",
-                    AA.properties = "KF", 
-                    reduction.name = "Ibex.KF")
+                        chains = "Heavy",
+                        encoder.input = "KF", 
+                        reduction.name = "Ibex.KF")
 ```
 
 ## Using Ibex Vectors
@@ -265,8 +290,9 @@ CoNGA.seurat <- CoNGAfy(ibex_example,
                          method = "dist")
 
 CoNGA.seurat <- runIbex(CoNGA.seurat, 
-                    AA.properties = "KF", 
-                    reduction.name = "Ibex.KF")
+                        encoder.input = "KF", 
+                        encoder.model = "VAE",
+                        reduction.name = "Ibex.KF")
 
 CoNGA.seurat <- CoNGA.seurat %>%
                   FindNeighbors(reduction = "Ibex.KF") %>%
@@ -275,7 +301,7 @@ CoNGA.seurat <- CoNGA.seurat %>%
 
 CoNGA.seurat <- RunUMAP(CoNGA.seurat, 
                      reduction = "Ibex.KF", 
-                     dims = 1:20, 
+                     dims = 1:30, 
                      reduction.name = 'Ibex.umap', 
                      reduction.key = 'ibexUMAP_')
 
