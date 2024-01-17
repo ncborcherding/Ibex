@@ -16,7 +16,7 @@
 #' clonotype group.
 #' @param features Selected genes for the reduction DEFAULT: null will return all genes
 #' @param assay The name of the assay or assays to return.
-#' @param meta.carry Variables to carry over from the meta data of thje single-cell object
+#' @param meta.carry Variables to carry over from the meta data of the single-cell object
 #' 
 #' @export
 #' @importFrom SeuratObject CreateSeuratObject CreateAssayObject

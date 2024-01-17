@@ -3,9 +3,9 @@
 \docType{data}
 \name{ibex_example}
 \alias{ibex_example}
-\title{A seurat object of 315 single B cells in
-human tonisls}
+\title{A seurat object of 370 single B cells in
+multisystem inflammatory syndrome}
 \description{
-A seurat object of 315 single B cells in
-human tonisls
+A seurat object of 370 single B cells in
+multisystem inflammatory syndrome
 }

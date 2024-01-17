@@ -23,7 +23,7 @@ clonotype group.}
 
 \item{assay}{The name of the assay or assays to return.}
 
-\item{meta.carry}{Variables to carry over from the meta data of thje single-cell object}
+\item{meta.carry}{Variables to carry over from the meta data of the single-cell object}
 }
 \value{
 Single-cell Object with 1 cell representing 1 clone

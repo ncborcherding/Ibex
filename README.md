@@ -83,7 +83,7 @@ seuratObj <- RunUMAP(seuratObj, reduction = "Ibex",  reduction.key = "Ibex_")
 
 If using Seurat package, the Ibex embedding information and gene expression PCA can be used to find the [Weighted Nearest Neighbors](https://pubmed.ncbi.nlm.nih.gov/34062119/). Before applying the WNN approach, best practice would be to remove the BCR-related genes from the list of variable genes and rerunning the PCA analysis. 
 
-### Recaluclate PCA without BCR genes with queitBCRgenes() function in Ibex.
+### Recalculate PCA without BCR genes with quietBCRgenes() function in Ibex.
 ```r
 seuratObj <- quietBCRgenes(seuratObj)
 seuratObj <- RunPCA(seuratObj)
