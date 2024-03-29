@@ -203,7 +203,7 @@ ibex_example <- RunUMAP(ibex_example,
 ibex_example <- FindClusters(ibex_example, 
                              graph.name = "wsnn",
                              resolution = 0.6,
-                             algorithm = 4, 
+                             algorithm = 3, 
                              verbose = FALSE)
 
 #WNN UMAP
