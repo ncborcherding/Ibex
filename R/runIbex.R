@@ -50,7 +50,7 @@ Ibex.matrix <- function(sc,
 
 #' Ibex single cell calculation
 #'
-#'Run Ibex algorithm with Seurat or SingleCellExperiment pipelines
+#' Run Ibex algorithm with Seurat or SingleCellExperiment pipelines
 #'
 #' @examples
 #' ibex_example <- runIbex(ibex_example, 

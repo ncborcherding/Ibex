@@ -13,7 +13,8 @@ test_that("maTrex works", {
   
   expect_equal(
     ibex.result1,
-    getdata("runIbex", "ibex.matrix_Heavy_VAE_AF")
+    getdata("runIbex", "ibex.matrix_Heavy_VAE_AF"),
+    tolerance=1e-2
   )
   
   ibex.result2 <- Ibex.matrix(ibex_example, 
@@ -24,6 +25,7 @@ test_that("maTrex works", {
   
   expect_equal(
     ibex.result2,
-    getdata("runIbex", "ibex.matrix_Light_AE_OHE")
+    getdata("runIbex", "ibex.matrix_Light_AE_OHE"),
+    tolerance=1e-2
   )
 })

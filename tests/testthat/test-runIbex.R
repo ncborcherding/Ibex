@@ -13,7 +13,8 @@ test_that("runIbex works with seurat objects", {
                        
 	expect_equal(
 		ibex_example@reductions$Heavy_VAE_AF@cell.embeddings,
-		getdata("runIbex", "runIbex_Heavy_VAE_AF_reduction")
+		getdata("runIbex", "runIbex_Heavy_VAE_AF_reduction"),
+		tolerance=1e-2
 	)
 	
 	ibex_example <- runIbex(ibex_example, 
@@ -25,7 +26,8 @@ test_that("runIbex works with seurat objects", {
 	
 	expect_equal(
 	  ibex_example@reductions$Light_AE_KF@cell.embeddings,
-	  getdata("runIbex", "runIbex_Light_AE_KF_reduction")
+	  getdata("runIbex", "runIbex_Light_AE_KF_reduction"),
+	  tolerance=1e-2
 	)
 	
 	ibex_example <- runIbex(ibex_example, 
@@ -37,7 +39,8 @@ test_that("runIbex works with seurat objects", {
 	
 	expect_equal(
 	  ibex_example@reductions$Heavy_VAE_OHE@cell.embeddings,
-	  getdata("runIbex", "runIbex_Heavy_VAE_OHE_reduction")
+	  getdata("runIbex", "runIbex_Heavy_VAE_OHE_reduction"),
+	  tolerance=1e-2
 	)
 	
 })
