@@ -296,7 +296,7 @@ CoNGA.seurat <- runIbex(CoNGA.seurat,
 
 CoNGA.seurat <- CoNGA.seurat %>%
                   FindNeighbors(reduction = "Ibex.KF") %>%
-                  FindClusters(algorithm = 4, 
+                  FindClusters(algorithm = 3, 
                                resolution = 0.6)
 
 CoNGA.seurat <- RunUMAP(CoNGA.seurat, 
