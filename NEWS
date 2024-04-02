@@ -1,3 +1,9 @@
+CHANGES IN VERSION 0.99.6
+------------------------
+* Implementing GitHub action workflows
+* Adding testthat framework 
+* Deprecating clonalCommunity 
+
 CHANGES IN VERSION 0.99.5
 ------------------------
 * Added geometric encoding using the BLOSUM62 matrix

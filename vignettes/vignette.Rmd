@@ -4,7 +4,7 @@ author:
 - name: Nick Borcherding
   email: ncborch@gmail.com
   affiliation: Washington University in St. Louis, School of Medicine, St. Louis, MO, USA
-date: "April 6, 2023"
+date: "April 2, 2024"
 output:
   BiocStyle::html_document:
     toc_float: true
@@ -27,6 +27,7 @@ library(BiocStyle)
 ```{r}
 suppressMessages(library(Seurat))
 suppressMessages(library(ggplot2))
+suppressMessages(library(dplyr))
 suppressMessages(library(Ibex))
 suppressMessages(library(viridis))
 suppressMessages(library(patchwork))
@@ -239,44 +240,6 @@ plot6 <- DimPlot(ibex_example, reduction = "adt.umap") + NoLegend()
 plot7 <- DimPlot(ibex_example, reduction = "Ibex.umap") + NoLegend()
 
 plot5 + plot6 + plot7
-```
-
-## Regressing shared feature space
-
-There is a high degree of overlap in the feature space of expanded clonotypes, not only in the adaptive receptor genes that form the clonotype, but also in potentially functional genes. To identify divergent clusters in shared clonotypes using ```clonalCommunity()```, we can use the Ibex dimensions to identify clusters in order to then regress out closely associated clonotypes.
-
-```{r}
-library(harmony)
-library(bluster)
-
-#Cluster clones
-ibex_example <- clonalCommunity(ibex_example, 
-                            reduction.name = "Ibex.KF", 
-                            cluster.parameter=NNGraphParam(k=20))
-
-#Run Harmony and new UMAP for RNA
-DefaultAssay(ibex_example) <- "RNA"
-ibex_example<- RunHarmony(ibex_example, "ibex.clusters", verbose = FALSE)
-ibex_example <- RunUMAP(ibex_example, 
-                     reduction = "harmony", 
-                     dims = 1:20, 
-                     reduction.key = "RC_UMAP_", 
-                     reduction.name = "regressClone_RNA")
-
-
-plot8 <- DimPlot(ibex_example, 
-                 reduction = "rna.umap", 
-                 group.by = "CTaa") + 
-                 NoLegend() + 
-                 scale_color_viridis(option="B", discrete = TRUE)
-
-plot9 <- DimPlot(ibex_example, 
-                 reduction = "regressClone_RNA", 
-                 group.by = "CTaa") + 
-                 NoLegend() + 
-                 scale_color_viridis(option="B", discrete = TRUE)
-
-plot8 + plot9
 ```
 
 # CoNGA Reduction

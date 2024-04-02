@@ -9,7 +9,7 @@ License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
 LazyDataCompression: xz
-RoxygenNote: 7.2.3
+RoxygenNote: 7.3.1
 biocViews: Software, ImmunoOncology, SingleCell, Classification, Annotation, Sequencing
 Depends: 
 	R (>= 4.0)
@@ -26,18 +26,18 @@ Imports: stringr,
         igraph,
         stats,
 	matrixStats
-Suggests: 
-	knitr, 
-	rmarkdown, 
-	markdown,
-	BiocStyle,  
-	Seurat,
-	viridis,
-	patchwork,
+Suggests:
+	BiocStyle, 
+	dplyr,
 	ggplot2,
-	harmony,
+	knitr, 
+	markdown,
+	patchwork,
+	rmarkdown, 
+	Seurat,
 	spelling,
-        testthat (>= 3.0.0)
+        testthat (>= 3.0.0),
+	viridis
 VignetteBuilder: knitr
 Language: en-US
 URL: https://github.com/ncborcherding/Ibex/
