@@ -43,4 +43,15 @@ test_that("runIbex works with seurat objects", {
 	  tolerance=1e-2
 	)
 	
+	ibex_example <- runIbex(ibex_example, 
+	                        chains = "Heavy",
+	                        method = "geometric",
+	                        reduction.name = "Heavy_Geometric")
+	
+	expect_equal(
+	  ibex_example@reductions$Heavy_Geometric@cell.embeddings,
+	  getdata("runIbex", "runIbex_Heavy_geometric_reduction"),
+	  tolerance=1e-2
+	)
+	
 })
