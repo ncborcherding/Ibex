@@ -117,7 +117,7 @@ CoNGA.dist <- function(sc, features, assay) {
 }
 # Adapted from the AverageExpression() function in Seurat
 #' @importFrom rlang %||%
-#' @importFrom Matrix sparse.model.matrix
+#' @importFrom Matrix sparse.model.matrix colSums
 #' @importFrom SummarizedExperiment assay
 #' @importFrom stats as.formula
 CoNGA.mean <- function(sc, features, assay) {
@@ -152,7 +152,7 @@ CoNGA.mean <- function(sc, features, assay) {
             )
         )
     ))
-    colsums <- colSums(x = category.matrix)
+    colsums <- Matrix::colSums(x = category.matrix)
     category.matrix <- category.matrix[, colsums > 0]
     colsums <- colsums[colsums > 0]
     
