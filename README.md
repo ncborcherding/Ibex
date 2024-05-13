@@ -101,9 +101,17 @@ seuratObj <- RunUMAP(seuratObj,
                      reduction.name = "wnn.umap", 
                      reduction.key = "wnnUMAP_")
 ```
-***
-### Citation
-More information on Ibex is available at our [Biorxiv preprint](https://www.biorxiv.org/content/10.1101/2022.11.09.515787v2). Please contact us (below) if you have any suggestions!
-***
-### Contact
-Questions, comments, suggestions, please feel free to contact Nick Borcherding via this repository, [email](mailto:ncborch@gmail.com), or using [twitter](https://twitter.com/theHumanBorch). 
+## Bug Reports/New Features
+
+#### If you run into any issues or bugs please submit a [GitHub issue](https://github.com/ncborcherding/Ibex/issues) with details of the issue.
+
+- If possible please include a [reproducible example](https://reprex.tidyverse.org/). 
+Alternatively, an example with the internal **ibex_example** would 
+be extremely helpful.
+
+#### Any requests for new features or enhancements can also be submitted as [GitHub issues](https://github.com/ncborcherding/Ibex/issues).
+
+#### [Pull Requests](https://github.com/ncborcherding/Ibex/pulls) are welcome for bug fixes, new features, or enhancements.
+
+## Citation
+More information on Ibex is available at our [Biorxiv preprint](https://www.biorxiv.org/content/10.1101/2022.11.09.515787v2). 
