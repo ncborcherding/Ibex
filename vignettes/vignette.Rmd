@@ -273,7 +273,7 @@ DimPlot(CoNGA.seurat, reduction = "Ibex.umap") + NoLegend()
 
 # Conclusion
 
-This has been a general overview of the capabilities of Ibex for incorporating BCR information into the embedding space of single-cell data. If you have any questions, comments, or suggestions, feel free to visit the github repository or [email me](mailto:ncborch@gmail.com).
+This has been a general overview of the capabilities of Ibex for incorporating BCR information into the embedding space of single-cell data. If you have any questions, comments, or suggestions, feel free to visit the [GitHub repository](https://github.com/ncborcherding/Ibex).
 
 ## Session Info
 
