@@ -31,9 +31,10 @@ install_tensorflow()
 
 # Installation
 
-To run Ibex, open R and install Ibex from github: 
+Ibex requires the installation of the [immApex](https://github.com/ncborcherding/immApex) API functions and Ibex from the GitHub repository:
 
 ```r
+devtools::install_github("ncborcherding/immApex")
 devtools::install_github("ncborcherding/Ibex")
 ```
 
@@ -46,7 +47,6 @@ Ibex should be able to be run in popular R-based single-cell workflows, includin
 Check out this [vignette](https://www.borch.dev/uploads/screpertoire/articles/ibex) for a quick start tutorial. 
 
 <img align="center" src="https://github.com/ncborcherding/Ibex/blob/main/www/graphicalAbstract.png">
-
 
 
 ## Autoencoded Matrix
