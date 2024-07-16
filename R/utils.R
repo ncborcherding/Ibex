@@ -22,6 +22,9 @@ if (inherits(x=sc, what ="Seurat")) {
 #' @importFrom stringr str_to_title
 chain.checker <- function(chain) {
   chain <- str_to_title(chain)
+  if(chain %!in% c("Heavy", "Light", "Both")) {
+    stop("Please select 'Heavy', 'Light' or 'Both' for the chains parameter,")
+  }
 }
 
 #Function to pull and organize BCR depending on the chain selected
