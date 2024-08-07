@@ -88,13 +88,6 @@ grabMeta <- function(sc) {
   return(meta)
 }
 
-#Shhhhhh
-quiet <- function(x) {
-  sink(tempfile())
-  on.exit(sink())
-  invisible(force(x))
-}
-
 #This is to check the single-cell expression object
 checkSingleObject <- function(sc) {
   if (!inherits(x=sc, what ="Seurat") & 
@@ -104,11 +97,13 @@ checkSingleObject <- function(sc) {
             the correct data.") }
 }
 
-#This is to check that all the cdr3 sequences are < 70 residues
-checkLength <- function(x) {
-  if(any(na.omit(nchar(x[,"cdr3_aa"])) > 70)) {
+#This is to check that all the cdr3 sequences are < 45 residues or < 90 for cdr1/2/3
+checkLength <- function(x, expanded = NULL) {
+  cutoff <- ifelse(is.null(expanded)) | expanded == FALSE, 45, 90)
+#TODO will need to update column pulling for expanded sequences
+  if(any(na.omit(nchar(x[,"cdr3_aa"])) > cut.off)) {
     stop("Models have been trained on cdr3 sequences 
-         less than 70 amino acid residues. Please
+         less than 45 amino acid residues. Please
          filter the larger sequences before running")
   }
 }
@@ -121,21 +116,8 @@ aa.model.loader <- function(chain, encoder.input, encoder.model) {
     select  <- system.file("extdata", paste0(species, "_", chain, "_", 
                                encoder.input, "_", encoder.model, ".h5"), 
                           package = "Ibex")
-  model <- quiet(load_model_hdf5(select, compile = FALSE))
-  return(model)
-}
-
-one.hot.organizer <- function(refer) {
-  reference <- ibex.data[[1]]
-  int <- matrix(ncol = length(reference$aa) + 1, nrow = length(refer))
-  for(i in seq_along(refer)) {
-    if (is.na(refer[i])) {
-      next()
-    }
-    int[i,which(reference$aa %in% refer[i])] <- 1
-  }
-  int[is.na(int)] <- 0
-  return(int)
+    model <- quiet(load_model_hdf5(select, compile = FALSE))
+    return(model)
 }
 
 
@@ -159,23 +141,3 @@ adding.DR <- function(sc, reduction, reduction.name) {
   return(sc)
 }
 
-AF.col <- c(2,3,4,5,6)
-KF.col <- c(7,8,9,10,11,12,13,14,15,16)
-
-#Generates the 30 vector based on autoencoder model 
-auto.embedder <- function(array.reshape, aa.model, encoder.input) {
-  array.reshape[is.na(array.reshape)] <- 0
-  score <- stats::predict(aa.model, t(array.reshape), verbose = 0)
-  return(score)
-}
-
-dist.convert <- function(dist_obj, k) {
-  if (length(k) > 1) stop("The function is not 'vectorized'!")
-  n <- attr(dist_obj, "Size")
-  if (k < 1 || k > n) stop("k out of bound!")
-  ##
-  i <- 1:(k - 1)
-  j <- rep.int(k, k - 1)
-  v1 <- dist_obj[f(j, i, dist_obj)]
-  return(v1)
-}

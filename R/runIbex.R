@@ -15,36 +15,89 @@
 #'                           method = "geometric",
 #'                           theta = pi)
 #'                         
-#' @param sc Single Cell Object in Seurat or SingleCell Experiment format or
+#' @param input.data Single Cell Object in Seurat or Single Cell Experiment format or
 #' the output of combineBCR() in scRepertoire
-#' @param chains Heavy or Light
+#' @param chain Heavy or Light
 #' @param method "encoder" = using deep learning autoencoders or 
-#' "geometric" = geomteric transformations based on BLOSUM62 matrix
-#' @param encoder.model "AE" = dense autoencoder or "VAE" = variation autoencoder
-#' @param encoder.input "AF" = Atchley factors, "KF" = Kidera factors, "both" = AF and KF, or "OHE" for
-#' One Hot Autoencoder
-#' @param theta angle to use for geometric transformation
+#' "geometric" = geomteric transformations based on the BLOSUM62 matrix
+#' @param encoder.model "CNN" = convolutional neural network-based autoencoder, 
+#' "VAE" = variation autoencoder, or "biLSTM" for Bidirectional LSTM
+#' @param encoder.input Type of model to use
+#'   \itemize{
+#'     \item{Amino Acid Properties: "atchleyFactors", "crucianiProperties", "FASGAI", "kideraFactors", "MSWHIM", "ProtFP", "stScales", "tScales", "VHSE", "zScales"}
+#'     \item{"OHE" for One Hot Encoding. Only option for biLSTM models}
+#'  }
+#' @param geometric.theta angle to use for geometric transformation
 #' 
 #' @export
 #' @importFrom SeuratObject CreateDimReducObject
+#' @importFrom immApex propertyEncoder onehotEncoder geometricEncoder
 #' 
 #' @return Ibex encoded values from the autoencoder
-Ibex.matrix <- function(sc, 
-                        chains = "Heavy", 
+Ibex.matrix <- function(input.data, 
+                        chain = "Heavy", 
                         method = "encoder",
                         encoder.model = "VAE", 
                         encoder.input = "AF",
-                        theta = pi) {
+                        geometric.theta = pi/3) {
+    
+    expanded.sequences <- grepl(".Exp", encoder.model)
+    #TODO Pair these down to the final models offered
+    if(encoder.input %!in% c("atchleyFactors", "crucianiProperties", "FASGAI", "kideraFactors", "MSWHIM", "ProtFP", "stScales", "tScales", "VHSE", "zScales", "OHE")) {
+      stop("Please select one of the following encoder.inputs: 'atchleyFactors', 'crucianiProperties', 'FASGAI', 'kideraFactors', 'MSWHIM', 'ProtFP', 'stScales', 'tScales', 'VHSE', 'zScales', or 'OHE'")
+    }
     chains <- chain.checker(chains)
-    BCR <- getBCR(sc, chains)
-    checkLength(BCR[[1]])
-    if (method == "encoder" && encoder.input %in% c("AF", "KF", "both", "all", "OHE")) {
-        print("Calculating the encoding values...")
-        reduction <- .encoder(BCR, encoder.input, encoder.model)
+    
+    #Getting Sequences
+    #TODO will need to update this system to use getIR and get only BCR genes
+    BCR <- getBCR(input.data, chains)[[1]]
+    
+    #Checking Sequences
+    checkLength(BCR[[1]], expanded.sequences)
+    length.to.use <- ifelse(expanded.sequences, 90, 45)
+    
+   
+    
+    if (method == "encoder") {
+      print("Encoding Sequences...")
+      
+      
+      if(encoder.model == "biLSTM") {
+        encoded.values <- suppressMessages(onehotEncoder(IGH.sequences,
+                                                         max.length = length.to.use,
+                                                         convert.to.matrix = FALSE,
+                                                         sequence.dictionary = c(amino.acids[1:20]),
+                                                         padding.symbol = "."))
+      } else {
+        if(encoder.input == "OHE") {
+          encoded.values <- suppressMessages(onehotEncoder(BCR,
+                                                           max.length = length.to.use,
+                                                           convert.to.matrix = TRUE,
+                                                           sequence.dictionary = c(amino.acids[1:20], "_"),
+                                                           padding.symbol = "."))
+        } else {
+          encoded.values <- suppressMessages(propertyEncoder(BCR, 
+                                                             max.length = length.to.use,
+                                                             method.to.use = encoder.input,
+                                                             convert.to.matrix = TRUE))
+        }
+      }
+      
+      print("Calculating Latent Dimensions...")
+      #Getting Model
+      aa.model <- aa.model.loader(chain, encoder.input, encoder.model)
+      reduction <- stats::predict(aa.model, encoded.values, verbose = 0)
+        
     } else if (method == "geometric") {
         print("Performing geometric transformation...")
-        reduction <- .geometric.encoding(BCR, theta)
+        reduction <- suppressMessages(geometricEncoder(BCR, theta = geometric.theta))
     }
+    #TODO Check the barcode usage here
+    reduction <- as.data.frame(reduction)
+    barcodes <- reduction[,1]
+    reduction <- reduction[,-1]
+    rownames(reduction) <- barcodes
+    colnames(reduction) <- paste0("Ibex_", seq_len(ncol(reduction)))
     return(reduction)
 }
 
@@ -59,38 +112,43 @@ Ibex.matrix <- function(sc,
 #'                         encoder.model = "VAE",
 #'                         encoder.input = "AF")
 #'                         
-#' @param sc Single Cell Object in Seurat or SingleCell Experiment format
-#' @param chains Heavy or Light
-#' @param chains Heavy or Light
+#' @param sc.data Single Cell Object in Seurat or SingleCell Experiment format
+#' @param chain Heavy or Light
 #' @param method "encoder" = using deep learning autoencoders or 
-#' "geometric" = geomteric transformations based on BLOSUM62 matrix
-#' @param encoder.model "AE" = dense autoencoder or "VAE" = variation autoencoder
-#' @param encoder.input "AF" = Atchley factors, "KF" = Kidera factors, "both" = AF and KF, or "OHE" for
-#' One Hot Autoencoder
-#' @param theta angle to use for geometric transformation
+#' "geometric" = geomteric transformations based on the BLOSUM62 matrix
+#' @param encoder.model "CNN" = convolutional neural network-based autoencoder, 
+#' "VAE" = variation autoencoder, or "biLSTM" for Bidirectional LSTM
+#' @param encoder.input Type of model to use
+#'   \itemize{
+#'     \item{Amino Acid Properties: "atchleyFactors", "crucianiProperties", "FASGAI", "kideraFactors", "MSWHIM", "ProtFP", "stScales", "tScales", "VHSE", "zScales"}
+#'     \item{"OHE" for One Hot Encoding. Only option for biLSTM models}
+#'  }
+#' @param geometric.theta angle to use for geometric transformation
 #' @param reduction.name Keyword to save Ibex reduction. Useful if you want
 #' to try Ibex with multiple parameters 
 #' @export
 #' @return Seurat or SingleCellExperiment object with Ibex dimensions placed 
 #' into the dimensional reduction slot. 
 #' 
-runIbex <- function(sc, 
+runIbex <- function(sc.data, 
                     chains = "Heavy", 
                     method = "encoder",
                     encoder.model = "VAE", 
                     encoder.input = "AF",
-                    theta = pi,
+                    geometric.theta = pi,
                     reduction.name = "Ibex") {
-    checkSingleObject(sc)
-    cells.chains <- rownames(sc[[]][!is.na(sc[["CTaa"]]),])
-    sc <- subset(sc, cells = cells.chains)
-    reduction <- Ibex.matrix(sc = sc,
+    checkSingleObject(sc.data)
+    #TODO add check for CTAA columns
+    cells.chains <- rownames(sc.data[[]][!is.na(sc.data[["CTaa"]]),])
+    sc.data <- subset(sc.data, cells = cells.chains)
+    reduction <- Ibex.matrix(input.data = sc.data,
                              chains = chains, 
                              method = method,
                              encoder.model = encoder.model, 
                              encoder.input = encoder.input,
-                             theta = theta)
-    BCR <- getBCR(sc, chains)
-    sc <- adding.DR(sc, reduction, reduction.name)
-    return(sc)
+                             geometric.theta = geometric.theta)
+    #TODO modify getBCR to getIR()
+    BCR <- getBCR(sc.data, chains)
+    sc.data <- adding.DR(sc.data, reduction, reduction.name)
+    return(sc.data)
 }
