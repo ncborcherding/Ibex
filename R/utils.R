@@ -1,6 +1,6 @@
 "%!in%" <- Negate("%in%")
 
-aa.eval <- function(x) { x %in% c("AF", "KF", "other")}
+amino.acids <- c("A", "R", "N", "D", "C", "Q", "E", "G", "H", "I", "L", "K", "M", "F", "P", "S", "T", "W", "Y", "V")
 
 # Add to meta data some of the metrics calculated
 #' @importFrom rlang %||%
@@ -102,9 +102,9 @@ checkLength <- function(x, expanded = NULL) {
   cutoff <- ifelse(is.null(expanded)) | expanded == FALSE, 45, 90)
 #TODO will need to update column pulling for expanded sequences
   if(any(na.omit(nchar(x[,"cdr3_aa"])) > cut.off)) {
-    stop("Models have been trained on cdr3 sequences 
-         less than 45 amino acid residues. Please
-         filter the larger sequences before running")
+    stop(paste0("Models have been trained on cdr3 sequences 
+         less than ", cutoff, " amino acid residues. Please
+         filter the larger sequences before running"))
   }
 }
 #Returns appropriate model for autoencoder

@@ -43,13 +43,21 @@ Ibex.matrix <- function(input.data,
     
     expanded.sequences <- grepl(".Exp", encoder.model)
     #TODO Pair these down to the final models offered
-    if(encoder.input %!in% c("atchleyFactors", "crucianiProperties", "FASGAI", "kideraFactors", "MSWHIM", "ProtFP", "stScales", "tScales", "VHSE", "zScales", "OHE")) {
-      stop("Please select one of the following encoder.inputs: 'atchleyFactors', 'crucianiProperties', 'FASGAI', 'kideraFactors', 'MSWHIM', 'ProtFP', 'stScales', 'tScales', 'VHSE', 'zScales', or 'OHE'")
+    valid.encoder.inputs <- c("atchleyFactors", "crucianiProperties", "FASGAI", "kideraFactors", "MSWHIM", "ProtFP", "stScales", "tScales", "VHSE", "zScales", "OHE")
+    if(encoder.input %!in% valid.encoder.inputs) {
+      stop("Please select one of the valid encoder inputs.")
     }
     chains <- chain.checker(chains)
     
+    if(expanded.sequences) {
+      dictionary <- c(amino.acids, "_")
+    } else {
+      dictionary <- amino.acids
+    }
+    
     #Getting Sequences
     #TODO will need to update this system to use getIR and get only BCR genes
+    #TODO think through how to get sequences into encoder
     BCR <- getBCR(input.data, chains)[[1]]
     
     #Checking Sequences
@@ -61,19 +69,19 @@ Ibex.matrix <- function(input.data,
     if (method == "encoder") {
       print("Encoding Sequences...")
       
-      
       if(encoder.model == "biLSTM") {
-        encoded.values <- suppressMessages(onehotEncoder(IGH.sequences,
+        encoded.values <- suppressMessages(onehotEncoder(BCR,
                                                          max.length = length.to.use,
                                                          convert.to.matrix = FALSE,
-                                                         sequence.dictionary = c(amino.acids[1:20]),
-                                                         padding.symbol = "."))
+                                                         sequence.dictionary = dictionary,
+                                                         padding.symbol = "."
+                                                        ))
       } else {
         if(encoder.input == "OHE") {
           encoded.values <- suppressMessages(onehotEncoder(BCR,
                                                            max.length = length.to.use,
                                                            convert.to.matrix = TRUE,
-                                                           sequence.dictionary = c(amino.acids[1:20], "_"),
+                                                           sequence.dictionary = dictionary,
                                                            padding.symbol = "."))
         } else {
           encoded.values <- suppressMessages(propertyEncoder(BCR, 
