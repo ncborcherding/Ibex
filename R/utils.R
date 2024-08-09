@@ -27,43 +27,6 @@ chain.checker <- function(chain) {
   }
 }
 
-#Function to pull and organize BCR depending on the chain selected
-#' @importFrom stringr str_split
-getBCR <- function(sc, chains) {
-  if (inherits(x=sc, what ="Seurat") | inherits(x=sc, what ="SingleCellExperiment")) {
-    meta <- grabMeta(sc)
-  } else {
-    meta <- do.call(rbind,sc)
-    rownames(meta) <- meta[,"barcode"]
-  }
-  tmp <- data.frame(barcode = rownames(meta), 
-                    str_split(meta[,"CTaa"], "_", simplify = TRUE), 
-                    str_split(meta[,"CTgene"], "_", simplify = TRUE))
-  if (length(chains) == 1 && chains != "both") {
-    if (chains %in% c("Heavy")) { #here
-      pos <- list(c(2,4))
-    } else if (chains %in% c("Light")) { #here
-      pos <- list(c(3,5))
-    }
-  } else {
-    pos <- list(one = c(2,4), two = c(3,5))
-    ch.1 <- grep("IGH|IGL",sc[[]]$CTgene[1]) #here
-    chains <- c("heavy", "light") #here
-  }
-  BCR <- NULL
-  for (i in seq_along(pos)) {
-    sub <- as.data.frame(tmp[,c(1,pos[[i]])])
-    colnames(sub) <- c("barcode", "cdr3_aa", "genes")
-    sub$v <- str_split(sub$genes, "[.]", simplify = TRUE)[,1]
-    sub$j <- str_split(sub$genes, "[.]", simplify = TRUE)[,2]
-    sub[sub == ""] <- NA
-    BCR[[i]] <- sub
-    sub <- NULL
-  }
-  names(BCR) <- chains
-  return(BCR)
-}
-
 #This is to grab the metadata from a Seurat or SCE object
 #' @importFrom SingleCellExperiment colData 
 grabMeta <- function(sc) {
@@ -99,9 +62,8 @@ checkSingleObject <- function(sc) {
 
 #This is to check that all the cdr3 sequences are < 45 residues or < 90 for cdr1/2/3
 checkLength <- function(x, expanded = NULL) {
-  cutoff <- ifelse(is.null(expanded)) | expanded == FALSE, 45, 90)
-#TODO will need to update column pulling for expanded sequences
-  if(any(na.omit(nchar(x[,"cdr3_aa"])) > cut.off)) {
+  cutoff <- ifelse( expanded == FALSE || is.null(expanded), 45, 90)
+  if(any(na.omit(nchar(x)) > cutoff)) {
     stop(paste0("Models have been trained on cdr3 sequences 
          less than ", cutoff, " amino acid residues. Please
          filter the larger sequences before running"))

@@ -31,7 +31,7 @@
 #' 
 #' @export
 #' @importFrom SeuratObject CreateDimReducObject
-#' @importFrom immApex propertyEncoder onehotEncoder geometricEncoder
+#' @importFrom immApex propertyEncoder onehotEncoder geometricEncoder getIR
 #' 
 #' @return Ibex encoded values from the autoencoder
 Ibex.matrix <- function(input.data, 
@@ -40,7 +40,7 @@ Ibex.matrix <- function(input.data,
                         encoder.model = "VAE", 
                         encoder.input = "AF",
                         geometric.theta = pi/3) {
-    
+    loci <- ifelse(chain == "Heavy", "IGH", c("IGK", "IGL"))
     expanded.sequences <- grepl(".Exp", encoder.model)
     #TODO Pair these down to the final models offered
     valid.encoder.inputs <- c("atchleyFactors", "crucianiProperties", "FASGAI", "kideraFactors", "MSWHIM", "ProtFP", "stScales", "tScales", "VHSE", "zScales", "OHE")
@@ -58,10 +58,19 @@ Ibex.matrix <- function(input.data,
     #Getting Sequences
     #TODO will need to update this system to use getIR and get only BCR genes
     #TODO think through how to get sequences into encoder
-    BCR <- getBCR(input.data, chains)[[1]]
+    BCR <- getIR(input.data, chain, sequence.type = "aa")[[1]]
+    
+    #Filtering out NA values and selecting sequences
+    if(any(is.na(BCR[,2]))) {
+      BCR <- BCR[-which(is.na(BCR[,2])),]
+    }
+    if(any(!grep(paste0(loci, collapse = "|"), BCR[,"v"]))) {
+      BCR <- BCR[-!grep(paste0(loci, collapse = "|"), BCR[,"v"]),]
+    }
+    
     
     #Checking Sequences
-    checkLength(BCR[[1]], expanded.sequences)
+    checkLength(x = BCR[,2], expanded = expanded.sequences)
     length.to.use <- ifelse(expanded.sequences, 90, 45)
     
    
@@ -70,7 +79,7 @@ Ibex.matrix <- function(input.data,
       print("Encoding Sequences...")
       
       if(encoder.model == "biLSTM") {
-        encoded.values <- suppressMessages(onehotEncoder(BCR,
+        encoded.values <- suppressMessages(onehotEncoder(BCR[,2],
                                                          max.length = length.to.use,
                                                          convert.to.matrix = FALSE,
                                                          sequence.dictionary = dictionary,
@@ -78,13 +87,13 @@ Ibex.matrix <- function(input.data,
                                                         ))
       } else {
         if(encoder.input == "OHE") {
-          encoded.values <- suppressMessages(onehotEncoder(BCR,
+          encoded.values <- suppressMessages(onehotEncoder(BCR[,2],
                                                            max.length = length.to.use,
                                                            convert.to.matrix = TRUE,
                                                            sequence.dictionary = dictionary,
                                                            padding.symbol = "."))
         } else {
-          encoded.values <- suppressMessages(propertyEncoder(BCR, 
+          encoded.values <- suppressMessages(propertyEncoder(BCR[,2], 
                                                              max.length = length.to.use,
                                                              method.to.use = encoder.input,
                                                              convert.to.matrix = TRUE))
