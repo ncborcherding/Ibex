@@ -125,7 +125,7 @@ Ibex.matrix <- function(input.data,
 
 #' Ibex single cell calculation
 #'
-#' Run Ibex algorithm with Seurat or SingleCellExperiment pipelines
+#' Run Ibex algorithm with Seurat or Single Cell Experiment pipelines
 #'
 #' @examples
 #' ibex_example <- runIbex(ibex_example, 
@@ -134,7 +134,7 @@ Ibex.matrix <- function(input.data,
 #'                         encoder.model = "VAE",
 #'                         encoder.input = "AF")
 #'                         
-#' @param sc.data Single Cell Object in Seurat or SingleCell Experiment format
+#' @param sc.data Single Cell Object in Seurat or Single Cell Experiment format
 #' @param chain Heavy or Light
 #' @param method "encoder" = using deep learning autoencoders or 
 #' "geometric" = geomteric transformations based on the BLOSUM62 matrix
@@ -160,7 +160,7 @@ runIbex <- function(sc.data,
                     geometric.theta = pi,
                     reduction.name = "Ibex") {
     checkSingleObject(sc.data)
-    #TODO add check for CTAA columns
+    #TODO Add CTaa checker and subset for SCE
     cells.chains <- rownames(sc.data[[]][!is.na(sc.data[["CTaa"]]),])
     sc.data <- subset(sc.data, cells = cells.chains)
     reduction <- Ibex.matrix(input.data = sc.data,
