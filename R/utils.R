@@ -18,15 +18,6 @@ if (inherits(x=sc, what ="Seurat")) {
   return(sc)
 }
 
-#All the receptor chains shall be capitlized
-#' @importFrom stringr str_to_title
-chain.checker <- function(chain) {
-  chain <- str_to_title(chain)
-  if(chain %!in% c("Heavy", "Light", "Both")) {
-    stop("Please select 'Heavy', 'Light' or 'Both' for the chains parameter,")
-  }
-}
-
 #This is to grab the metadata from a Seurat or SCE object
 #' @importFrom SingleCellExperiment colData 
 grabMeta <- function(sc) {

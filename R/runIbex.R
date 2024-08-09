@@ -39,16 +39,24 @@ Ibex.matrix <- function(input.data,
                         method = "encoder",
                         encoder.model = "VAE", 
                         encoder.input = "AF",
-                        geometric.theta = pi/3) {
-    loci <- ifelse(chain == "Heavy", "IGH", c("IGK", "IGL"))
-    expanded.sequences <- grepl(".Exp", encoder.model)
+                          geometric.theta = pi/3) {
+    #Chain Check
+    if(chains %!in% c("Heavy", "Light")) {
+      stop("Please select one of the following chains: 'Heavy', 'Light'")
+    }
+  
     #TODO Pair these down to the final models offered
+    #Model Check
     valid.encoder.inputs <- c("atchleyFactors", "crucianiProperties", "FASGAI", "kideraFactors", "MSWHIM", "ProtFP", "stScales", "tScales", "VHSE", "zScales", "OHE")
     if(encoder.input %!in% valid.encoder.inputs) {
       stop("Please select one of the valid encoder inputs.")
     }
-    chains <- chain.checker(chains)
+  
+    #Will be used to filter output of getIR()
+    loci <- ifelse(chain == "Heavy", "IGH", c("IGK", "IGL"))
+    expanded.sequences <- grepl(".Exp", encoder.model)
     
+    #Set Dictionary for embedding
     if(expanded.sequences) {
       dictionary <- c(amino.acids, "_")
     } else {
@@ -56,24 +64,21 @@ Ibex.matrix <- function(input.data,
     }
     
     #Getting Sequences
-    #TODO will need to update this system to use getIR and get only BCR genes
-    #TODO think through how to get sequences into encoder
     BCR <- getIR(input.data, chain, sequence.type = "aa")[[1]]
     
-    #Filtering out NA values and selecting sequences
+    #Filtering out NA values 
     if(any(is.na(BCR[,2]))) {
       BCR <- BCR[-which(is.na(BCR[,2])),]
     }
+    #Filtering out sequences that do not match gene locid
     if(any(!grep(paste0(loci, collapse = "|"), BCR[,"v"]))) {
       BCR <- BCR[-!grep(paste0(loci, collapse = "|"), BCR[,"v"]),]
     }
     
-    
-    #Checking Sequences
+    #Checking Sequences - needs to be < 45 or 90
     checkLength(x = BCR[,2], expanded = expanded.sequences)
     length.to.use <- ifelse(expanded.sequences, 90, 45)
     
-   
     
     if (method == "encoder") {
       print("Encoding Sequences...")
@@ -164,8 +169,7 @@ runIbex <- function(sc.data,
                              encoder.model = encoder.model, 
                              encoder.input = encoder.input,
                              geometric.theta = geometric.theta)
-    #TODO modify getBCR to getIR()
-    BCR <- getBCR(sc.data, chains)
+    BCR <- getIR(input.data, chain, sequence.type = "aa")[[1]]
     sc.data <- adding.DR(sc.data, reduction, reduction.name)
     return(sc.data)
 }
