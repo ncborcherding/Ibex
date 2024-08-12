@@ -107,7 +107,7 @@ Ibex.matrix <- function(input.data,
       
       print("Calculating Latent Dimensions...")
       #Getting Model
-      aa.model <- aa.model.loader(chain, encoder.input, encoder.model)
+      aa.model <- aa.model.loader(species = "Human", chain, encoder.input, encoder.model)
       reduction <- stats::predict(aa.model, encoded.values, verbose = 0)
         
     } else if (method == "geometric") {
