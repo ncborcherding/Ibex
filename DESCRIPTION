@@ -14,7 +14,7 @@ biocViews: Software, ImmunoOncology, SingleCell, Classification, Annotation, Seq
 Depends: 
 	R (>= 4.0)
 Imports: stringr, 
-	SeuratObject,
+	SeuratObject (>5.0.0),
 	SingleCellExperiment,
 	rlang,
 	keras,
