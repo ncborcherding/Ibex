@@ -17,13 +17,13 @@ Ibex.matrix <- function(input.data,
                         encoder.function = "onehotEncoder",
                         aa.method.to.use = NULL,
                         encoder.model = "VAE",
-                        geometric.matrix = "BLOSUM62"
-                        theta = pi/3)) {
+                        geometric.matrix = "BLOSUM62",
+                        theta = pi/3) {
   
   chains <- chain.checker(chains)
   if(chains %in% c("Heavy", "Light")) {
     BCR <- getIR(input.data, chains)
-  } else if(chains = "Both") {
+  } else if(chains == "Both") {
     lapply(c("Heavy", "Light"), function(x) {
       tmp <- getIR(input.data, x)[[1]]
     }) -> BCR
@@ -47,13 +47,13 @@ Ibex.matrix <- function(input.data,
     sequence.matrix <- auto.embedder(sequence.matrix, aa.model, encoder.input)
     
     sequence.matrix <- data.frame(sequence.matrix)
-    rownames(sequence.matrix) <- unique(membership[,"barcode"]),
+    rownames(sequence.matrix) <- unique(membership[,"barcode"])
                       
   } else if(encoder.function == "geometricEncoder") {
     sequence.matrix <- geometricEncoder(input.sequences, 
                                         theta  = theta,
-                                        method.to.use = geometric.matrix
-                                        convert.to.matrix = TRUE
+                                        method.to.use = geometric.matrix,
+                                        convert.to.matrix = TRUE)
   }
   colnames(sequence.matrix) <- paste0("Ibex_", seq_len(ncol(sequence.matrix)))
   return(sequence.matrix)

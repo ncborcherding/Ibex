@@ -5,7 +5,7 @@
 \title{Reduce a single-cell object to representative cells}
 \usage{
 CoNGAfy(
-  sc,
+  input.data,
   method = "dist",
   features = NULL,
   assay = "RNA",
@@ -13,7 +13,7 @@ CoNGAfy(
 )
 }
 \arguments{
-\item{sc}{Single Cell Object in Seurat or Single Cell Experiment format}
+\item{input.data}{Single Cell Object in Seurat or Single Cell Experiment format}
 
 \item{method}{"mean" or "dist" Generate a mean value across features by clonotype or 
 use the PCA reduction to identify the cell with the minimal euclidean distance from the

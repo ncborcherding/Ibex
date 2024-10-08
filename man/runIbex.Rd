@@ -5,39 +5,43 @@
 \title{Ibex single cell calculation}
 \usage{
 runIbex(
-  sc,
+  sc.data,
   chains = "Heavy",
   method = "encoder",
   encoder.model = "VAE",
   encoder.input = "AF",
-  theta = pi,
+  geometric.theta = pi,
   reduction.name = "Ibex"
 )
 }
 \arguments{
-\item{sc}{Single Cell Object in Seurat or SingleCell Experiment format}
-
-\item{chains}{Heavy or Light}
+\item{sc.data}{Single Cell Object in Seurat or Single Cell Experiment format}
 
 \item{method}{"encoder" = using deep learning autoencoders or 
-"geometric" = geomteric transformations based on BLOSUM62 matrix}
+"geometric" = geomteric transformations based on the BLOSUM62 matrix}
 
-\item{encoder.model}{"AE" = dense autoencoder or "VAE" = variation autoencoder}
+\item{encoder.model}{"CNN" = convolutional neural network-based autoencoder, 
+"VAE" = variation autoencoder, or "biLSTM" for Bidirectional LSTM}
 
-\item{encoder.input}{"AF" = Atchley factors, "KF" = Kidera factors, "both" = AF and KF, or "OHE" for
-One Hot Autoencoder}
+\item{encoder.input}{Type of model to use
+ \itemize{
+   \item{Amino Acid Properties: "atchleyFactors", "crucianiProperties", "FASGAI", "kideraFactors", "MSWHIM", "ProtFP", "stScales", "tScales", "VHSE", "zScales"}
+   \item{"OHE" for One Hot Encoding. Only option for biLSTM models}
+}}
 
-\item{theta}{angle to use for geometric transformation}
+\item{geometric.theta}{angle to use for geometric transformation}
 
 \item{reduction.name}{Keyword to save Ibex reduction. Useful if you want
 to try Ibex with multiple parameters}
+
+\item{chain}{Heavy or Light}
 }
 \value{
 Seurat or SingleCellExperiment object with Ibex dimensions placed 
 into the dimensional reduction slot.
 }
 \description{
-Run Ibex algorithm with Seurat or SingleCellExperiment pipelines
+Run Ibex algorithm with Seurat or Single Cell Experiment pipelines
 }
 \examples{
 ibex_example <- runIbex(ibex_example, 

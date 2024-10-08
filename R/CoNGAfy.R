@@ -10,7 +10,7 @@
 #'                         method = "dist",
 #'                         features = NULL)
 #'                         
-#' @param sc Single Cell Object in Seurat or Single Cell Experiment format
+#' @param input.data Single Cell Object in Seurat or Single Cell Experiment format
 #' @param method "mean" or "dist" Generate a mean value across features by clonotype or 
 #' use the PCA reduction to identify the cell with the minimal euclidean distance from the
 #' clonotype group.
@@ -26,22 +26,22 @@
 #' @return Single-cell Object with 1 cell representing 1 clone
 #' 
 #' 
-CoNGAfy <- function(sc, 
+CoNGAfy <- function(input.data, 
                     method = "dist", 
                     features = NULL, 
                     assay = "RNA", 
                     meta.carry = c("CTaa", "CTgene")) {
-    cells.chains <- rownames(sc[[]][!is.na(sc[["CTaa"]]),])
-    sc <- subset(sc, cells = cells.chains)
+    cells.chains <- rownames(input.data[[]][!is.na(input.data[["CTaa"]]),])
+    input.data <- subset(input.data, cells = cells.chains)
     conga <- NULL
     if(method == "mean") {
         for (x in seq_along(assay)) {
-            conga[[x]] <- CoNGA.mean(sc, features, assay[x])
+            conga[[x]] <- CoNGA.mean(input.data, features, assay[x])
             
         }
     } else if(method == "dist") {
         for (x in seq_along(assay)) {
-            conga[[x]] <- CoNGA.dist(sc, features, assay[x])
+            conga[[x]] <- CoNGA.dist(input.data, features, assay[x])
             
         }
         
@@ -54,8 +54,8 @@ CoNGAfy <- function(sc,
                 sc.output[[names(conga)[y]]] <- CreateAssayObject(conga[[y]])
             }
         }
-        CTge <- unique(sc[[]][,c(meta.carry)])
-    } else if (inherits(x=sc, what ="SingleCellExperiment")) {
+        CTge <- unique(input.data[[]][,c(meta.carry)])
+    } else if (inherits(x=input.data, what ="SingleCellExperiment")) {
         sc.output <- SingleCellExperiment(assay = conga[[1]])
         if(length(conga) > 1) {
             for(y in 2:length(conga)) {
@@ -63,7 +63,7 @@ CoNGAfy <- function(sc,
             }
         }
         sc.output$CTaa <- rownames(sc.output@colData)
-        CTge <- data.frame(unique(sc@colData[,c(meta.carry)]))
+        CTge <- data.frame(unique(input.data@colData[,c(meta.carry)]))
     }
     CTge <- CTge[!duplicated(CTge$CTaa),]
     clones <- unique(CTge$CTaa)
@@ -77,17 +77,17 @@ CoNGAfy <- function(sc,
 #For multiplets will use the cell with the minimal distance in PCA
 #For doublets, will automatically select the first cell. 
 #' @importFrom SummarizedExperiment assay
-CoNGA.dist <- function(sc, features, assay) {
-    if (inherits(x=sc, what ="Seurat")) {
-        if(assay == "RNA") {
-            data.use <- sc[["pca"]]@cell.embeddings
-        } else if (assay == "ADT") {
-            data.use <- sc[["apca"]]@cell.embeddings
+CoNGA.dist <- function(input.data, features, assay) {
+    if (inherits(x=input.data, what ="Seurat")) {
+        if("RNA" == assay) {
+            data.use <- input.data[["pca"]]@cell.embeddings
+        } else if ("ADT" == assay) {
+            data.use <- input.data[["apca"]]@cell.embeddings
         }
-    } else if (inherits(x=sc, what ="SingleCellExperiment")){
-        data.use <- reducedDim(sc, "PCA")
+    } else if (inherits(x=input.data, what ="SingleCellExperiment")){
+        data.use <- reducedDim(input.data, "PCA")
     }
-    meta <- grabMeta(sc)
+    meta <- grabMeta(input.data)
     data <- as.data.frame(meta[,"CTaa"])
     colnames(data) <- "CTaa"
     rownames(data) <- rownames(meta)
@@ -104,10 +104,10 @@ CoNGA.dist <- function(sc, features, assay) {
         }
         barcodes <- c(barcodes, cell)
     }
-    if (inherits(x=sc, what ="Seurat")) {
-        assay.use <- sc[[assay]]@data
-    } else if (inherits(x=sc, what ="SingleCellExperiment")){
-        assay.use <- assay(sc)
+    if (inherits(x=input.data, what ="Seurat")) {
+        assay.use <- input.data[[assay]]$counts
+    } else if (inherits(x=input.data, what ="SingleCellExperiment")){
+        assay.use <- assay(input.data)
     }
     features.to.avg <- features %||% rownames(x = assay.use)
     features.assay <- intersect(x = features.to.avg, y = rownames(x = assay.use))
@@ -120,17 +120,17 @@ CoNGA.dist <- function(sc, features, assay) {
 #' @importFrom Matrix sparse.model.matrix colSums
 #' @importFrom SummarizedExperiment assay
 #' @importFrom stats as.formula
-CoNGA.mean <- function(sc, features, assay) {
+CoNGA.mean <- function(input.data, features, assay) {
     
-    if (inherits(x=sc, what ="Seurat")) {
-        data.use <- sc[[assay]]@data
-    } else if (inherits(x=sc, what ="SingleCellExperiment")){
-        data.use <- assay(sc, name = assay)
+    if (inherits(x=input.data, what ="Seurat")) {
+        data.use <- input.data[[assay]]$counts
+    } else if (inherits(x=input.data, what ="SingleCellExperiment")){
+        data.use <- assay(input.data, name = assay)
     }
     
     features.to.avg <- features %||% rownames(x = data.use)
     features.assay <- intersect(x = features.to.avg, y = rownames(x = data.use))
-    meta <- grabMeta(sc)
+    meta <- grabMeta(input.data)
     data <- as.data.frame(meta[,"CTaa"])
     colnames(data) <- "CTaa"
     rownames(data) <- rownames(meta)
