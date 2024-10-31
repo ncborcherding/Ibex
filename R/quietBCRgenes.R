@@ -12,7 +12,7 @@
 #' @param sc Single-cell object in Seurat format or vector of variable genes to use in reduction
 #' @param assay The Seurat assay slot to use to remove BCR genes from, NULL value will default to
 #' the default assay
-#' @importFrom SeuratObject DefaultAssay
+#' @importFrom SeuratObject DefaultAssay VariableFeatures
 #' @export
 #' @return Seurat object or vector list with BCR genes removed.
 quietBCRgenes <- function(sc, 
@@ -22,10 +22,10 @@ quietBCRgenes <- function(sc,
     if (is.null(assay)) {
       assay <- DefaultAssay(sc)
     }
-    unwanted_genes <- grep(pattern = unwanted_genes, x = sc[[assay]]@var.features, value = TRUE)
+    unwanted_genes <- grep(pattern = unwanted_genes, x = VariableFeatures(sc, assay = assay), value = TRUE)
     unwanted_genes <- c(unwanted_genes , "JCHAIN")
     unwanted_genes <- unwanted_genes[unwanted_genes %!in% pseudogenes]
-    sc[[assay]]@var.features <- sc[[assay]]@var.features[sc[[assay]]@var.features %!in% unwanted_genes]
+    VariableFeatures(sc, assay = assay) <- VariableFeatures(sc, assay = assay)[VariableFeatures(sc, assay = assay) %!in% unwanted_genes]
   } else {
     #Bioconductor scran pipelines uses vector of variable genes for DR
     unwanted_genes <- grep(pattern = unwanted_genes, x = sc, value = TRUE)
