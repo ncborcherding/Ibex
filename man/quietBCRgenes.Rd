@@ -7,10 +7,11 @@
 quietBCRgenes(sc, assay = NULL)
 }
 \arguments{
-\item{sc}{Single-cell object in Seurat format or vector of variable genes to use in reduction}
+\item{sc}{Single-cell object in Seurat format or vector of variable
+genes to use in reduction}
 
-\item{assay}{The Seurat assay slot to use to remove BCR genes from, NULL value will default to
-the default assay}
+\item{assay}{The Seurat assay slot to use to remove BCR genes from, NULL
+value will default to the default assay}
 }
 \value{
 Seurat object or vector list with BCR genes removed.
