@@ -11,14 +11,13 @@ test_that("quietBCRgenes works", {
     getdata("quietBCRgenes", "quietBCRgenes_feature.vector")
   )
   
-  ibex_example@assays$RNA@var.features <- features
-  Seurat::DefaultAssay(ibex_example) <- "RNA"
+  SeuratObject::DefaultAssay(ibex_example) <- "RNA"
+  SeuratObject::VariableFeatures(ibex_example, assay="RNA") <- features
   
   ibex_example <- quietBCRgenes(ibex_example)
   
-  
   expect_equal(
     quietBCRgenes(features),
-    ibex_example@assays$RNA@var.features
+    Seurat::VariableFeatures(ibex_example)
   )
 })
