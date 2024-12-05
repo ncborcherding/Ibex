@@ -9,9 +9,10 @@
 #' @examples
 #' x <- quietBCRgenes(ibex_example)
 #'
-#' @param sc Single-cell object in Seurat format or vector of variable genes to use in reduction
-#' @param assay The Seurat assay slot to use to remove BCR genes from, NULL value will default to
-#' the default assay
+#' @param sc Single-cell object in Seurat format or vector of variable
+#' genes to use in reduction
+#' @param assay The Seurat assay slot to use to remove BCR genes from, NULL
+#' value will default to the default assay
 #' @export
 #' @return Seurat object or vector list with BCR genes removed.
 quietBCRgenes <- function(sc, assay = NULL) {
@@ -24,7 +25,8 @@ quietBCRgenes.Seurat <- function(sc, assay = NULL) {
   if (is.null(assay)) {
     assay <- DefaultAssay(sc)
   }
-  VariableFeatures(sc, assay = assay) <- quietBCRgenes.default(VariableFeatures(sc, assay = assay))
+  VariableFeatures(sc, assay = assay) <-
+    quietBCRgenes.default(VariableFeatures(sc, assay = assay))
   sc
 }
 
@@ -32,12 +34,12 @@ quietBCRgenes.Seurat <- function(sc, assay = NULL) {
 quietBCRgenes.default <- function(sc, assay = NULL) {
   unwanted_genes <- "^IG[HLK][VDJCAGM]"
   unwanted_genes <- grep(pattern = unwanted_genes, x = sc, value = TRUE)
-  unwanted_genes <- c(unwanted_genes , "JCHAIN")
+  unwanted_genes <- c(unwanted_genes, "JCHAIN")
   unwanted_genes <- unwanted_genes[unwanted_genes %!in% getHumanIgPseudoGenes()]
   sc[sc %!in% unwanted_genes]
 }
 
-#' Human Immunoglobulin pseudogenes
+#' Get Human Immunoglobulin pseudogenes
 #'
 #' This function returns a character vector of human immunoglobulin
 #' pseudogenes. These are also the genes that are removed from the
@@ -45,6 +47,7 @@ quietBCRgenes.default <- function(sc, assay = NULL) {
 #'
 #' @return Character vector of human immunoglobulin pseudogenes.
 #' @export
+#'
 getHumanIgPseudoGenes <- function() {
   unique(c(
     "IGHJ1P", "IGHJ2P", "IGHJ3P", "IGLC4", "IGLC5", "IGHEP1", "IGHEP2",

@@ -2,7 +2,7 @@
 % Please edit documentation in R/quietBCRgenes.R
 \name{getHumanIgPseudoGenes}
 \alias{getHumanIgPseudoGenes}
-\title{Human Immunoglobulin pseudogenes}
+\title{Get Human Immunoglobulin pseudogenes}
 \usage{
 getHumanIgPseudoGenes()
 }

@@ -3,7 +3,8 @@ CHANGES IN VERSION 0.99.7
 * Integration of Ibex with immApex
 * Update Seurat object to v5
 * Update ```CoNGAfy()``` to function with all versions of Seurat
-* Updated ```quietBCRgenes()``` to used VariableFeatures() call
+* Updated ```quietBCRgenes()``` to use VariableFeatures() call for SeuratV5 and backward compatibility.
+* Add ```getHumanIgPseudoGenes()``` to return a list of human Immunoglobulin Pseudo genes that are kept by ```quietBCRgenes()```
 
 
 CHANGES IN VERSION 0.99.6
