@@ -2,7 +2,7 @@
 % Please edit documentation in R/CoNGAfy.R
 \name{CoNGAfy}
 \alias{CoNGAfy}
-\title{Reduce a single-cell object to representative cells}
+\title{Reduce a Single-Cell Object to Representative Cells}
 \usage{
 CoNGAfy(
   input.data,
@@ -13,30 +13,37 @@ CoNGAfy(
 )
 }
 \arguments{
-\item{input.data}{Single Cell Object in Seurat or Single Cell Experiment format}
+\item{input.data}{A single-cell dataset in Seurat or SingleCellExperiment format.}
 
-\item{method}{"mean" or "dist" Generate a mean value across features by clonotype or 
-use the PCA reduction to identify the cell with the minimal euclidean distance from the
-clonotype group.}
+\item{method}{Character. Specifies the method to reduce the dataset:
+\itemize{
+  \item "mean" - Computes the mean expression of selected features across cells in each clonotype.
+  \item "dist" - Uses PCA reduction to identify the cell with the minimal Euclidean distance within each clonotype group.
+}}
 
-\item{features}{Selected genes for the reduction DEFAULT: null will return all genes}
+\item{features}{Character vector. Selected genes for the reduction. If \code{NULL} (default), all genes are used.}
 
-\item{assay}{The name of the assay or assays to return.}
+\item{assay}{Character. The name of the assay or assays to include in the output. Defaults to the active assay.}
 
-\item{meta.carry}{Variables to carry over from the meta data of the single-cell object}
+\item{meta.carry}{Character vector. Metadata variables to carry over from the input single-cell object to the output.}
 }
 \value{
-Single-cell Object with 1 cell representing 1 clone
+A reduced single-cell object where each clonotype is represented by a single cell.
 }
 \description{
-Generate a single-cell object that has a representation of
-RNA expression by clonotype. This approach was first introduced
-in \href{https://pubmed.ncbi.nlm.nih.gov/34426704/}{CoNGA} and was 
-adapted to R. Please read and cite the author's work.
+This function generates a single-cell object with a reduced representation of RNA expression 
+by clonotype. The approach is inspired by the method introduced in \href{https://pubmed.ncbi.nlm.nih.gov/34426704/}{CoNGA}. 
+Users can generate either a mean representation of features by clonotype or identify a representative 
+cell using PCA-based minimal Euclidean distance. Please read and cite the original work by the authors of CoNGA.
 }
 \examples{
+# Generate a representative single-cell object using minimal Euclidean distance
 ibex.clones <- CoNGAfy(ibex_example, 
-                        method = "dist",
-                        features = NULL)
-                        
+                       method = "dist",
+                       features = NULL)
+
+# Generate a representative single-cell object using the mean expression across features
+ibex.clones <- CoNGAfy(ibex_example, 
+                       method = "mean")
+
 }

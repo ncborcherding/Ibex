@@ -2,7 +2,7 @@
 % Please edit documentation in R/runIbex.R
 \name{runIbex}
 \alias{runIbex}
-\title{Ibex single cell calculation}
+\title{Ibex Single-Cell Calculation}
 \usage{
 runIbex(
   sc.data,
@@ -15,39 +15,64 @@ runIbex(
 )
 }
 \arguments{
-\item{sc.data}{Single Cell Object in Seurat or Single Cell Experiment format}
-
-\item{method}{"encoder" = using deep learning autoencoders or 
-"geometric" = geomteric transformations based on the BLOSUM62 matrix}
-
-\item{encoder.model}{"CNN" = convolutional neural network-based autoencoder, 
-"VAE" = variation autoencoder, or "biLSTM" for Bidirectional LSTM}
-
-\item{encoder.input}{Type of model to use
- \itemize{
-   \item{Amino Acid Properties: "atchleyFactors", "crucianiProperties", "FASGAI", "kideraFactors", "MSWHIM", "ProtFP", "stScales", "tScales", "VHSE", "zScales"}
-   \item{"OHE" for One Hot Encoding. Only option for biLSTM models}
+\item{sc.data}{A single-cell dataset, which can be:
+\itemize{
+  \item A Seurat object
+  \item A SingleCellExperiment object
 }}
 
-\item{geometric.theta}{angle to use for geometric transformation}
+\item{method}{Character. Algorithm to use for generating latent dimensions:
+\itemize{
+  \item "encoder" - Uses deep learning autoencoders
+  \item "geometric" - Uses geometric transformations based on the BLOSUM62 matrix
+}}
 
-\item{reduction.name}{Keyword to save Ibex reduction. Useful if you want
-to try Ibex with multiple parameters}
+\item{encoder.model}{Character. Type of autoencoder model to use:
+\itemize{
+  \item "CNN" - Convolutional Neural Network-based autoencoder
+  \item "VAE" - Variational Autoencoder
+}}
 
-\item{chain}{Heavy or Light}
+\item{encoder.input}{Character. Input features for the encoder model:
+\itemize{
+  \item Amino Acid Properties: "atchleyFactors", "crucianiProperties", "kideraFactors", "MSWHIM", "tScales"
+  \item "OHE" - One Hot Encoding 
+}}
+
+\item{geometric.theta}{Numeric. Angle (in radians) for geometric transformation. 
+Used only when \code{method = "geometric"}.}
+
+\item{reduction.name}{Character. The name to assign to the dimensional reduction. 
+This is useful for running Ibex with multiple parameter settings and saving results 
+under different names.}
+
+\item{chain}{Character. Specifies the chain to analyze:
+\itemize{
+  \item "Heavy" for the heavy chain
+  \item "Light" for the light chain
+}}
 }
 \value{
-Seurat or SingleCellExperiment object with Ibex dimensions placed 
-into the dimensional reduction slot.
+An updated Seurat or SingleCellExperiment object with Ibex dimensions added 
+to the dimensional reduction slot.
 }
 \description{
-Run Ibex algorithm with Seurat or Single Cell Experiment pipelines
+This function applies the Ibex algorithm to single-cell data, integrating seamlessly with 
+Seurat or SingleCellExperiment pipelines. The algorithm generates latent dimensions using 
+deep learning or geometric transformations, storing the results in the dimensional reduction slot.
 }
 \examples{
+# Using the encoder method with a variational autoencoder
 ibex_example <- runIbex(ibex_example, 
-                        chains = "Heavy",
+                        chain = "Heavy",
                         method = "encoder",
                         encoder.model = "VAE",
-                        encoder.input = "AF")
-                        
+                        encoder.input = "atchleyFactors")
+
+# Using the geometric method with a specified angle
+ibex_example <- runIbex(ibex_example, 
+                        chain = "Heavy",
+                        method = "geometric",
+                        geometric.theta = pi)
+
 }

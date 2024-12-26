@@ -62,10 +62,10 @@ checkLength <- function(x, expanded = NULL) {
 }
 #Returns appropriate model for autoencoder
 #' @importFrom tensorflow tf
-#' @importFrom keras load_model_hdf5
+#' @importFrom keras3 load_model
 aa.model.loader <- function(species = "Human", chain, encoder.input, encoder.model) {
     select  <- system.file("extdata", paste0(species, "_", chain, "_", 
-                               encoder.input, "_", encoder.model, ".h5"), 
+                               encoder.input, "_", encoder.model, ".keras"), 
                           package = "Ibex")
     model <- quiet(load_model_hdf5(select, compile = FALSE))
     return(model)
