@@ -112,7 +112,7 @@ The idea behind Ibex is to combine BCR cdr3 amino acid information with phenotyp
 
 ## Ibex.matrix Function
 
-Ibex has 2 major functions - the first being ```Ibex.matrix()```, which is the backbone of the algorithm and returns the encoded values based on the selection of variables. Unlike ```runIbex()``` below, ```Ibex.matrix()``` does not filter the input for only B cells with attached BCR data. In addition, ```Ibex.matrix()``` is compatible with the list output from the ```combineBCR()``` function from the [scRepertoire](https://github.com/ncborcherding/scRepertoire) R package, while ```runIbex()``` must be performed on a single-cell object.
+Ibex has 2 major functions - the first being ```Ibex.matrix()```, which is the backbone of the algorithm and returns the encoded values based on the selection of variables. Unlike ```runIbex()``` below, ```Ibex.matrix()``` does not filter the input for only B cells with attached BCR data. In addition, ```Ibex.matrix()``` is compatible with the list output from the ```combineBCR()``` function from the [scRepertoire](https://github.com/BorchLab/scRepertoire) R package, while ```runIbex()``` must be performed on a single-cell object.
 
 **chains**  
 * "Heavy" for Ig Heavy Chain 
@@ -273,7 +273,7 @@ DimPlot(CoNGA.seurat, reduction = "Ibex.umap") + NoLegend()
 
 # Conclusion
 
-This has been a general overview of the capabilities of Ibex for incorporating BCR information into the embedding space of single-cell data. If you have any questions, comments, or suggestions, feel free to visit the [GitHub repository](https://github.com/ncborcherding/Ibex).
+This has been a general overview of the capabilities of Ibex for incorporating BCR information into the embedding space of single-cell data. If you have any questions, comments, or suggestions, feel free to visit the [GitHub repository](https://github.com/BorchLab/Ibex).
 
 ## Session Info
 
