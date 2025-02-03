@@ -1,8 +1,8 @@
 # Ibex
 Using BCR sequences for graph embedding
 
-[![R-CMD-check](https://github.com/ncborcherding/Ibex/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/ncborcherding/Ibex/actions/workflows/R-CMD-check.yaml)
-[![Codecov test coverage](https://codecov.io/gh/ncborcherding/Ibex/graph/badge.svg)](https://app.codecov.io/gh/ncborcherding/Ibex?branch=master)
+[![R-CMD-check](https://github.com/BorchLab/Ibex/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/BorchLab/Ibex/actions/workflows/R-CMD-check.yaml)
+[![Codecov test coverage](https://codecov.io/gh/BorchLab/Ibex/graph/badge.svg)](https://app.codecov.io/gh/BorchLab/Ibex?branch=master)
 [![Documentation](https://img.shields.io/badge/docs-stable-blue.svg)](https://www.borch.dev/uploads/screpertoire/articles/ibex)
 
 <img align="right" src="https://github.com/BorchLab/Ibex/blob/main/www/ibex_hex.png" width="352" height="352">
