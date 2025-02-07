@@ -114,7 +114,7 @@ The idea behind Ibex is to combine BCR cdr3 amino acid information with phenotyp
 
 Ibex has 2 major functions - the first being ```Ibex.matrix()```, which is the backbone of the algorithm and returns the encoded values based on the selection of variables. Unlike ```runIbex()``` below, ```Ibex.matrix()``` does not filter the input for only B cells with attached BCR data. In addition, ```Ibex.matrix()``` is compatible with the list output from the ```combineBCR()``` function from the [scRepertoire](https://github.com/ncborcherding/scRepertoire) R package, while ```runIbex()``` must be performed on a single-cell object.
 
-**chains**  
+**chain**  
 * "Heavy" for Ig Heavy Chain 
 * "Light" for Ig Light Chain 
 
@@ -136,19 +136,18 @@ Ibex has 2 major functions - the first being ```Ibex.matrix()```, which is the b
 If choosing the geometric transformation, what value of theta to use (default is pi)
 
 ```{r}
-Ibex_vectors <- 
-  Ibex.matrix(ibex_example, 
-                       chains = "Heavy",
-                       method = "encoder",
-                       encoder.model = "VAE", 
-                       encoder.input = "OHE")
+Ibex_vectors <- Ibex.matrix(ibex_example, 
+                            chain = "Heavy",
+                            method = "encoder",
+                            encoder.model = "VAE", 
+                            encoder.input = "OHE")
 
 ggplot(data = as.data.frame(Ibex_vectors), aes(Ibex_1, Ibex_2)) + 
   geom_point() + 
   theme_classic()
 
 Ibex_vectors2 <- Ibex.matrix(ibex_example, 
-                       chains = "Heavy",
+                       chain = "Heavy",
                        method = "geometric",
                        theta = pi)
 
@@ -163,7 +162,7 @@ Additionally, ```runIbex()``` can be used to append the Seurat or Single-cell Ex
 
 ```{r}
 ibex_example <- runIbex(ibex_example, 
-                        chains = "Heavy",
+                        chain = "Heavy",
                         encoder.input = "KF", 
                         reduction.name = "Ibex.KF")
 ```

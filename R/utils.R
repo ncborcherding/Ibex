@@ -60,14 +60,16 @@ checkLength <- function(x, expanded = NULL) {
          filter the larger sequences before running"))
   }
 }
-#Returns appropriate model for autoencoder
-#' @importFrom tensorflow tf
+#Returns appropriate encoder model
 #' @importFrom keras3 load_model
-aa.model.loader <- function(species = "Human", chain, encoder.input, encoder.model) {
+aa.model.loader <- function(species = "Human", 
+                            chain, 
+                            encoder.input, 
+                            encoder.model) {
     select  <- system.file("extdata", paste0(species, "_", chain, "_", 
-                               encoder.input, "_", encoder.model, ".keras"), 
+                               encoder.input, "_", encoder.model, "_encoder.keras"), 
                           package = "Ibex")
-    model <- quiet(load_model_hdf5(select, compile = FALSE))
+    model <- suppressMessages(load_model(select, compile = FALSE))
     return(model)
 }
 

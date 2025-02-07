@@ -58,17 +58,19 @@ Ibex.matrix <- function(input.data,
                         chain = "Heavy", 
                         method = "encoder",
                         encoder.model = "VAE", 
-                        encoder.input = "AF",
+                        encoder.input = "atchleyFactors",
                         geometric.theta = pi/3) {
   #Chain Check
-  if(chains %!in% c("Heavy", "Light")) {
+  if(chain %!in% c("Heavy", "Light")) {
     stop("Please select one of the following chains: 'Heavy', 'Light'")
   }
   
   #Model Check
-  valid.encoder.inputs <- c("atchleyFactors", "crucianiProperties", "kideraFactors", "MSWHIM", "tScales", "OHE")
-  if(encoder.input %!in% valid.encoder.inputs) {
-    stop("Please select one of the valid encoder inputs.")
+  if(method == "encoder") {
+    valid.encoder.inputs <- c("atchleyFactors", "crucianiProperties", "kideraFactors", "MSWHIM", "tScales", "OHE")
+    if(encoder.input %!in% valid.encoder.inputs) {
+      stop("Please select one of the valid encoder inputs.")
+    }
   }
   
   #Will be used to filter output of getIR()
@@ -120,7 +122,8 @@ Ibex.matrix <- function(input.data,
     reduction <- stats::predict(aa.model, encoded.values, verbose = 0)
   } else if (method == "geometric") {
     print("Performing geometric transformation...")
-    reduction <- suppressMessages(geometricEncoder(BCR, theta = geometric.theta))
+    reduction <- suppressMessages(geometricEncoder(BCR[,2], theta = geometric.theta))
+    reduction <- cbind(BCR[,1], reduction)
   }
   #TODO Check the barcode usage here
   reduction <- as.data.frame(reduction)
