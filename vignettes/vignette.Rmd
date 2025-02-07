@@ -147,9 +147,9 @@ ggplot(data = as.data.frame(Ibex_vectors), aes(Ibex_1, Ibex_2)) +
   theme_classic()
 
 Ibex_vectors2 <- Ibex.matrix(ibex_example, 
-                       chain = "Heavy",
-                       method = "geometric",
-                       theta = pi)
+                             chain = "Heavy",
+                             method = "geometric",
+                             geometric.theta = pi)
 
 ggplot(as.data.frame(Ibex_vectors2), aes(x = Ibex_1, y = Ibex_2)) + 
   geom_point() + 
@@ -163,7 +163,7 @@ Additionally, ```runIbex()``` can be used to append the Seurat or Single-cell Ex
 ```{r}
 ibex_example <- runIbex(ibex_example, 
                         chain = "Heavy",
-                        encoder.input = "KF", 
+                        encoder.input = "kideraFactors", 
                         reduction.name = "Ibex.KF")
 ```
 
@@ -192,9 +192,12 @@ We now can use this in a similar way as other single-cell modalities and calcula
 
 ```{r}
 ibex_example <- FindMultiModalNeighbors(
-  ibex_example, reduction.list = list("pca", "apca", "Ibex.KF"), 
-  dims.list = list(1:30, 1:20, 1:30), modality.weight.name = "RNA.weight"
-)
+  ibex_example, 
+  reduction.list = list("pca", "apca", "Ibex.KF"), 
+  dims.list = list(1:30, 1:20, 1:30), 
+  modality.weight.name = "RNA.weight")
+
+
 ibex_example <- RunUMAP(ibex_example, 
                         nn.name = "weighted.nn", 
                         reduction.name = "wnn.umap", 
@@ -252,7 +255,7 @@ CoNGA.seurat <- CoNGAfy(ibex_example,
                          method = "dist")
 
 CoNGA.seurat <- runIbex(CoNGA.seurat, 
-                        encoder.input = "KF", 
+                        encoder.input = "kideraFactors", 
                         encoder.model = "VAE",
                         reduction.name = "Ibex.KF")
 
@@ -262,10 +265,10 @@ CoNGA.seurat <- CoNGA.seurat %>%
                                resolution = 0.6)
 
 CoNGA.seurat <- RunUMAP(CoNGA.seurat, 
-                     reduction = "Ibex.KF", 
-                     dims = 1:30, 
-                     reduction.name = 'Ibex.umap', 
-                     reduction.key = 'ibexUMAP_')
+                        reduction = "Ibex.KF", 
+                        dims = 1:30, 
+                        reduction.name = 'Ibex.umap', 
+                        reduction.key = 'ibexUMAP_')
 
 DimPlot(CoNGA.seurat, reduction = "Ibex.umap") + NoLegend()
 ```

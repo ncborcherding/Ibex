@@ -67,9 +67,10 @@ aa.model.loader <- function(species = "Human",
                             encoder.input, 
                             encoder.model) {
     select  <- system.file("extdata", paste0(species, "_", chain, "_", 
-                               encoder.input, "_", encoder.model, "_encoder.keras"), 
+                          encoder.model, "_", encoder.input,  "_encoder.keras"), 
                           package = "Ibex")
-    model <- suppressMessages(load_model(select, compile = FALSE))
+
+    model <- suppressMessages(keras3::load_model(select, compile = TRUE))
     return(model)
 }
 

@@ -53,7 +53,7 @@ CoNGAfy <- function(input.data,
         
     }
     names(conga) <- assay
-    if (inherits(x=sc, what ="Seurat")) {
+    if (inherits(x=input.data, what ="Seurat")) {
         sc.output <- CreateSeuratObject(conga[[1]], assay = names(conga)[1], project = "Ibex")
         if(length(conga) > 1) {
             for(y in 2:length(conga)) {
