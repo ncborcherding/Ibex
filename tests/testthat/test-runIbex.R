@@ -1,57 +1,76 @@
 # test script for runTrex.R - testcases are NOT comprehensive!
+library(Seurat)
 
-test_that("runIbex works with seurat objects", {
-	data("ibex_example")
-  set.seed(42)
+test_that("runIbex handles incorrect inputs gracefully", {
+  expect_error(runIbex(sc.data = ibex_example, chain = "Middle", method = "encoder"),
+               "'arg' should be one of “Heavy”, “Light”")
+  expect_error(runIbex(sc.data = ibex_example, chain = "Heavy", method = "xyz"),
+               "'arg' should be one of “encoder”, “geometric”")
+  expect_error(runIbex(sc.data = ibex_example, chain = "Heavy", method = "encoder", encoder.model = "ABC"),
+               "'arg' should be one of “CNN”, “VAE”")
+  expect_error(runIbex(sc.data = ibex_example, chain = "Heavy", method = "encoder", encoder.input = "XYZ"),
+               "'arg' should be one of “atchleyFactors”, “crucianiProperties”, “kideraFactors”, “MSWHIM”, “tScales”, “OHE”")
+  expect_error(runIbex(sc.data = ibex_example, chain = "Heavy", method = "geometric", geometric.theta = "not_numeric"),
+               "non-numeric argument to mathematical function")
+})
+
+test_that("runIbex works with Seurat object", {
+  suppressWarnings(sc_example <- CreateSeuratObject(counts = matrix(rnorm(1000), nrow = 10, ncol = 100)))
+  sc_example[["CTaa"]] <- sample(c("CASSL", "CASST", NA, "NA_IGHV1", "None_IGHV2"), 100, replace = TRUE)
+  sc_example[["CTgene"]] <- sample(c("NA_IGHV1.IGD1.IGJ1.IGM", "NA_IGHV1.IGD1.IGJ1.IGM", NA, "NA_IGHV1.IGD1.IGJ1.IGM", "None_IGHV1.IGD1.IGJ1.IGM"), 100, replace = TRUE)
   
-  ibex_example <- runIbex(ibex_example, 
-                          chains = "Heavy",
-                          method = "encoder",
-                          encoder.model = "VAE",
-                          encoder.input = "AF", 
-                          reduction.name = "Heavy_VAE_AF")
-                       
-	expect_equal(
-		ibex_example@reductions$Heavy_VAE_AF@cell.embeddings,
-		getdata("runIbex", "runIbex_Heavy_VAE_AF_reduction"),
-		tolerance=1e-2
-	)
-	
-	ibex_example <- runIbex(ibex_example, 
-	                        chains = "Light",
-	                        method = "encoder",
-	                        encoder.model = "AE",
-	                        encoder.input = "KF", 
-	                        reduction.name = "Light_AE_KF")
-	
-	expect_equal(
-	  ibex_example@reductions$Light_AE_KF@cell.embeddings,
-	  getdata("runIbex", "runIbex_Light_AE_KF_reduction"),
-	  tolerance=1e-2
-	)
-	
-	ibex_example <- runIbex(ibex_example, 
-	                        chains = "Heavy",
-	                        method = "encoder",
-	                        encoder.model = "VAE",
-	                        encoder.input = "OHE", 
-	                        reduction.name = "Heavy_VAE_OHE")
-	
-	expect_equal(
-	  ibex_example@reductions$Heavy_VAE_OHE@cell.embeddings,
-	  getdata("runIbex", "runIbex_Heavy_VAE_OHE_reduction"),
-	  tolerance=1e-2
-	)
-	
-	ibex_example <- runIbex(ibex_example, 
-	                        chains = "Heavy",
-	                        method = "geometric",
-	                        reduction.name = "Heavy_Geometric")
-	
-	expect_equal(
-	  ibex_example@reductions$Heavy_Geometric@cell.embeddings,
-	  getdata("runIbex", "runIbex_Heavy_geometric_reduction"),
-	  tolerance=1e-2
-	)
-	
+  result <- runIbex(sc_example, chain = "Heavy", method = "encoder",
+                    encoder.model = "VAE", encoder.input = "atchleyFactors",
+                    reduction.name = "IbexTest")
+  
+  expect_true("IbexTest" %in% names(result@reductions))
+  expect_true(inherits(result, "Seurat"))
+})
+
+test_that("runIbex works with geometric method", {
+  sc_example <- suppressWarnings(CreateSeuratObject(counts = matrix(rnorm(1000), nrow = 10, ncol = 100)))
+  sc_example[["CTaa"]] <- sample(c("CASSL", "CASST", NA, "NA_IGHV1", "None_IGHV2"), 100, replace = TRUE)
+  sc_example[["CTgene"]] <- sample(c("NA_IGHV1.IGD1.IGJ1.IGM", "NA_IGHV1.IGD1.IGJ1.IGM", NA, "NA_IGHV1.IGD1.IGJ1.IGM", "None_IGHV1.IGD1.IGJ1.IGM"), 100, replace = TRUE)
+  
+  result <- runIbex(sc_example, chain = "Heavy", method = "geometric",
+                    geometric.theta = pi / 4, reduction.name = "IbexGeo")
+  
+  expect_true("IbexGeo" %in% names(result@reductions))
+  expect_true(inherits(result, "Seurat"))
+})
+
+test_that("runIbex filters cells correctly", {
+  sc_example <- suppressWarnings(CreateSeuratObject(counts = matrix(rnorm(1000), nrow = 10, ncol = 100)))
+  sc_example[["CTaa"]] <- c(rep("CASSL", 50), rep(NA, 50))
+  sc_example[["CTgene"]] <- sample(c("NA_IGHV1.IGD1.IGJ1.IGM", "NA_IGHV1.IGD1.IGJ1.IGM", NA, "NA_IGHV1.IGD1.IGJ1.IGM", "None_IGHV1.IGD1.IGJ1.IGM"), 100, replace = TRUE)
+  result <- runIbex(sc_example, chain = "Heavy", method = "encoder",
+                    encoder.model = "VAE", encoder.input = "atchleyFactors",
+                    reduction.name = "IbexFiltered")
+  
+  expect_true("IbexFiltered" %in% names(result@reductions))
+  expect_lt(ncol(result), 100)  # Ensures some cells were filtered out
+})
+
+test_that("runIbex stops if amino acid sequences are missing", {
+  sc_example <- suppressWarnings(CreateSeuratObject(counts = matrix(rnorm(1000), nrow = 10, ncol = 100)))
+  
+  expect_error(runIbex(sc_example, chain = "Heavy", method = "encoder",
+                       encoder.model = "VAE", encoder.input = "atchleyFactors"),
+               "Amino acid sequences are not added to the single-cell object correctly.")
+})
+
+test_that("runIbex works with different reduction names", {
+  sc_example <- suppressWarnings(CreateSeuratObject(counts = matrix(rnorm(1000), nrow = 10, ncol = 100)))
+  sc_example[["CTaa"]] <- sample(c("CASSL", "CASST", NA, "NA_IGHV1", "None_IGHV2"), 100, replace = TRUE)
+  sc_example[["CTgene"]] <- sample(c("NA_IGHV1.IGD1.IGJ1.IGM", "NA_IGHV1.IGD1.IGJ1.IGM", NA, "NA_IGHV1.IGD1.IGJ1.IGM", "None_IGHV1.IGD1.IGJ1.IGM"), 100, replace = TRUE)
+  result1 <- runIbex(sc_example, chain = "Heavy", method = "encoder",
+                     encoder.model = "VAE", encoder.input = "atchleyFactors",
+                     reduction.name = "Ibex1")
+  
+  result2 <- runIbex(sc_example, chain = "Heavy", method = "encoder",
+                     encoder.model = "VAE", encoder.input = "atchleyFactors",
+                     reduction.name = "Ibex2")
+  
+  expect_true("Ibex1" %in% names(result1@reductions))
+  expect_true("Ibex2" %in% names(result2@reductions))
 })

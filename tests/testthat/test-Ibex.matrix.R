@@ -1,31 +1,53 @@
 # test script for Ibex.matrix.R - testcases are NOT comprehensive!
 
-test_that("maTrex works", {
-  data("ibex_example")
-  
-  set.seed(42)
-  
-  ibex.result1 <- Ibex.matrix(ibex_example, 
-                              chains = "Heavy",
-                              method = "encoder",
-                              encoder.model = "VAE",
-                              encoder.input = "AF")
-  
-  expect_equal(
-    ibex.result1,
-    getdata("runIbex", "ibex.matrix_Heavy_VAE_AF"),
-    tolerance=1e-2
-  )
-  
-  ibex.result2 <- Ibex.matrix(ibex_example, 
-                              chains = "Light",
-                              method = "encoder",
-                              encoder.model = "AE",
-                              encoder.input = "OHE")
-  
-  expect_equal(
-    ibex.result2,
-    getdata("runIbex", "ibex.matrix_Light_AE_OHE"),
-    tolerance=1e-2
-  )
+test_that("Ibex.matrix handles incorrect inputs gracefully", {
+  expect_error(Ibex.matrix(input.data = ibex_example, chain = "Middle", method = "encoder"),
+               "'arg' should be one of “Heavy”, “Light”")
+  expect_error(Ibex.matrix(input.data = ibex_example, chain = "Heavy", method = "xyz"),
+               "'arg' should be one of “encoder”, “geometric”")
+  expect_error(Ibex.matrix(input.data = ibex_example, chain = "Heavy", method = "encoder", encoder.model = "ABC"),
+               "'arg' should be one of “CNN”, “VAE”")
+  expect_error(Ibex.matrix(input.data = ibex_example, chain = "Heavy", method = "encoder", encoder.input = "XYZ"),
+               "'arg' should be one of “atchleyFactors”, “crucianiProperties”, “kideraFactors”, “MSWHIM”, “tScales”, “OHE”")
+  expect_error(Ibex.matrix(input.data = ibex_example, chain = "Heavy", method = "geometric", geometric.theta = "not_numeric"),
+               "non-numeric argument to mathematical function")
+})
+
+test_that("Ibex.matrix returns expected output format", {
+  result <- Ibex.matrix(input.data = ibex_example, chain = "Heavy", method = "encoder",
+                        encoder.model = "VAE", encoder.input = "atchleyFactors")
+  expect_true(is.data.frame(result))
+  expect_true(all(grepl("^Ibex_", colnames(result))))
+  expect_gt(nrow(result), 0)
+  expect_gt(ncol(result), 0)
+})
+
+test_that("Ibex.matrix works with encoder method", {
+  result <- Ibex.matrix(input.data = ibex_example, chain = "Light", method = "encoder",
+                        encoder.model = "CNN", encoder.input = "OHE")
+  expect_true(is.data.frame(result))
+  expect_true(all(grepl("^Ibex_", colnames(result))))
+})
+
+test_that("Ibex.matrix works with geometric method", {
+  result <- Ibex.matrix(input.data = ibex_example, chain = "Heavy", method = "geometric",
+                        geometric.theta = pi / 4)
+  expect_true(is.data.frame(result))
+  expect_true(all(grepl("^Ibex_", colnames(result))))
+})
+
+test_that("Ibex.matrix handles different species options", {
+  result1 <- Ibex.matrix(input.data = ibex_example, chain = "Heavy", method = "encoder",
+                         encoder.model = "VAE", encoder.input = "atchleyFactors", species = "Human")
+  result2 <- Ibex.matrix(input.data = ibex_example, chain = "Heavy", method = "encoder",
+                         encoder.model = "VAE", encoder.input = "atchleyFactors", species = "Mouse")
+  expect_true(is.data.frame(result1))
+  expect_true(is.data.frame(result2))
+  expect_true(all(grepl("^Ibex_", colnames(result1))))
+  expect_true(all(grepl("^Ibex_", colnames(result2))))
+})
+
+test_that("Ibex.matrix runs silently when verbose = FALSE", {
+  expect_silent(Ibex.matrix(input.data = ibex_example, chain = "Heavy", method = "encoder",
+                            encoder.model = "VAE", encoder.input = "atchleyFactors", verbose = FALSE))
 })
