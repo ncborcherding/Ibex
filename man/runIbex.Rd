@@ -9,9 +9,10 @@ runIbex(
   chain = "Heavy",
   method = "encoder",
   encoder.model = "VAE",
-  encoder.input = "AF",
+  encoder.input = "atchleyFactors",
   geometric.theta = pi,
-  reduction.name = "Ibex"
+  reduction.name = "Ibex",
+  verbose = TRUE
 )
 }
 \arguments{
@@ -33,10 +34,12 @@ runIbex(
   \item "geometric" - Uses geometric transformations based on the BLOSUM62 matrix
 }}
 
-\item{encoder.model}{Character. Type of autoencoder model to use:
+\item{encoder.model}{Character. The type of autoencoder model to use:
 \itemize{
-  \item "CNN" - Convolutional Neural Network-based autoencoder
-  \item "VAE" - Variational Autoencoder
+  \item "CNN" - CDR3 Convolutional Neural Network-based autoencoder
+  \item "VAE" - CDR3 Variational Autoencoder
+  \item "CNN.EXP" - CDR1/2/3 CNN
+  \item "VAE.EXP" - CDR1/2/3 VAE
 }}
 
 \item{encoder.input}{Character. Input features for the encoder model:
@@ -52,6 +55,8 @@ Used only when \code{method = "geometric"}.}
 \item{reduction.name}{Character. The name to assign to the dimensional reduction. 
 This is useful for running Ibex with multiple parameter settings and saving results 
 under different names.}
+
+\item{verbose}{Logical. Whether to print progress messages. Default is TRUE.}
 }
 \value{
 An updated Seurat or SingleCellExperiment object with Ibex dimensions added 

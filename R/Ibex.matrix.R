@@ -37,8 +37,10 @@
 #'   }
 #' @param encoder.model Character. The type of autoencoder model to use:
 #'   \itemize{
-#'     \item "CNN" - Convolutional Neural Network-based autoencoder
-#'     \item "VAE" - Variational Autoencoder
+#'     \item "CNN" - CDR3 Convolutional Neural Network-based autoencoder
+#'     \item "VAE" - CDR3 Variational Autoencoder
+#'     \item "CNN.EXP" - CDR1/2/3 CNN
+#'     \item "VAE.EXP" - CDR1/2/3 VAE
 #'   }
 #' @param encoder.input Character. Specifies the input features for the 
 #' encoder model. Options include:
@@ -64,7 +66,7 @@
 Ibex.matrix <- function(input.data, 
                         chain = c("Heavy", "Light"), 
                         method = c("encoder", "geometric"),
-                        encoder.model = c("CNN", "VAE"), 
+                        encoder.model = c("CNN", "VAE", "CNN.EXP", "VAE.EXP"), 
                         encoder.input = c("atchleyFactors", "crucianiProperties", 
                                           "kideraFactors", "MSWHIM", "tScales", "OHE"),
                         geometric.theta = pi/3, 
@@ -78,7 +80,7 @@ Ibex.matrix <- function(input.data,
   if (method == "encoder") {
     encoder.model <- match.arg(encoder.model)
     encoder.input <- match.arg(encoder.input)
-    expanded.sequences <- grepl(".Exp", encoder.model)
+    expanded.sequences <- grepl(".EXP", encoder.model)
   } else {
     expanded.sequences <- FALSE
   }
@@ -89,12 +91,19 @@ Ibex.matrix <- function(input.data,
   # Define loci based on chain selection
   loci <- if (chain == "Heavy") "IGH" else c("IGK", "IGL")
   
-  # Determine dictionary for sequence encoding
-  dictionary <- if (expanded.sequences) c(amino.acids, "-") else amino.acids
-  
   #Getting Sequences
   BCR <- getIR(input.data, chain, sequence.type = "aa")[[1]]
   BCR <- BCR[complete.cases(BCR[,2]), ]
+  
+  # Determine dictionary for sequence encoding
+  if (expanded.sequences) {
+    BCR[,2] <- gsub("-", "_", BCR[,2])
+    dictionary <- c(amino.acids, "_")
+  } else  {
+    dictionary <- amino.acids
+  }
+  
+
   
   # Filter by gene locus
   BCR <- BCR[grepl(paste0(loci, collapse = "|"), BCR[, "v"]), ]

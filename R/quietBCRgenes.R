@@ -32,8 +32,8 @@ quietBCRgenes.Seurat <- function(sc, assay = NULL) {
   if (is.null(assay)) {
     assay <- DefaultAssay(sc)
   }
-  VariableFeatures(sc, assay = assay) <-
-    quietBCRgenes.default(VariableFeatures(sc, assay = assay))
+  SeuratObject::VariableFeatures(sc, assay = assay) <-
+    quietBCRgenes.default(SeuratObject::VariableFeatures(sc, assay = assay))
   sc
 }
 

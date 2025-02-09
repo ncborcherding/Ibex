@@ -19,6 +19,7 @@ Imports:
 	Matrix, 
 	rlang,
 	SeuratObject,
+	scRepertoire,
 	SingleCellExperiment,
 	stats,
 	SummarizedExperiment

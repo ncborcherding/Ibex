@@ -8,7 +8,7 @@ Ibex.matrix(
   input.data,
   chain = c("Heavy", "Light"),
   method = c("encoder", "geometric"),
-  encoder.model = c("CNN", "VAE"),
+  encoder.model = c("CNN", "VAE", "CNN.EXP", "VAE.EXP"),
   encoder.input = c("atchleyFactors", "crucianiProperties", "kideraFactors", "MSWHIM",
     "tScales", "OHE"),
   geometric.theta = pi/3,
@@ -38,8 +38,10 @@ Ibex.matrix(
 
 \item{encoder.model}{Character. The type of autoencoder model to use:
 \itemize{
-  \item "CNN" - Convolutional Neural Network-based autoencoder
-  \item "VAE" - Variational Autoencoder
+  \item "CNN" - CDR3 Convolutional Neural Network-based autoencoder
+  \item "VAE" - CDR3 Variational Autoencoder
+  \item "CNN.EXP" - CDR1/2/3 CNN
+  \item "VAE.EXP" - CDR1/2/3 VAE
 }}
 
 \item{encoder.input}{Character. Specifies the input features for the 

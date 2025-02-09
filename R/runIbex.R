@@ -36,10 +36,12 @@
 #'     \item "encoder" - Uses deep learning autoencoders
 #'     \item "geometric" - Uses geometric transformations based on the BLOSUM62 matrix
 #'   }
-#' @param encoder.model Character. Type of autoencoder model to use:
+#' @param encoder.model Character. The type of autoencoder model to use:
 #'   \itemize{
-#'     \item "CNN" - Convolutional Neural Network-based autoencoder
-#'     \item "VAE" - Variational Autoencoder
+#'     \item "CNN" - CDR3 Convolutional Neural Network-based autoencoder
+#'     \item "VAE" - CDR3 Variational Autoencoder
+#'     \item "CNN.EXP" - CDR1/2/3 CNN
+#'     \item "VAE.EXP" - CDR1/2/3 VAE
 #'   }
 #' @param encoder.input Character. Input features for the encoder model:
 #'   \itemize{
@@ -52,6 +54,7 @@
 #' @param reduction.name Character. The name to assign to the dimensional reduction. 
 #'   This is useful for running Ibex with multiple parameter settings and saving results 
 #'   under different names.
+#' @param verbose Logical. Whether to print progress messages. Default is TRUE.
 #'
 #' @return An updated Seurat or SingleCellExperiment object with Ibex dimensions added 
 #' to the dimensional reduction slot.
@@ -60,9 +63,10 @@ runIbex <- function(sc.data,
                     chain = "Heavy", 
                     method = "encoder",
                     encoder.model = "VAE", 
-                    encoder.input = "AF",
+                    encoder.input = "atchleyFactors",
                     geometric.theta = pi,
-                    reduction.name = "Ibex") {
+                    reduction.name = "Ibex", 
+                    verbose = TRUE) {
     checkSingleObject(sc.data)
     sc.data <- filter.cells(sc.data, chain)
     reduction <- Ibex.matrix(input.data = sc.data,
@@ -70,7 +74,8 @@ runIbex <- function(sc.data,
                              method = method,
                              encoder.model = encoder.model, 
                              encoder.input = encoder.input,
-                             geometric.theta = geometric.theta)
+                             geometric.theta = geometric.theta, 
+                             verbose = verbose)
     BCR <- getIR(sc.data, chain, sequence.type = "aa")[[1]]
     sc.data <- adding.DR(sc.data, reduction, reduction.name)
     return(sc.data)
