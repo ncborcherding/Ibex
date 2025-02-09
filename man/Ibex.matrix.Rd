@@ -55,7 +55,7 @@ encoder model. Options include:
 \item{geometric.theta}{Numeric. Angle (in radians) for the geometric 
 transformation. Only used when \code{method = "geometric"}.}
 
-\item{species}{Charater. Default is "Human" or "Mouse".}
+\item{species}{Character. Default is "Human" or "Mouse".}
 
 \item{verbose}{Logical. Whether to print progress messages. Default is TRUE.}
 }

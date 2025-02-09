@@ -81,6 +81,15 @@ runIbex <- function(sc.data,
     return(sc.data)
 }
 
+#' Filter Single-Cell Data Based on CDR3 Sequences
+#'
+#' This function subsets a Seurat or SingleCellExperiment object, 
+#' removing cells where the `CTaa` column is missing or contains unwanted patterns.
+#'
+#' @param sc.obj A Seurat or SingleCellExperiment object.
+#' @param chain Character. Specifies the chain type ("Heavy" or "Light").
+#'
+#' @return A filtered Seurat or SingleCellExperiment object.
 filter.cells <- function(sc.obj, 
                          chain) {
   if (!"CTaa" %in% colnames(sc.obj[[]])) {

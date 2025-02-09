@@ -13,7 +13,6 @@ biocViews: Software, ImmunoOncology, SingleCell, Classification, Annotation, Seq
 Depends: 
 	R (>= 4.0)
 Imports: 
-	dplyr,
 	immApex,
 	keras3,
 	Matrix, 
@@ -25,6 +24,7 @@ Imports:
 	SummarizedExperiment
 Suggests:
 	BiocStyle, 
+	dplyr,
 	ggplot2,
 	knitr, 
 	markdown,

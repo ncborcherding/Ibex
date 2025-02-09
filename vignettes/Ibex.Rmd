@@ -4,7 +4,7 @@ author:
 - name: Nick Borcherding
   email: ncborch@gmail.com
   affiliation: Washington University in St. Louis, School of Medicine, St. Louis, MO, USA
-date: "April 2, 2024"
+date: "February, 9, 2025"
 output:
   BiocStyle::html_document:
     toc_float: true
@@ -16,7 +16,7 @@ vignette: >
 ---
 
 ```{r, echo=FALSE, results="hide", message=FALSE}
-knitr::opts_chunk$set(error=FALSE, message=FALSE, warning=FALSE)
+knitr::opts_chunk$set(error=FALSE, message=FALSE, warning=FALSE, tidy = FALSE)
 library(BiocStyle)
 ```
 
@@ -79,14 +79,18 @@ MIS.sample <- subset(MIS.sample, BCR.recoverd == "Yes")
 
 #Processing RNA
 DefaultAssay(MIS.sample) <- 'RNA'
-MIS.sample <- NormalizeData(MIS.sample) %>% FindVariableFeatures() %>% 
-  quietBCRgenes() %>% ScaleData() %>% RunPCA(verbose = FALSE)
+MIS.sample <- NormalizeData(MIS.sample) %>% 
+              FindVariableFeatures() %>% 
+              quietBCRgenes() %>% 
+              ScaleData() %>% 
+              RunPCA(verbose = FALSE)
 
 #Processing ADT
 DefaultAssay(MIS.sample) <- 'ADT'
 VariableFeatures(MIS.sample) <- rownames(MIS.sample[["ADT"]])
 MIS.sample <- NormalizeData(MIS.sample, normalization.method = 'CLR', margin = 2) %>% 
-  ScaleData() %>% RunPCA(reduction.name = 'apca')
+              ScaleData() %>% 
+              RunPCA(reduction.name = 'apca')
 
 ###################################
 #Making Example Data Set for Trex
@@ -97,14 +101,39 @@ ibex_example <- subset(MIS.sample, cells = rownames(meta))
 save(ibex_example, file = "ibex_example.rda", compress = "xz")
 ```
 
+## Getting Expanded Sequences
+
+The function ```combineExpandedBCR()``` extends the functionality of ```combineBCR()``` from the scRepertoire package by first concatenating the CDR1, CDR2, and CDR3 sequences into a single expanded variable. This approach retains additional information from the BCR variable regions before calling ```combineBCR()``` to consolidate BCR sequences into clones. This will allow for use of expanded sequence models which we will detail below. 
+
+### **Function Parameters**
+The `combineExpandedBCR()` function supports the following parameters:
+
+| Parameter              | Description                                                               | Default |
+|------------------------|---------------------------------------------------------------------------|---------|
+| `input.data`          | List of data frames containing BCR sequencing results.                    | **Required** |
+| `samples`            | Character vector labeling each sample.                                    | **Required** |
+| `ID`                 | Additional sample labeling (optional).                                   | `NULL` |
+| `call.related.clones` | Whether to group related clones using nucleotide sequences and V genes. | `TRUE` |
+| `threshold`          | Normalized edit distance for clone clustering.                          | `0.85` |
+| `removeNA`          | Remove chains without values.                                           | `FALSE` |
+| `removeMulti`       | Remove barcodes with more than two chains.                             | `FALSE` |
+| `filterMulti`       | Select highest-expressing light and heavy chains.                      | `TRUE` |
+| `filterNonproductive` | Remove nonproductive chains if the column exists.                     | `TRUE` |
+
+```{r}
+combined.BCR <- combineExpandedBCR(input.data = list(ibex_vdj),
+                                   samples = "Sample1",
+                                   filterNonproductive = TRUE)
+head(combined.BCR[[1]])[,c(1,11)]
+```
+
+We can attach the expanded sequences to the Seurat or Single-Cell Experiment objects using the scRepertoire [`combineExpression()`](https://www.borch.dev/uploads/screpertoire/reference/combineexpression) function.
 
 ## Loading the Data
 
 ```{r}
 data("ibex_example")
 ```
-
-****************
 
 # Running Ibex
 
@@ -275,7 +304,7 @@ DimPlot(CoNGA.seurat, reduction = "Ibex.umap") + NoLegend()
 
 # Conclusion
 
-This has been a general overview of the capabilities of Ibex for incorporating BCR information into the embedding space of single-cell data. If you have any questions, comments, or suggestions, feel free to visit the [GitHub repository](https://github.com/ncborcherding/Ibex).
+This has been a general overview of the capabilities of Ibex for incorporating BCR information into the embedding space of single-cell data. If you have any questions, comments, or suggestions, feel free to visit the [GitHub repository](https://github.com/BorchLab/Ibex).
 
 ## Session Info
 

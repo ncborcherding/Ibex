@@ -1,12 +1,5 @@
 # test script for combineExpandedBCR.R - testcases are NOT comprehensive!
 
-library(scRepertoire)
-BCR <- read.csv("https://www.borch.dev/uploads/contigs/b_contigs.csv")
-BCR$cdr1 <- BCR$cdr3
-BCR$cdr2 <- BCR$cdr3
-BCR$cdr1_nt <- BCR$cdr3_nt
-BCR$cdr2_nt <- BCR$cdr3_nt
-
 test_that("combineExpandedBCR handles incorrect input gracefully", {
   expect_error(combineExpandedBCR(NULL, samples = "Sample1"),
                "Input data must be a list of data frames.")
@@ -18,14 +11,14 @@ test_that("combineExpandedBCR handles incorrect input gracefully", {
 
 test_that("combineExpandedBCR correctly concatenates CDR sequences", {
   
-  modified_data <- combineExpandedBCR(list(BCR), samples = "Sample1")
+  modified_data <- combineExpandedBCR(list(ibex_vdj), samples = "Sample1")
   
   expect_true(any(grepl("-", modified_data[[1]]$CTaa)))
 })
 
 test_that("combineExpandedBCR integrates correctly with combineBCR", {
   
-  result <- combineExpandedBCR(list(BCR), samples = "Sample1")
+  result <- combineExpandedBCR(list(ibex_vdj), samples = "Sample1")
   expect_true(is.list(result))
   expect_true(all(c("barcode", "CTaa") %in% colnames(result[[1]])))
   expect_gt(nrow(result[[1]]), 0)
@@ -33,7 +26,7 @@ test_that("combineExpandedBCR integrates correctly with combineBCR", {
 
 test_that("combineExpandedBCR correctly assigns sample labels", {
   
-  result <- combineExpandedBCR(list(BCR), samples = "Sample1")
+  result <- combineExpandedBCR(list(ibex_vdj), samples = "Sample1")
   
   expect_true("sample" %in% colnames(result[[1]]))
   expect_equal(result[[1]]$sample[1], "Sample1")
@@ -41,7 +34,7 @@ test_that("combineExpandedBCR correctly assigns sample labels", {
 
 test_that("combineExpandedBCR handles multiple sample inputs correctly", {
   
-  result <- combineExpandedBCR(list(BCR, BCR), samples = c("Sample1", "Sample2"))
+  result <- combineExpandedBCR(list(ibex_vdj, ibex_vdj), samples = c("Sample1", "Sample2"))
   
   expect_true(length(result) == 2)
   expect_equal(result[[1]]$sample[1], "Sample1")

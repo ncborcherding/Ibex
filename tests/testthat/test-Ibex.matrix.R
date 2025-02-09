@@ -2,13 +2,13 @@
 
 test_that("Ibex.matrix handles incorrect inputs gracefully", {
   expect_error(Ibex.matrix(input.data = ibex_example, chain = "Middle", method = "encoder"),
-               "'arg' should be one of “Heavy”, “Light”")
+               "'arg' should be one of \"Heavy\", \"Light\"")
   expect_error(Ibex.matrix(input.data = ibex_example, chain = "Heavy", method = "xyz"),
-               "'arg' should be one of “encoder”, “geometric”")
+               "'arg' should be one of \"encoder\", \"geometric\"")
   expect_error(Ibex.matrix(input.data = ibex_example, chain = "Heavy", method = "encoder", encoder.model = "ABC"),
-               "'arg' should be one of “CNN”, “VAE”, “CNN.EXP”, “VAE.EXP”")
+               "'arg' should be one of \"CNN\", \"VAE\", \"CNN.EXP\", \"VAE.EXP\"")
   expect_error(Ibex.matrix(input.data = ibex_example, chain = "Heavy", method = "encoder", encoder.input = "XYZ"),
-               "'arg' should be one of “atchleyFactors”, “crucianiProperties”, “kideraFactors”, “MSWHIM”, “tScales”, “OHE”")
+               "arg' should be one of \"atchleyFactors\", \"crucianiProperties\", \"kideraFactors\", \"MSWHIM\", \"tScales\", \"OHE\"")
   expect_error(Ibex.matrix(input.data = ibex_example, chain = "Heavy", method = "geometric", geometric.theta = "not_numeric"),
                "non-numeric argument to mathematical function")
 })

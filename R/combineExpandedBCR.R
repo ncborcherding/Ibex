@@ -1,9 +1,14 @@
 #' combineBCR for CDR1/2/3 sequences
 #'
-#' @details This function enhances BCR processing by incorporating additional 
+#' This function enhances BCR processing by incorporating additional 
 #' sequence information from CDR1 and CDR2 regions before applying the BCR 
 #' combination logic. The function depends on 
 #' \code{\link[scRepertoire]{combineBCR}} from the scRepertoire package.
+#' 
+#' @examples
+#' combined.BCR <- combineExpandedBCR(list(ibex_vdj), 
+#'                                    samples = "Sample1",
+#'                                    filterNonproductive = TRUE)
 #'
 #' @param input.data List of filtered contig annotations.
 #' @param samples Character vector. Labels of samples (required).
