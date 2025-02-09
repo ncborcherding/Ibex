@@ -1,3 +1,33 @@
+CHANGES IN VERSION 0.99.7
+------------------------
+* Integration of Ibex with immApex
+* Updated Seurat object to v5
+* Updated support for SCE format for ```runIbex()```
+* Update ```CoNGAfy()``` to function with all versions of Seurat
+* Updated ```quietBCRgenes()``` to use VariableFeatures() call for SeuratV5 and backward compatibility.
+* Add ```getHumanIgPseudoGenes()``` to return a list of human Immunoglobulin Pseudo genes that are kept by ```quietBCRgenes()```
+
+## New Models
+* Added New Light and Heavy Chain Models
+* Encoding methods now accepted: "OHE", "atchleyFactors", "crucianiProperties", "kideraFactors", "MSWHIM","tScales", "zScales"
+* Sequence input: 
+	- Heavy: 10000000
+	- Light: 5000000
+	- Heavy-Expanded: 5000000
+	- Light-Expanded: 2500000
+* Trained convolutional and variational autoencoders for Heavy/Light chains
+ 	- Architecture: 512-256-128-256-512
+	- Parameters: 
+		Batch Size = 128
+		Latent Dimensions = 128
+		Epochs = 100
+		Loss = Mean Squared Error (CNN) & KL Divergence (VAE)
+		Activation = relu
+		Learning rate = 1e-6
+	- Optimizers: Adam
+	- Early stopping was set to patients of 10 for minimal validation loss and restoration of best weights
+	- CNN autoencoders have batch normalization layers between the dense layers. 
+
 CHANGES IN VERSION 0.99.6
 ------------------------
 * Implementing GitHub action workflows
@@ -18,8 +48,6 @@ CHANGES IN VERSION 0.99.5
 	- Early stopping was set to patients of 10 for minimal validation loss and restoration of best weights
 	- learn rate varied by models
 	- classical auto encoders have batch normalization layers between the dense layers. 
-    
-
 
 CHANGES IN VERSION 0.99.4
 ------------------------

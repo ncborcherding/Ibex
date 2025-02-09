@@ -1,40 +1,54 @@
 # Ibex
 Using BCR sequences for graph embedding
 
-[![R-CMD-check](https://github.com/BorchLab/Ibex/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/BorchLab/Ibex/actions/workflows/R-CMD-check.yaml)
-[![Codecov test coverage](https://codecov.io/gh/BorchLab/Ibex/graph/badge.svg)](https://app.codecov.io/gh/BorchLab/Ibex?branch=master)
+[![R-CMD-check](https://github.com/ncborcherding/Ibex/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/ncborcherding/Ibex/actions/workflows/R-CMD-check.yaml)
+[![Codecov test coverage](https://codecov.io/gh/ncborcherding/Ibex/graph/badge.svg)](https://app.codecov.io/gh/ncborcherding/Ibex?branch=master)
 [![Documentation](https://img.shields.io/badge/docs-stable-blue.svg)](https://www.borch.dev/uploads/screpertoire/articles/ibex)
 
-<img align="right" src="https://github.com/BorchLab/Ibex/blob/main/www/ibex_hex.png" width="352" height="352">
+<img align="right" src="https://github.com/ncborcherding/Ibex/blob/main/www/ibex_hex.png" width="352" height="352">
 
 ## Introduction
 Single-cell sequencing is now a integral tool in the field of immunology and oncology that allows researchers to couple RNA quantification and other modalities, 
-like immune cell receptor profiling at the level of an individual cell. Towards this end, we developed the [scRepertoire](https://github.com/BorchLab/scRepertoire) 
-R package to assist in the interaction of immune receptor and gene expression sequencing. However, utilization of clonal indices for more complex analyses are still lacking, specifically in using clonality in embedding of single-cells. To this end, we developed an R package that uses deep learning to vectorize BCR sequences using order or translating the sequence into amino acid properties. The sister package to this is [Trex](https://github.com/BorchLab/Trex) for embedding of TCR sequence data.
+like immune cell receptor profiling at the level of an individual cell. Towards this end, we developed the [scRepertoire](https://github.com/ncborcherding/scRepertoire) 
+R package to assist in the interaction of immune receptor and gene expression sequencing. However, utilization of clonal indices for more complex analyses are still lacking, specifically in using clonality in embedding of single-cells. To this end, we developed an R package that uses deep learning to vectorize BCR sequences using order or translating the sequence into amino acid properties. The sister package to this is [Trex](https://github.com/ncborcherding/Trex) for embedding of TCR sequence data.
 
 # System requirements 
 
-Ibex has been tested on R versions >= 4.0. Please consult the DESCRIPTION file for more details on required R packages - it is specifically designed to work with single-cell objects that have had BCRs added using [scRepertoire](https://github.com/BorchLab/scRepertoire). Ibex has been tested on OS X and Windows platforms.
+Ibex has been tested on R versions >= 4.0. Please consult the DESCRIPTION file for more details on required R packages - it is specifically designed to work with single-cell objects that have had BCRs added using [scRepertoire](https://github.com/ncborcherding/scRepertoire). Ibex has been tested on OS X and Windows platforms.
 
-**keras** is necessary to use the autoencoder function (this includes the set up of the tensorflow environment in R):
+**keras3** is necessary for immApex (this includes the set up of the tensorflow environment in R):
 
 ```r
-##Install keras
-install.packages("keras")
+##Install keras3
+install.packages("keras3")
 
 ##Setting up Tensor Flow
 library(reticulate)
 use_condaenv(condaenv = "r-reticulate", required = TRUE)
-library(keras)
+library(keras3)
 install_keras()
 ```
 
 # Installation
 
-To run Ibex, open R and install Ibex from github: 
+Ibex requires the installation of the [immApex](https://github.com/ncborcherding/immApex) API functions and Ibex from the GitHub repository:
 
 ```r
-devtools::install_github("BorchLab/Ibex")
+devtools::install_github("ncborcherding/immApex")
+```
+
+immApex can also be installed from Bioconductor:
+```r
+if (!require("BiocManager", quietly = TRUE))
+    install.packages("BiocManager")
+
+BiocManager::install("immApex")
+```
+
+After immApex installation, you can install Ibex with: 
+
+```r
+devtools::install_github("ncborcherding/Ibex")
 ```
 
 # Usage/Demos
@@ -45,8 +59,7 @@ Ibex should be able to be run in popular R-based single-cell workflows, includin
 
 Check out this [vignette](https://www.borch.dev/uploads/screpertoire/articles/ibex) for a quick start tutorial. 
 
-<img align="center" src="https://github.com/BorchLab/Ibex/blob/main/www/graphicalAbstract.png">
-
+<img align="center" src="https://github.com/ncborcherding/Ibex/blob/main/www/graphicalAbstract.png">
 
 
 ## Autoencoded Matrix
@@ -103,15 +116,15 @@ seuratObj <- RunUMAP(seuratObj,
 ```
 ## Bug Reports/New Features
 
-#### If you run into any issues or bugs please submit a [GitHub issue](https://github.com/BorchLab/Ibex/issues) with details of the issue.
+#### If you run into any issues or bugs please submit a [GitHub issue](https://github.com/ncborcherding/Ibex/issues) with details of the issue.
 
 - If possible please include a [reproducible example](https://reprex.tidyverse.org/). 
 Alternatively, an example with the internal **ibex_example** would 
 be extremely helpful.
 
-#### Any requests for new features or enhancements can also be submitted as [GitHub issues](https://github.com/BorchLab/Ibex/issues).
+#### Any requests for new features or enhancements can also be submitted as [GitHub issues](https://github.com/ncborcherding/Ibex/issues).
 
-#### [Pull Requests](https://github.com/BorchLab/Ibex/pulls) are welcome for bug fixes, new features, or enhancements.
+#### [Pull Requests](https://github.com/ncborcherding/Ibex/pulls) are welcome for bug fixes, new features, or enhancements.
 
 ## Citation
 More information on Ibex is available at our [Biorxiv preprint](https://www.biorxiv.org/content/10.1101/2022.11.09.515787v2). 
