@@ -4,7 +4,7 @@ on:
   push:
     branches: [main, master]
   pull_request:
-    branches: [main, master, dev]
+    branches: [main, master]
 
 name: R-CMD-check
 
@@ -24,6 +24,7 @@ jobs:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
       R_KEEP_PKG_SOURCE: yes
 
+   
     steps:
       - uses: actions/checkout@v3
 
@@ -38,10 +39,10 @@ jobs:
       - name: Install R dependencies
         uses: r-lib/actions/setup-r-dependencies@v2
         with:
-            extra-packages: rcmdcheck, keras  # Add keras to the list of extra packages
+            extra-packages: rcmdcheck, keras3  # Add keras to the list of extra packages
 
       - name: Install Keras Python dependencies
-        run: R -e 'keras::install_keras()'  # This runs the install_keras function from R
+        run: R -e 'keras3::install_keras()'  # This runs the install_keras function from R
           
       - uses: r-lib/actions/check-r-package@v2
         with:
