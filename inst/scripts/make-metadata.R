@@ -18,7 +18,7 @@ DESCRIPTION <- "Keras-based deep learning encoder for BCR sequences."
 
 # 2) Locate the data files in inst/extdata
 path_to_extdata <- file.path("inst", "extdata")
-files <- list.files(path_to_extdata, full.names = TRUE)
+files <- list.files(path_to_extdata, full.names = TRUE, pattern = ".keras")
 
 # 3) Helper function: guess DispatchClass and RDataClass from file extension
 inferDispatchClass <- function(file_ext) {

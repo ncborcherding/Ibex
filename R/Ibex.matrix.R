@@ -97,13 +97,16 @@ Ibex.matrix <- function(input.data,
   
   # Determine dictionary for sequence encoding
   if (expanded.sequences) {
+    #Quick Check to see if there are - corresponding to CDR1-CDR2-CDR3
+    if (all(grepl("-", BCR[,2]) {
+      stop("Expanded sequences are not properly formated, please use 
+           combineExpandedBCR().")
+    }
     BCR[,2] <- gsub("-", "_", BCR[,2])
     dictionary <- c(amino.acids, "_")
   } else  {
     dictionary <- amino.acids
   }
-  
-
   
   # Filter by gene locus
   BCR <- BCR[grepl(paste0(loci, collapse = "|"), BCR[, "v"]), ]

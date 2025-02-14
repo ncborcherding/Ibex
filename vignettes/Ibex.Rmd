@@ -139,6 +139,20 @@ data("ibex_example")
 
 The idea behind Ibex is to combine BCR cdr3 amino acid information with phenotypic RNA/protein data to direct the use of single-cell sequencing towards antigen-specific discoveries.  This is a growing field - specifically [TESSA](https://github.com/jcao89757/TESSA) uses amino acid characteristics and autoencoder as a means to get a dimensional reduction. Another option is [CoNGA](https://github.com/phbradley/conga), which produces an embedding using BCR and RNA. Ibex was designed to make a customizable approach to this combined approach using R.
 
+## Choosing Between CNN and VAE
+
+**Convolutional Neural Networks (CNNs)**  
+* **Pros**: Detect local sequence motifs effectively; relatively straightforward and quick to train.  
+* **Cons**: Can struggle to capture global context
+
+**Variational Autoencoders (VAEs)**  
+* **Pros**: Model sequences within a probabilistic, continuous latent space; suitable for generating novel variants.  
+* **Cons**: Training can be more complex (balancing reconstruction and regularization losses); interpretability may be less direct.
+
+**Which to choose?**  
+* **Use CNNs** if local motif detection and simpler training are priorities.  
+* **Use VAEs** if you want a generative model capturing broader sequence structures.
+
 ## Ibex.matrix Function
 
 Ibex has 2 major functions - the first being ```Ibex.matrix()```, which is the backbone of the algorithm and returns the encoded values based on the selection of variables. Unlike ```runIbex()``` below, ```Ibex.matrix()``` does not filter the input for only B cells with attached BCR data. In addition, ```Ibex.matrix()``` is compatible with the list output from the ```combineBCR()``` function from the [scRepertoire](https://github.com/BorchLab/scRepertoire) R package, while ```runIbex()``` must be performed on a single-cell object.
