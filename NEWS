@@ -11,10 +11,12 @@ CHANGES IN VERSION 0.99.7
 * Added New Light and Heavy Chain Models
 * Encoding methods now accepted: "OHE", "atchleyFactors", "crucianiProperties", "kideraFactors", "MSWHIM","tScales", "zScales"
 * Sequence input: 
-	- Heavy: 10000000
-	- Light: 5000000
-	- Heavy-Expanded: 5000000
-	- Light-Expanded: 2500000
+	- Human Heavy: 10000000
+	- Human Light: 5000000
+	- Human Heavy-Expanded: 5000000
+	- Human Light-Expanded: 2500000
+	- Mouse Heavy: 5000000
+	- Mouse Heavy-Expanded: 5000000
 * Trained convolutional and variational autoencoders for Heavy/Light chains
  	- Architecture: 512-256-128-256-512
 	- Parameters: 

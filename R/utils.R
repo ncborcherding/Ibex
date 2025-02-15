@@ -62,7 +62,7 @@ checkLength <- function(x, expanded = NULL) {
 }
 #Returns appropriate encoder model
 #' @importFrom keras3 load_model
-aa.model.loader <- function(species = "Human", 
+aa.model.loader <- function(species, 
                             chain, 
                             encoder.input, 
                             encoder.model) {
