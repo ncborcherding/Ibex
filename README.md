@@ -77,10 +77,13 @@ You can run Ibex within your Seurat or Single-Cell Experiemt workflow. **Importa
 
 ```r
 seuratObj_Bonly <- runIbex(seuratObj, #The single cell object
-                           chains = "Heavy", #Use of "Heavy" or "Light" 
-                           AA.properties = c("AF", "KF", "both", "OHE"), 
-                           reduction.name = "Ibex", #Name designation for 
-                           #the vectors to be added to the single-cell object)
+                           chain = c("Heavy", "Light"),                                       # "Heavy" or "Light"
+                           method = c("encoder", "geometric"),                                # Use deep learning "encoder" or "geometric" transformation
+                           encoder.model = c("CNN", "VAE", "CNN.EXP", "VAE.EXP"),             # Types of Deep Learning Models
+                           encoder.input = c("atchleyFactors", "crucianiProperties", 
+                                          "kideraFactors", "MSWHIM", "tScales", "OHE"),       # Method of Encoding
+                           geometric.theta = pi/3,                                            # theta for Geometric Encoding
+                           species = "Human")                                                 # "Mouse" or "Human"
                    
 seuratObj_Bonly <- runIbex(seuratObj, reduction.name = "Ibex")
 ```
