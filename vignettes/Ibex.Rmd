@@ -31,7 +31,7 @@ suppressMessages(library(dplyr))
 suppressMessages(library(Ibex))
 suppressMessages(library(viridis))
 suppressMessages(library(patchwork))
-suppressMessages(library(DT))
+suppressMessages(library(kableExtra))
 suppressMessages(library(utils))
 ```
 
@@ -142,9 +142,11 @@ A full list of available models is provided below:
 ```{r tidy = FALSE}
 model.meta.data <-  read.csv(system.file("extdata", "metadata.csv", 
                                                package = "Ibex"))[,c(1:2,8)]
-datatable(model.meta.data,
-          options = list(pageLength = 10, autoWidth = TRUE, scrollX = TRUE, dom = 'tip'),
-          filter = 'top')
+model.meta.data %>%
+  kable("html", escape = FALSE) %>%
+  kable_styling(full_width = FALSE) %>%
+  scroll_box(width = "100%", height = "400px")
+
 ```
 
 ### Choosing Between CNN and VAE
