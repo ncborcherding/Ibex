@@ -34,6 +34,7 @@ Suggests:
 	Seurat,
 	spelling,
         testthat (>= 3.0.0),
+        utils,
 	viridis
 VignetteBuilder: knitr
 Language: en-US

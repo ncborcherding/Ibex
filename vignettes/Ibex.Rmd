@@ -32,6 +32,7 @@ suppressMessages(library(Ibex))
 suppressMessages(library(viridis))
 suppressMessages(library(patchwork))
 suppressMessages(library(DT))
+suppressMessages(library(utils))
 ```
 
 ## The Data Set
@@ -142,7 +143,7 @@ A full list of available models is provided below:
 model.meta.data <-  read.csv(system.file("extdata", "metadata.csv", 
                                                package = "Ibex"))[,c(1:2,8)]
 datatable(model.meta.data,
-          options = list(pageLength = 10, autoWidth = TRUE, scrollX = TRUE, dom = 'Bfrtip'),
+          options = list(pageLength = 10, autoWidth = TRUE, scrollX = TRUE, dom = 'tip'),
           filter = 'top')
 ```
 
