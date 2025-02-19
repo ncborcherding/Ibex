@@ -18,7 +18,7 @@ if (inherits(x=sc, what ="Seurat")) {
   return(sc)
 }
 
-#This is to grab the metadata from a Seurat or SCE object
+# This is to grab the metadata from a Seurat or SCE object
 #' @importFrom SingleCellExperiment colData 
 grabMeta <- function(sc) {
   if (inherits(x=sc, what ="Seurat")) {
@@ -42,7 +42,7 @@ grabMeta <- function(sc) {
   return(meta)
 }
 
-#This is to check the single-cell expression object
+# This is to check the single-cell expression object
 checkSingleObject <- function(sc) {
   if (!inherits(x=sc, what ="Seurat") & 
       !inherits(x=sc, what ="SummarizedExperiment")){
@@ -51,21 +51,29 @@ checkSingleObject <- function(sc) {
             the correct data.") }
 }
 
-#This is to check that all the cdr3 sequences are < 45 residues or < 90 for cdr1/2/3
+# This is to check that all the CDR3 sequences are < 45 residues or < 90 for CDR1/2/3
 checkLength <- function(x, expanded = NULL) {
   cutoff <- ifelse( expanded == FALSE || is.null(expanded), 45, 90)
   if(any(na.omit(nchar(x)) > cutoff)) {
-    stop(paste0("Models have been trained on cdr3 sequences 
+    stop(paste0("Models have been trained on sequences 
          less than ", cutoff, " amino acid residues. Please
          filter the larger sequences before running"))
   }
 }
-#Returns appropriate encoder model
+# Returns appropriate encoder model
 #' @importFrom keras3 load_model
 aa.model.loader <- function(species, 
                             chain, 
                             encoder.input, 
                             encoder.model) {
+  # Check if model is present
+    model.meta.data <-  read.csv(system.file("extdata", "metadata.csv", 
+                                               package = "Ibex"))
+   if(!paste0(species, "_", chain, "_", 
+           encoder.model, "_", encoder.input,  "_encoder.keras") %in%  model.meta.data[,1]) {
+     stop(species, "_", chain, "_", encoder.model, "_", encoder.input, " is not an available model.")
+   }
+  # Load Model
     select  <- system.file("extdata", paste0(species, "_", chain, "_", 
                           encoder.model, "_", encoder.input,  "_encoder.keras"), 
                           package = "Ibex")
@@ -75,7 +83,7 @@ aa.model.loader <- function(species,
 }
 
 
-#Add the eigenvectors to single cell object
+# Add the dimRed to single cell object
 #' @importFrom SeuratObject CreateDimReducObject
 #' @importFrom SingleCellExperiment reducedDim
 adding.DR <- function(sc, reduction, reduction.name) {

@@ -25,6 +25,7 @@ Imports:
 Suggests:
 	BiocStyle, 
 	dplyr,
+        DT,
 	ggplot2,
 	knitr, 
 	markdown,

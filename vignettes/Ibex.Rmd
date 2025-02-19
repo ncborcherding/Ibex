@@ -4,7 +4,7 @@ author:
 - name: Nick Borcherding
   email: ncborch@gmail.com
   affiliation: Washington University in St. Louis, School of Medicine, St. Louis, MO, USA
-date: "February, 9, 2025"
+date: "February, 19, 2025"
 output:
   BiocStyle::html_document:
     toc_float: true
@@ -24,22 +24,21 @@ library(BiocStyle)
 
 ## Load Libraries
 
-```{r}
+```{r tidy = FALSE}
 suppressMessages(library(Seurat))
 suppressMessages(library(ggplot2))
 suppressMessages(library(dplyr))
 suppressMessages(library(Ibex))
 suppressMessages(library(viridis))
 suppressMessages(library(patchwork))
+suppressMessages(library(DT))
 ```
-
 
 ## The Data Set
 
-To show the multiple options of Ibex, the example data is derived from [this manuscript (https://pubmed.ncbi.nlm.nih.gov/33891889/) - multimodal single-cell characterization of COVID19-associated multisystem inflammatory syndrome in children. The data example built into the package (ibex_example) is derived from randomly sampling cells from Patient 1.
+To show the multiple options of **Ibex**, the example data is derived from [this manuscript (https://pubmed.ncbi.nlm.nih.gov/33891889/) - *Immune dysregulation and autoreactivity correlate with disease severity in SARS-CoV-2-associated multisystem inflammatory syndrome in children*. The data example built into the package (ibex_example) is derived from randomly sampling cells from Patient 1.
 
-This is a standard workflow based on the [WNN](https://satijalab.org/seurat/articles/weighted_nearest_neighbor_analysis.html) Seurat process. However, Ibex will work for Bioconductor/Single-Cell Experiment workflows as well. The major exception is the addition of ```quietBCRgenes()```, which removed B cell receptor genes from the variable gene list used for ```runPCA()```. 
-
+This is a standard workflow based on the [WNN](https://satijalab.org/seurat/articles/weighted_nearest_neighbor_analysis.html) Seurat process. However, **Ibex** will work for Bioconductor/Single-Cell Experiment workflows as well.
 
 ```{r, eval=FALSE}
 suppressMessages(library(scRepertoire))
@@ -101,6 +100,10 @@ ibex_example <- subset(MIS.sample, cells = rownames(meta))
 save(ibex_example, file = "ibex_example.rda", compress = "xz")
 ```
 
+```{r, echo=FALSE}
+data("ibex_example")
+```
+
 ## Getting Expanded Sequences
 
 The function ```combineExpandedBCR()``` extends the functionality of ```combineBCR()``` from the scRepertoire package by first concatenating the CDR1, CDR2, and CDR3 sequences into a single expanded variable. This approach retains additional information from the BCR variable regions before calling ```combineBCR()``` to consolidate BCR sequences into clones. This will allow for use of expanded sequence models which we will detail below. 
@@ -120,7 +123,7 @@ The `combineExpandedBCR()` function supports the following parameters:
 | `filterMulti`       | Select highest-expressing light and heavy chains.                      | `TRUE` |
 | `filterNonproductive` | Remove nonproductive chains if the column exists.                     | `TRUE` |
 
-```{r}
+```{r tidy = FALSE}
 combined.BCR <- combineExpandedBCR(input.data = list(ibex_vdj),
                                    samples = "Sample1",
                                    filterNonproductive = TRUE)
@@ -129,61 +132,115 @@ head(combined.BCR[[1]])[,c(1,11)]
 
 We can attach the expanded sequences to the Seurat or Single-Cell Experiment objects using the scRepertoire [`combineExpression()`](https://www.borch.dev/uploads/screpertoire/reference/combineexpression) function.
 
-## Loading the Data
+## Available Models
 
-```{r}
-data("ibex_example")
+**Ibex** offers a diverse set of models built on various architectures and encoding methods. Currently, models are available for both heavy and light chain sequences in humans, as well as heavy chain models for mice. Models for CDR3-based sequences have been trained on sequences of 45 residues or fewer, while models for CDR1/2/3-based sequences are specific to sequences of 90 amino acids or fewer.
+
+A full list of available models is provided below:
+
+```{r tidy = FALSE}
+model.meta.data <-  read.csv(system.file("extdata", "metadata.csv", 
+                                               package = "Ibex"))[,c(1:2,8)]
+datatable(model.meta.data,
+          options = list(pageLength = 10, autoWidth = TRUE, scrollX = TRUE, dom = 'Bfrtip'),
+          filter = 'top')
 ```
 
-# Running Ibex
-
-The idea behind Ibex is to combine BCR cdr3 amino acid information with phenotypic RNA/protein data to direct the use of single-cell sequencing towards antigen-specific discoveries.  This is a growing field - specifically [TESSA](https://github.com/jcao89757/TESSA) uses amino acid characteristics and autoencoder as a means to get a dimensional reduction. Another option is [CoNGA](https://github.com/phbradley/conga), which produces an embedding using BCR and RNA. Ibex was designed to make a customizable approach to this combined approach using R.
-
-## Choosing Between CNN and VAE
+### Choosing Between CNN and VAE
 
 **Convolutional Neural Networks (CNNs)**  
-* **Pros**: Detect local sequence motifs effectively; relatively straightforward and quick to train.  
+
+* **Pros**: Detect local sequence motifs effectively; relatively straightforward and quick to train.
 * **Cons**: Can struggle to capture global context
 
 **Variational Autoencoders (VAEs)**  
+
 * **Pros**: Model sequences within a probabilistic, continuous latent space; suitable for generating novel variants.  
 * **Cons**: Training can be more complex (balancing reconstruction and regularization losses); interpretability may be less direct.
 
 **Which to choose?**  
+
 * **Use CNNs** if local motif detection and simpler training are priorities.  
 * **Use VAEs** if you want a generative model capturing broader sequence structures.
 
+### Choosing Encoding Methods
+
+**One-Hot Encoding:** Represents each amino acid as a binary vector (e.g., a 20-length vector for the 20 standard residues).
+
+* **Pros**: Simple and assumption-free.
+* **Cons**: High-dimensional and doesn’t capture biochemical similarities.
+
+**Atchley Factors:** Uses five numerical descriptors summarizing key physicochemical properties.
+
+* **Pros**: Compact and embeds biochemical information.
+* **Cons**: May overlook some residue-specific nuances.
+
+**Cruciani Properties:** Encodes amino acids via descriptors that reflect molecular shape, hydrophobicity, and electronic features.
+
+* **Pros**: Captures rich chemical details.
+* **Cons**: More complex to compute and less standardized.
+
+**Kidera Factors:** Provides ten orthogonal values derived from a broad set of physical and chemical properties.
+
+* **Pros**: Offers a balanced, low-dimensional representation.
+* **Cons**: Derived statistically, potentially averaging out finer details.
+
+**MSWHIM:** Derives descriptors from 3D structural data, summarizing overall shape and surface properties.
+
+* **Pros**: Provides robust, rotation-invariant structural insight.
+* **Cons**: Requires 3D information and can be computationally intensive.
+
+**tScales:** Encodes amino acids based on topological and structural features reflective of protein folding and interactions.
+
+* **Pros**: Captures contextual information from the overall sequence structure.
+* **Cons**: Less commonly used, making standardization and tool support a challenge.
+
+# Running Ibex
+
+The idea behind **Ibex** is to combine BCR CDR3 amino acid information with phenotypic RNA/protein data to direct the use of single-cell sequencing towards antigen-specific discoveries.  This is a growing field - specifically [TESSA](https://github.com/jcao89757/TESSA) uses amino acid characteristics and autoencoder as a means to get a dimensional reduction. Another option is [CoNGA](https://github.com/phbradley/conga), which produces an embedding using BCR and RNA. **Ibex** was designed to make a customizable approach to this combined approach using R.
+
 ## Ibex.matrix Function
 
-Ibex has 2 major functions - the first being ```Ibex.matrix()```, which is the backbone of the algorithm and returns the encoded values based on the selection of variables. Unlike ```runIbex()``` below, ```Ibex.matrix()``` does not filter the input for only B cells with attached BCR data. In addition, ```Ibex.matrix()``` is compatible with the list output from the ```combineBCR()``` function from the [scRepertoire](https://github.com/BorchLab/scRepertoire) R package, while ```runIbex()``` must be performed on a single-cell object.
+**Ibex** includes two primary functions: `Ibex.matrix()` and `runIbex()`. The `Ibex.matrix()` function serves as the backbone of the algorithm, returning encoded values based on user-selected parameters. In contrast to `runIbex()`, which filters input to include only B cells with attached BCR data, `Ibex.matrix()` operates on all provided data. Additionally, it is compatible with the list output from the `combineBCR()` function (from the [scRepertoire](https://github.com/BorchLab/scRepertoire) package), whereas `runIbex()` is designed for use with a single-cell object.
 
-**chain**  
-* "Heavy" for Ig Heavy Chain 
-* "Light" for Ig Light Chain 
+### Parameters
 
-**method**  
-* "encoder" for a convolution neural network (CNN) based encoding. 
-* "geometric" for a geometric transformation  
+- **chain**:  
+  Specifies the chain type. Options:  
+  - `"Heavy"` for Ig Heavy Chain  
+  - `"Light"` for Ig Light Chain
 
-**encoder.model**  
-* "VAE" for a variational autoencoder  
-* "AE" for a traditional autoencoder  
+- **method**:  
+  Chooses the transformation method. Options:  
+  - `"encoder"`: Applies a CNN/VAE-based transformation.  
+  - `"geometric"`: Uses a geometric transformation.
 
-**encoder.input**  
-* "AF" to use Atchley factors  
-* "KF" to use Kidera factors  
-* "both" to use both  
-* "OHE" for a One Hot Autoencoder
+- **encoder.model**:  
+  When using the `"encoder"` method, selects the specific model variant. Options:  
+  - `"CNN"`: CDR3 Convolutional Neural Network-based autoencoder  
+  - `"VAE"`: CDR3 Variational Autoencoder  
+  - `"CNN.EXP"`: CDR1/2/3 CNN  
+  - `"VAE.EXP"`: CDR1/2/3 VAE
 
-**theta**  
-If choosing the geometric transformation, what value of theta to use (default is pi)
+- **encoder.input**:  
+  Specifies the encoding input method. Options:  
+  - `"atchleyFactors"`  
+  - `"crucianiProperties"`  
+  - `"kideraFactors"`  
+  - `"MSWHIM"`  
+  - `"tScales"`  
+  - `"OHE"`
 
-```{r}
+- **theta**:  
+  For the geometric transformation, defines the value of theta (default is π/3).
+
+```{r tidy = FALSE}
 Ibex_vectors <- Ibex.matrix(ibex_example, 
                             chain = "Heavy",
                             method = "encoder",
                             encoder.model = "VAE", 
-                            encoder.input = "OHE")
+                            encoder.input = "OHE", 
+                            verbose = FALSE)
 
 ggplot(data = as.data.frame(Ibex_vectors), aes(Ibex_1, Ibex_2)) + 
   geom_point() + 
@@ -192,7 +249,8 @@ ggplot(data = as.data.frame(Ibex_vectors), aes(Ibex_1, Ibex_2)) +
 Ibex_vectors2 <- Ibex.matrix(ibex_example, 
                              chain = "Heavy",
                              method = "geometric",
-                             geometric.theta = pi)
+                             geometric.theta = pi, 
+                             verbose = FALSE)
 
 ggplot(as.data.frame(Ibex_vectors2), aes(x = Ibex_1, y = Ibex_2)) + 
   geom_point() + 
@@ -203,24 +261,26 @@ ggplot(as.data.frame(Ibex_vectors2), aes(x = Ibex_1, y = Ibex_2)) +
 
 Additionally, ```runIbex()``` can be used to append the Seurat or Single-cell Experiment object with the Ibex vectors and allow for further analysis. Importantly, ```runIbex()``` will remove single cells that do not have recovered BCR data in the metadata of the object. 
 
-```{r}
+```{r tidy = FALSE}
 ibex_example <- runIbex(ibex_example, 
                         chain = "Heavy",
                         encoder.input = "kideraFactors", 
-                        reduction.name = "Ibex.KF")
+                        reduction.name = "Ibex.KF", 
+                        verbose = FALSE)
 ```
 
 ## Using Ibex Vectors
 
 After ```runIbex()``` we have the encoded values stored under **"Ibex..."**. Using the Ibex reduction stored in Seurat, we can calculate the nearest neighbor and shared nearest neighbor indexes and generate a UMAP.
 
-```{r}
+```{r tidy = FALSE}
 #Generating UMAP from Ibex Neighbors
 ibex_example <- RunUMAP(ibex_example, 
                         reduction = "Ibex.KF",
                         dims = 1:30,
                         reduction.name = 'Ibex.umap', 
-                        reduction.key = 'ibexUMAP_')
+                        reduction.key = 'ibexUMAP_', 
+                        verbose = FALSE)
 #Ibex UMAP
 plot1 <- DimPlot(ibex_example, reduction = "Ibex.umap") + NoLegend()
 plot2 <- DimPlot(ibex_example, group.by = "CTaa", reduction = "Ibex.umap") + 
@@ -233,7 +293,7 @@ plot1 + plot2
 
 We now can use this in a similar way as other single-cell modalities and calculate weighted nearest neighbor (WNN). To check out more on WNN, please read the Satija's group [paper](https://pubmed.ncbi.nlm.nih.gov/34062119/). We will use the RNA, ADT protein levels, and Ibex vectors for the WNN calculations. 
 
-```{r}
+```{r tidy = FALSE}
 ibex_example <- FindMultiModalNeighbors(
   ibex_example, 
   reduction.list = list("pca", "apca", "Ibex.KF"), 
@@ -244,7 +304,8 @@ ibex_example <- FindMultiModalNeighbors(
 ibex_example <- RunUMAP(ibex_example, 
                         nn.name = "weighted.nn", 
                         reduction.name = "wnn.umap", 
-                        reduction.key = "wnnUMAP_")
+                        reduction.key = "wnnUMAP_", 
+                        verbose = FALSE)
 
 ibex_example <- FindClusters(ibex_example, 
                              graph.name = "wsnn",
@@ -265,20 +326,22 @@ plot3 + plot4
 
 We can also look at the differences in the UMAP generated from RNA, ADT, or Ibex as individual components. Remember, the clusters that we are displaying in UMAP are based on clusters defined by the weighted nearest neighbors calculated above. 
 
-```{r}
+```{r tidy = FALSE}
 ibex_example <- RunUMAP(ibex_example, 
                         reduction = 'pca', 
                         dims = 1:30, 
                         assay = 'RNA', 
                         reduction.name = 'rna.umap', 
-                        reduction.key = 'rnaUMAP_')
+                        reduction.key = 'rnaUMAP_', 
+                             verbose = FALSE)
 
 ibex_example <- RunUMAP(ibex_example, 
                         reduction = 'apca', 
                         dims = 1:20, 
                         assay = 'ADT', 
                         reduction.name = 'adt.umap', 
-                        reduction.key = 'adtUMAP_')
+                        reduction.key = 'adtUMAP_', 
+                             verbose = FALSE)
 
 plot5 <- DimPlot(ibex_example, reduction = "rna.umap") + NoLegend()
 plot6 <- DimPlot(ibex_example, reduction = "adt.umap") + NoLegend()
@@ -291,37 +354,40 @@ plot5 + plot6 + plot7
 
 Recent [work](https://pubmed.ncbi.nlm.nih.gov/34426704/) has proposed using representative cells for the characterization of clonotype and gene expression relationships. In order to generate these representative cells, either a mean expression across a clone or using the PCA dimensional space to identify a single cell that has the minimum euclidean distance across a clone. 
 
-In order to generate a single-cell object based on the CoNGA approach, Ibex offers the function ```CoNGAfy()```. For **method**, select either "mean" or "dist" as described above. After performing ```CoNGAfy()```, the user can use any of the above reduction strategies. 
+In order to generate a single-cell object based on the CoNGA approach, **Ibex** offers the function ```CoNGAfy()```. For **method**, select either "mean" or "dist" as described above. After performing ```CoNGAfy()```, the user can use any of the above reduction strategies. 
 
-```{r}
+```{r tidy = FALSE}
 CoNGA.seurat <- CoNGAfy(ibex_example, 
-                         method = "dist")
+                        method = "dist")
 
 CoNGA.seurat <- runIbex(CoNGA.seurat, 
                         encoder.input = "kideraFactors", 
                         encoder.model = "VAE",
-                        reduction.name = "Ibex.KF")
+                        reduction.name = "Ibex.KF", 
+                        verbose = TRUE)
 
 CoNGA.seurat <- CoNGA.seurat %>%
                   FindNeighbors(reduction = "Ibex.KF") %>%
                   FindClusters(algorithm = 3, 
-                               resolution = 0.6)
+                               resolution = 0.6,
+                               verbose = FALSE)
 
 CoNGA.seurat <- RunUMAP(CoNGA.seurat, 
                         reduction = "Ibex.KF", 
                         dims = 1:30, 
                         reduction.name = 'Ibex.umap', 
-                        reduction.key = 'ibexUMAP_')
+                        reduction.key = 'ibexUMAP_', 
+                        verbose = FALSE)
 
 DimPlot(CoNGA.seurat, reduction = "Ibex.umap") + NoLegend()
 ```
 
 # Conclusion
 
-This has been a general overview of the capabilities of Ibex for incorporating BCR information into the embedding space of single-cell data. If you have any questions, comments, or suggestions, feel free to visit the [GitHub repository](https://github.com/BorchLab/Ibex).
+This has been a general overview of the capabilities of **Ibex** for incorporating BCR information into the embedding space of single-cell data. If you have any questions, comments, or suggestions, feel free to visit the [GitHub repository](https://github.com/BorchLab/Ibex).
 
 ## Session Info
 
-```{r}
+```{r tidy = FALSE}
 sessionInfo()
 ```
