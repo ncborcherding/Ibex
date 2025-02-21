@@ -18,6 +18,15 @@ vignette: >
 ```{r, echo=FALSE, results="hide", message=FALSE}
 knitr::opts_chunk$set(error=FALSE, message=FALSE, warning=FALSE, tidy = FALSE)
 library(BiocStyle)
+
+# Check Python modules once at the start
+keras_installed <- reticulate::py_module_available("keras")
+numpy_installed <- reticulate::py_module_available("numpy")
+
+# If not installed, skip evaluation of all subsequent chunks
+knitr::opts_chunk$set(
+  eval = keras_installed && numpy_installed
+)
 ```
 
 # Introduction
