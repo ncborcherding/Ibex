@@ -1,4 +1,4 @@
-# Ibex
+ Ibex
 Using BCR sequences for graph embedding
 
 [![R-CMD-check](https://github.com/BorchLab/Ibex/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/BorchLab/Ibex/actions/workflows/R-CMD-check.yaml)
@@ -8,15 +8,16 @@ Using BCR sequences for graph embedding
 <img align="right" src="https://github.com/BorchLab/Ibex/blob/main/www/ibex_hex.png" width="352" height="352">
 
 ## Introduction
-Single-cell sequencing is now a integral tool in the field of immunology and oncology that allows researchers to couple RNA quantification and other modalities, 
-like immune cell receptor profiling at the level of an individual cell. Towards this end, we developed the [scRepertoire](https://github.com/BorchLab/scRepertoire) 
-R package to assist in the interaction of immune receptor and gene expression sequencing. However, utilization of clonal indices for more complex analyses are still lacking, specifically in using clonality in embedding of single-cells. To this end, we developed an R package that uses deep learning to vectorize BCR sequences using order or translating the sequence into amino acid properties. The sister package to this is [Trex](https://github.com/BorchLab/Trex) for embedding of TCR sequence data.
+Single-cell sequencing is an integral tool in immunology and oncology, enabling researchers to measure gene expression and immune cell receptor profiling at the level of individual cells. We developed the [scRepertoire](https://github.com/BorchLab/scRepertoire) R package to facilitate the integration of immune receptor and gene expression data. However, leveraging clonal indices for more complex analyses—such as using clonality in cell embedding—remains challenging.
 
-# System requirements 
+**Ibex** addresses this need by using deep learning to vectorize BCR sequences based on amino acid properties or their underlying order. Ibex is the sister package to [Trex](https://github.com/BorchLab/Trex), which focuses on TCR sequence data.
 
-Ibex has been tested on R versions >= 4.0. Please consult the DESCRIPTION file for more details on required R packages - it is specifically designed to work with single-cell objects that have had BCRs added using [scRepertoire](https://github.com/BorchLab/scRepertoire). Ibex has been tested on OS X and Windows platforms.
+---
 
-**keras3** is necessary for immApex (this includes the set up of the tensorflow environment in R):
+# System Requirements 
+Ibex has been tested on R versions >= 4.0. For details on required R packages, refer to the package’s DESCRIPTION file. It is designed to work with single-cell objects containing BCR data generated using [scRepertoire](https://github.com/BorchLab/scRepertoire). Ibex has been tested on macOS and Linux.
+
+**keras3** is required for the immApex-based (deep learning) components of Ibex. Follow the steps below to install and configure `keras3` and TensorFlow:
 
 ```r
 ##Install keras3
@@ -31,13 +32,14 @@ install_keras()
 
 # Installation
 
-Ibex requires the installation of the [immApex](https://github.com/BorchLab/immApex) API functions and Ibex from the GitHub repository:
+Ibex relies on the [immApex](https://github.com/BorchLab/immApex) API can be installed directly from GitHub: 
 
 ```r
 devtools::install_github("BorchLab/immApex")
 ```
 
-immApex can also be installed from Bioconductor:
+You may also install immApex from Bioconductor:
+
 ```r
 if (!require("BiocManager", quietly = TRUE))
     install.packages("BiocManager")
@@ -51,16 +53,22 @@ After immApex installation, you can install Ibex with:
 devtools::install_github("BorchLab/Ibex")
 ```
 
+The main version of Ibex is submitted to Bioconductor (installation instructions will be updated after review). By default, Ibex will automatically pull deep learning models from a [Zenodo repository](https://zenodo.org/records/14919286) and cache them locally.
+
+Alternatively, to install **Ibex** and all the required models at once:
+```r
+devtools::install_github("BorchLab/Ibex@fullstack")
+```
+
 # Usage/Demos
 
-Ibex should be able to be run in popular R-based single-cell workflows, including Seurat and Bioconductor/Single-Cell Experiment formats.
+Ibex integrates smoothly into most popular R-based single-cell workflows, including **Seurat** and **Bioconductor/SingleCellExperiment.**
 
 ## Quick Start 
 
-Check out this [vignette](https://www.borch.dev/uploads/screpertoire/articles/ibex) for a quick start tutorial. 
+See the [vignette](https://www.borch.dev/uploads/screpertoire/articles/ibex) for a step-by-step tutorial. 
 
 <img align="center" src="https://github.com/BorchLab/Ibex/blob/main/www/graphicalAbstract.png">
-
 
 ## Autoencoded Matrix
 
@@ -90,7 +98,7 @@ seuratObj_Bonly <- runIbex(seuratObj, reduction.name = "Ibex")
 
 ## After Running Ibex
 
-From here, you can generate a tSNE/UMAP using the Ibex values, similar to the PCA values based on variable gene expression.
+Once the Ibex embeddings are part of your Seurat object, you can use these embeddings to generate a t-SNE or UMAP:
 
 ```r
 seuratObj <- RunTSNE(seuratObj, reduction = "Ibex",  reduction.key = "Ibex_")

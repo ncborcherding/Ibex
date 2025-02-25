@@ -4,7 +4,7 @@ author:
 - name: Nick Borcherding
   email: ncborch@gmail.com
   affiliation: Washington University in St. Louis, School of Medicine, St. Louis, MO, USA
-date: "February, 19, 2025"
+date: "February 25, 2025"
 output:
   BiocStyle::html_document:
     toc_float: true
@@ -157,6 +157,8 @@ model.meta.data %>%
   scroll_box(width = "100%", height = "400px")
 
 ```
+
+All the models are available via a [Zenodo repository](https://zenodo.org/records/14919286), which Ibex will pull automatically and cache for future use locally. There is no need to download the models independent of the ```runIbex()``` or ```ibex.matrix()``` calls. 
 
 ### Choosing Between CNN and VAE
 
