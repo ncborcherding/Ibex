@@ -21,7 +21,8 @@ Imports:
 	scRepertoire,
 	SingleCellExperiment,
 	stats,
-	SummarizedExperiment
+	SummarizedExperiment,
+	tools
 Suggests:
 	BiocStyle, 
 	dplyr,
