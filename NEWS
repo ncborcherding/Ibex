@@ -1,3 +1,11 @@
+CHANGES IN VERSION 0.99.8
+------------------------
+* Updated example data to 2k HEL BEAM-Ab from 10x
+* Converted ibex_example into SCE object for compliance
+* Large revision of vignette to fit new data/format
+* Added species argument to runIbex
+* Updated CoNGA handling of assay for Seurat and Single-Cell Objects.
+
 CHANGES IN VERSION 0.99.7
 ------------------------
 * Integration of Ibex with immApex

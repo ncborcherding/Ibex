@@ -1,6 +1,4 @@
-# test script for runTrex.R - testcases are NOT comprehensive!
-library(Seurat)
-
+# test script for runIbex.R - testcases are NOT comprehensive!
 test_that("runIbex handles incorrect inputs gracefully", {
   expect_error(runIbex(sc.data = ibex_example, chain = "Middle", method = "encoder"),
                "'arg' should be one of \"Heavy\", \"Light\"")
@@ -42,7 +40,7 @@ if (!keras_installed || !numpy_installed) {
   })
   
   test_that("runIbex works with geometric method", {
-    sc_example <- suppressWarnings(CreateSeuratObject(counts = matrix(rnorm(1000), nrow = 10, ncol = 100)))
+    sc_example <- suppressWarnings(SeuratObject::CreateSeuratObject(counts = matrix(rnorm(1000), nrow = 10, ncol = 100)))
     sc_example[["CTaa"]] <- sample(c("CASSL", "CASST", NA, "NA_IGHV1", "None_IGHV2"), 100, replace = TRUE)
     sc_example[["CTgene"]] <- sample(c("NA_IGHV1.IGD1.IGJ1.IGM", "NA_IGHV1.IGD1.IGJ1.IGM", NA, "NA_IGHV1.IGD1.IGJ1.IGM", "None_IGHV1.IGD1.IGJ1.IGM"), 100, replace = TRUE)
     
@@ -74,7 +72,7 @@ if (!keras_installed || !numpy_installed) {
   })
   
   test_that("runIbex stops if amino acid sequences are missing", {
-    sc_example <- suppressWarnings(CreateSeuratObject(counts = matrix(rnorm(1000), nrow = 10, ncol = 100)))
+    sc_example <- suppressWarnings(SeuratObject::CreateSeuratObject(counts = matrix(rnorm(1000), nrow = 10, ncol = 100)))
     
     expect_error(runIbex(sc_example, 
                          chain = "Heavy", 
@@ -86,7 +84,7 @@ if (!keras_installed || !numpy_installed) {
   })
   
   test_that("runIbex works with different reduction names", {
-    sc_example <- suppressWarnings(CreateSeuratObject(counts = matrix(rnorm(1000), nrow = 10, ncol = 100)))
+    sc_example <- suppressWarnings(SeuratObject::CreateSeuratObject(counts = matrix(rnorm(1000), nrow = 10, ncol = 100)))
     sc_example[["CTaa"]] <- sample(c("CASSL", "CASST", NA, "NA_IGHV1", "None_IGHV2"), 100, replace = TRUE)
     sc_example[["CTgene"]] <- sample(c("NA_IGHV1.IGD1.IGJ1.IGM", "NA_IGHV1.IGD1.IGJ1.IGM", NA, "NA_IGHV1.IGD1.IGJ1.IGM", "None_IGHV1.IGD1.IGJ1.IGM"), 100, replace = TRUE)
     result1 <- runIbex(sc_example, 

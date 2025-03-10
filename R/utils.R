@@ -122,7 +122,7 @@ aa.model.loader <- function(species, chain, encoder.input, encoder.model) {
 
 # Add the dimRed to single cell object
 #' @importFrom SeuratObject CreateDimReducObject
-#' @importFrom SingleCellExperiment reducedDim
+#' @importFrom SingleCellExperiment reducedDim reducedDim<-
 adding.DR <- function(sc, reduction, reduction.name) {
   if (inherits(sc, "Seurat")) {
     DR <- suppressWarnings(CreateDimReducObject(

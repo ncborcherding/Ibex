@@ -3,9 +3,9 @@
 \docType{data}
 \name{ibex_vdj}
 \alias{ibex_vdj}
-\title{200 randomly sampled cells from  the 10x 
-10k Human Diseased PBMCs (ALL) Freshly Processed Data}
+\title{Full filtered_annotated_contig.csv from  the 10x 
+2k_BEAM-Ab_Mouse_HEL_5pv2_2k_BEAM-Ab_Mouse_HEL_5pv2}
 \description{
-200 randomly sampled cells from  the 10x 
-10k Human Diseased PBMCs (ALL) Freshly Processed Data
+Full filtered_annotated_contig.csv from  the 10x 
+2k_BEAM-Ab_Mouse_HEL_5pv2_2k_BEAM-Ab_Mouse_HEL_5pv2
 }

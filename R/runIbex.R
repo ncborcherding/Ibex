@@ -54,6 +54,7 @@
 #' @param reduction.name Character. The name to assign to the dimensional reduction. 
 #'   This is useful for running Ibex with multiple parameter settings and saving results 
 #'   under different names.
+#' @param species Character. Default is "Human" or "Mouse".
 #' @param verbose Logical. Whether to print progress messages. Default is TRUE.
 #'
 #' @return An updated Seurat or SingleCellExperiment object with Ibex dimensions added 
@@ -66,6 +67,7 @@ runIbex <- function(sc.data,
                     encoder.input = "atchleyFactors",
                     geometric.theta = pi,
                     reduction.name = "Ibex", 
+                    species = "Human",
                     verbose = TRUE) {
     checkSingleObject(sc.data)
     sc.data <- filter.cells(sc.data, chain)
@@ -75,6 +77,7 @@ runIbex <- function(sc.data,
                              encoder.model = encoder.model, 
                              encoder.input = encoder.input,
                              geometric.theta = geometric.theta, 
+                             species = species,
                              verbose = verbose)
     BCR <- getIR(sc.data, chain, sequence.type = "aa")[[1]]
     sc.data <- adding.DR(sc.data, reduction, reduction.name)
@@ -92,13 +95,12 @@ runIbex <- function(sc.data,
 #' @return A filtered Seurat or SingleCellExperiment object.
 filter.cells <- function(sc.obj, 
                          chain) {
-  if (!"CTaa" %in% colnames(sc.obj[[]])) {
+  meta <- grabMeta(sc.obj)
+  if (!"CTaa" %in% colnames(meta)) {
     stop("Amino acid sequences are not added to the single-cell object correctly.")
   }
   pattern.NA <- ifelse(chain == "Heavy", "NA_", "_NA")
   pattern.none <- ifelse(chain == "Heavy", "None_", "_None")
-  # Identify cells where CTaa is not NA and does not contain "_NA"
-  meta <- grabMeta(sc.obj)
   
   cells.index <- which(!is.na(meta[,"CTaa"]) & 
                     !grepl(paste0(pattern.NA, "|", pattern.none), meta[,"CTaa"]))

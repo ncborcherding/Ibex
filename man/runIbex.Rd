@@ -12,6 +12,7 @@ runIbex(
   encoder.input = "atchleyFactors",
   geometric.theta = pi,
   reduction.name = "Ibex",
+  species = "Human",
   verbose = TRUE
 )
 }
@@ -55,6 +56,8 @@ Used only when \code{method = "geometric"}.}
 \item{reduction.name}{Character. The name to assign to the dimensional reduction. 
 This is useful for running Ibex with multiple parameter settings and saving results 
 under different names.}
+
+\item{species}{Character. Default is "Human" or "Mouse".}
 
 \item{verbose}{Logical. Whether to print progress messages. Default is TRUE.}
 }
