@@ -118,7 +118,7 @@ set.seed(42)
 cell.idx <- unique(c(which(!grepl("CANWDGDYW", SeuratObj$CTaa)), sample(seq_len(nrow(SeuratObj[[]])), 154)))
 
 ibex_example <- SeuratObj
-save(ibex_example, file = "Ibex_FullExample.rds", compress = "xz")
+saveRDS(ibex_example, file = "Ibex_FullExample.rds")
 
 # Forming Example Data set in SCE format
 ibex_example <- subset(ibex_example, cells = colnames(ibex_example)[cell.idx])
@@ -335,7 +335,8 @@ ibex_example <- runUMAP(ibex_example,
 plot1 <- plotUMAP(ibex_example, color_by ="Anti-Hen-Egg-Lysozyme", dimred = "ibexUMAP") + 
             theme(legend.position = "bottom")
 plot2 <- plotUMAP(ibex_example, color_by = "CTaa", dimred = "ibexUMAP") + 
-  scale_color_viridis(discrete = TRUE, option = "B") 
+  scale_color_viridis(discrete = TRUE, option = "B") + 
+  guides(color = "none")
 
 plot1 + plot2
 ```
