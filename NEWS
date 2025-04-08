@@ -1,5 +1,9 @@
 CHANGES IN VERSION 0.99.8
 ------------------------
+* Examples now check if python is installed and running
+
+CHANGES IN VERSION 0.99.8
+------------------------
 * Updated example data to 2k HEL BEAM-Ab from 10x
 * Converted ibex_example into SCE object for compliance
 * Large revision of vignette to fit new data/format
