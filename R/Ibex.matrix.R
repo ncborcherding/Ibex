@@ -87,9 +87,6 @@ Ibex.matrix <- function(input.data,
     expanded.sequences <- FALSE
   }
   
-  #Will be used to filter output of getIR()
-  loci <- ifelse(chain == "Heavy", "IGH", c("IGK", "IGL"))
-  
   # Define loci based on chain selection
   loci <- if (chain == "Heavy") "IGH" else c("IGK", "IGL")
   
