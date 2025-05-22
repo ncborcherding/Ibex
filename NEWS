@@ -1,8 +1,12 @@
-CHANGES IN VERSION 0.99.8
+CHANGES IN VERSION 0.99.11
+------------------------
+* Switched keras python check to chunk-specific for vignette  
+
+CHANGES IN VERSION 0.99.10
 ------------------------
 * Added information to example data
 
-CHANGES IN VERSION 0.99.8
+CHANGES IN VERSION 0.99.9
 ------------------------
 * Examples now check if python is installed and running
 
