@@ -31,18 +31,17 @@ CoNGAfy(
 A reduced single-cell object where each clonotype is represented by a single cell.
 }
 \description{
-This function generates a single-cell object with a reduced representation of RNA expression 
-by clonotype. The approach is inspired by the method introduced in \href{https://pubmed.ncbi.nlm.nih.gov/34426704/}{CoNGA}. 
-Users can generate either a mean representation of features by clonotype or identify a representative 
-cell using PCA-based minimal Euclidean distance. Please read and cite the original work by the authors of CoNGA.
+This function generates a single-cell object with a reduced representation 
+of RNA expression by clone. The approach is inspired by the method introduced 
+in \href{https://pubmed.ncbi.nlm.nih.gov/34426704/}{CoNGA}. Users can 
+generate either a mean representation of features by clone or identify a 
+representative cell using count-based minimal Euclidean distance. 
+Please read and cite the original work by the authors of CoNGA.
 }
 \examples{
-# Generate a representative single-cell object using minimal Euclidean distance
 ibex.clones <- CoNGAfy(ibex_example, 
-                       method = "dist",
-                       features = NULL)
+                       method = "dist")
 
-# Generate a representative single-cell object using the mean expression across features
 ibex.clones <- CoNGAfy(ibex_example, 
                        method = "mean")
 

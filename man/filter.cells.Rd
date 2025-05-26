@@ -4,7 +4,7 @@
 \alias{filter.cells}
 \title{Filter Single-Cell Data Based on CDR3 Sequences}
 \usage{
-\method{filter}{cells}(sc.obj, chain)
+filter.cells(sc.obj, chain)
 }
 \arguments{
 \item{sc.obj}{A Seurat or SingleCellExperiment object.}

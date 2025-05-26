@@ -7,11 +7,13 @@
 #'
 #' @examples
 #' # Using the encoder method with a variational autoencoder
+#' if(reticulate::py_module_available("keras")) {  
 #' ibex_values <- Ibex.matrix(ibex_example, 
 #'                            chain = "Heavy",
 #'                            method = "encoder",
 #'                            encoder.model = "VAE",
 #'                            encoder.input = "atchleyFactors")
+#' }
 #'
 #' # Using the geometric method with a specified angle
 #' ibex_values <- Ibex.matrix(ibex_example, 
@@ -85,9 +87,6 @@ Ibex.matrix <- function(input.data,
     expanded.sequences <- FALSE
   }
   
-  #Will be used to filter output of getIR()
-  loci <- ifelse(chain == "Heavy", "IGH", c("IGK", "IGL"))
-  
   # Define loci based on chain selection
   loci <- if (chain == "Heavy") "IGH" else c("IGK", "IGL")
   
@@ -97,13 +96,16 @@ Ibex.matrix <- function(input.data,
   
   # Determine dictionary for sequence encoding
   if (expanded.sequences) {
+    #Quick Check to see if there are - corresponding to CDR1-CDR2-CDR3
+    if (all(grepl("-", BCR[,2]))) {
+      stop("Expanded sequences are not properly formated, please use 
+           combineExpandedBCR().")
+    }
     BCR[,2] <- gsub("-", "_", BCR[,2])
     dictionary <- c(amino.acids, "_")
   } else  {
     dictionary <- amino.acids
   }
-  
-
   
   # Filter by gene locus
   BCR <- BCR[grepl(paste0(loci, collapse = "|"), BCR[, "v"]), ]
@@ -129,7 +131,10 @@ Ibex.matrix <- function(input.data,
     }
     if (verbose) print("Calculating Latent Dimensions...")
     #Getting Model
-    aa.model <- aa.model.loader(species = "Human", chain, encoder.input, encoder.model)
+    aa.model <- aa.model.loader(species = species, 
+                                chain, 
+                                encoder.input, 
+                                encoder.model)
     reduction <- stats::predict(aa.model, encoded.values, verbose = 0)
   } else if (method == "geometric") {
     if (verbose) print("Performing geometric transformation...")

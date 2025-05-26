@@ -27,7 +27,10 @@ reduction. By excluding BCR genes, this function ensures that the variable gene
 set focuses on biologically relevant features rather than highly variable BCR genes.
 }
 \examples{
-# Remove BCR genes from the variable features of a Seurat object
-ibex_example <- quietBCRgenes(ibex_example)
+# Remove BCR genes from the variable features of a vector
+variable.genes <- c("IGHV1-69", "IGHV3-23", "IGHV4-34", "IGHV5-51", "IGHV6-1", 
+                    "IGKV1-5", "IGKV3-20", "IGLV2-14", "IGLV3-21", "IGLV6-57", 
+                    "TP53", "MYC", "BCL2", "CD19", "CD79A", "CD79B", "PAX5")
+variable.genes <- quietBCRgenes(variable.genes)
 
 }

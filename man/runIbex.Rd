@@ -12,6 +12,7 @@ runIbex(
   encoder.input = "atchleyFactors",
   geometric.theta = pi,
   reduction.name = "Ibex",
+  species = "Human",
   verbose = TRUE
 )
 }
@@ -56,6 +57,8 @@ Used only when \code{method = "geometric"}.}
 This is useful for running Ibex with multiple parameter settings and saving results 
 under different names.}
 
+\item{species}{Character. Default is "Human" or "Mouse".}
+
 \item{verbose}{Logical. Whether to print progress messages. Default is TRUE.}
 }
 \value{
@@ -72,11 +75,13 @@ present for the given chain selection.
 }
 \examples{
 # Using the encoder method with a variational autoencoder
+if(reticulate::py_module_available("keras")) {  
 ibex_example <- runIbex(ibex_example, 
                         chain = "Heavy",
                         method = "encoder",
                         encoder.model = "VAE",
                         encoder.input = "atchleyFactors")
+}
 
 # Using the geometric method with a specified angle
 ibex_example <- runIbex(ibex_example, 

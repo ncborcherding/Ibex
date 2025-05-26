@@ -1,3 +1,23 @@
+CHANGES IN VERSION 0.99.11
+------------------------
+* Switched keras python check to chunk-specific for vignette  
+
+CHANGES IN VERSION 0.99.10
+------------------------
+* Added information to example data
+
+CHANGES IN VERSION 0.99.9
+------------------------
+* Examples now check if python is installed and running
+
+CHANGES IN VERSION 0.99.8
+------------------------
+* Updated example data to 2k HEL BEAM-Ab from 10x
+* Converted ibex_example into SCE object for compliance
+* Large revision of vignette to fit new data/format
+* Added species argument to runIbex
+* Updated CoNGA handling of assay for Seurat and Single-Cell Objects.
+
 CHANGES IN VERSION 0.99.7
 ------------------------
 * Integration of Ibex with immApex
@@ -11,10 +31,12 @@ CHANGES IN VERSION 0.99.7
 * Added New Light and Heavy Chain Models
 * Encoding methods now accepted: "OHE", "atchleyFactors", "crucianiProperties", "kideraFactors", "MSWHIM","tScales", "zScales"
 * Sequence input: 
-	- Heavy: 10000000
-	- Light: 5000000
-	- Heavy-Expanded: 5000000
-	- Light-Expanded: 2500000
+	- Human Heavy: 10000000
+	- Human Light: 5000000
+	- Human Heavy-Expanded: 5000000
+	- Human Light-Expanded: 2500000
+	- Mouse Heavy: 5000000
+	- Mouse Heavy-Expanded: 5000000
 * Trained convolutional and variational autoencoders for Heavy/Light chains
  	- Architecture: 512-256-128-256-512
 	- Parameters: 

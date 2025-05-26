@@ -8,7 +8,7 @@ PKG_NAME <- "Ibex"
 BIOC_VERSION <- "3.21"            
 MAINTAINER <- "Nick Borcherding <ncborch@gail.com.com>"
 DATA_PROVIDER <- "Consolidated Sources: IReceptor, OAS, and GEO"
-SOURCE_URL <- NA 
+SOURCE_URL <-  "https://github.com/BorchLab"
 SOURCE_VERSION <- NA         
 SOURCE_TYPE <- "CSV"              
 GENOME <- NA                      
@@ -18,7 +18,7 @@ DESCRIPTION <- "Keras-based deep learning encoder for BCR sequences."
 
 # 2) Locate the data files in inst/extdata
 path_to_extdata <- file.path("inst", "extdata")
-files <- list.files(path_to_extdata, full.names = TRUE)
+files <- list.files(path_to_extdata, full.names = TRUE, pattern = ".keras")
 
 # 3) Helper function: guess DispatchClass and RDataClass from file extension
 inferDispatchClass <- function(file_ext) {
@@ -62,12 +62,7 @@ metadata_list <- lapply(files, function(f) {
                         ", Encoding Method: ", components[4])
   SPECIES <- ifelse(grepl("Human", title), "Homo sapiens", "Mus musculus")
   TAXONOMY_ID <- ifelse(grepl("Human", title), "9606", "10090")
-  
-  # RDataPath should start with your package name, then subdirectories, then filename
-  # e.g., "MyPackageName/somefolder/filename.rds"  if there are nested subfolders in extdata
-  # Here, we assume the file is only in the top-level extdata
-  rDataPath <- file.path(PKG_NAME, file_name)
-  
+  rDataPath <- paste0("records/14919286/files/", file_name)
   # We assemble a named vector or list for each file:
   c(
     Title = title,
@@ -85,8 +80,9 @@ metadata_list <- lapply(files, function(f) {
     Maintainer = MAINTAINER,
     RDataClass = rDataClass,
     DispatchClass = dispatchClass,
+    Location_Prefix = "https://zenodo.org/",
     RDataPath = rDataPath,
-    Tags = paste("BCR", "scRNA-seq", "Encoder", "Model", sep = ",")
+    Tags = paste("BCR", "scRNA-seq", "Encoder", "Model", sep = ":")
   )
 })
 
