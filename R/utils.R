@@ -61,61 +61,64 @@ checkLength <- function(x, expanded = NULL) {
   }
 }
 # Returns appropriate encoder model
-#' @importFrom keras3 load_model
-#' @importFrom utils read.csv download.file
+#' @importFrom utils download.file read.csv
 #' @importFrom tools R_user_dir
-aa.model.loader <- function(species, chain, encoder.input, encoder.model) {
-  
-  # 1) Construct the expected .keras filename
+aa.model.loader <- function(species,
+                            chain,
+                            encoder.input,
+                            encoder.model,
+                            return_path = TRUE)     
+{
+  ## 1. expected filename 
   model.name.base <- paste0(
-    species, "_", chain, "_", 
-    encoder.model, "_", encoder.input, 
-    "_encoder.keras"
-  )
+    species, "_", chain, "_",
+    encoder.model, "_", encoder.input,
+    "_encoder.keras")
   
-  # 2) Locate and read the metadata CSV within your package
+  ##  2. metadata sanity check
   meta_file <- system.file("extdata", "metadata.csv", package = "Ibex")
-  if (!file.exists(meta_file)) {
+  if (!file.exists(meta_file))
     stop("Cannot find 'metadata.csv' in Ibex's 'inst/extdata' directory.")
-  }
-  model.meta.data <- read.csv(meta_file, stringsAsFactors = FALSE)
   
-  # 3) Check if the requested model is listed in the first column (Title)
-  if (!model.name.base %in% model.meta.data[[1]]) {
-    stop("Model '", model.name.base, "' is not an available model.")
-  }
+  model.meta <- read.csv(meta_file, stringsAsFactors = FALSE)
   
-  # 4) Construct the Zenodo download URL
-  base_url <- "https://zenodo.org/record/14919286/files"
+  if (!model.name.base %in% model.meta[[1]])
+    stop("Model '", model.name.base, "' is not listed in metadata.csv.")
+  
+  ## 3. resolve Zenodo URL 
+  base_url     <- "https://zenodo.org/record/14919286/files"
   download_url <- paste0(base_url, "/", model.name.base, "?download=1")
   
-  # 5) Create or use a persistent cache directory for your package
+  ##  4. prepare cache 
   cache_dir <- tools::R_user_dir("Ibex", which = "cache")
-  if (!dir.exists(cache_dir)) {
-    dir.create(cache_dir, recursive = TRUE)
-  }
+  if (!dir.exists(cache_dir)) dir.create(cache_dir, recursive = TRUE)
   
-  # 6) Define the full local path in the cache
   local_path <- file.path(cache_dir, model.name.base)
   
-  # 7) Download the file only if not already cached
   if (!file.exists(local_path)) {
-    message("Downloading '", model.name.base, "' to cache directory:\n  ", local_path)
-    
-    status <- utils::download.file(download_url, destfile = local_path, mode = "wb")
-    if (status != 0) {
-      stop("Error downloading '", model.name.base, "'. Status code: ", status)
-    }
-  } else {
-    message("Using cached model:\n  ", local_path)
+    message("Downloading model: ", model.name.base)
+    status <- utils::download.file(download_url,
+                                   destfile = local_path,
+                                   mode     = "wb")
+    if (status != 0)
+      stop("Download failed with status code ", status, ".")
   }
   
-  # 8) Load the model (using keras3 or your chosen Keras interface)
-  model <- suppressMessages(
-    keras3::load_model(local_path, compile = TRUE)
-  )
+  ## 5. return 
+  if (return_path)
+    return(local_path)
   
-  return(model)
+  ##  (optional) load via basilisk 
+  model <- basilisk::basiliskRun(
+    env = IbexEnv,
+    fun = function(mpath) {
+      library(tensorflow)
+      library(keras)
+      keras::load_model_hdf5(mpath, compile = FALSE)
+    },
+    mpath = local_path
+  )
+  model
 }
 
 

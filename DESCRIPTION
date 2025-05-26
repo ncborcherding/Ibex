@@ -35,12 +35,13 @@ Suggests:
 	mumosa,
 	patchwork,
 	rmarkdown, 
-        reticulate,
+        basilisk,
 	scater,
 	spelling,
         testthat (>= 3.0.0),
         utils,
 	viridis
+SystemRequirements: Python (via basilisk)
 VignetteBuilder: knitr
 Language: en-US
 URL: https://github.com/BorchLab/Ibex/

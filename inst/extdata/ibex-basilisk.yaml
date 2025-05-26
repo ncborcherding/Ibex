@@ -1,0 +1,10 @@
+channels:
+  - defaults
+- conda-forge
+dependencies:
+  - python=3.9
+- tensorflow=2.11
+- keras=2.11
+- numpy
+- h5py
+

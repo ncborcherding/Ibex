@@ -17,18 +17,6 @@ Single-cell sequencing is an integral tool in immunology and oncology, enabling 
 # System Requirements 
 Ibex has been tested on R versions >= 4.0. For details on required R packages, refer to the package’s DESCRIPTION file. It is designed to work with single-cell objects containing BCR data generated using [scRepertoire](https://github.com/BorchLab/scRepertoire). Ibex has been tested on macOS and Linux.
 
-**keras3** is required for the immApex-based (deep learning) components of Ibex. Follow the steps below to install and configure `keras3` and TensorFlow:
-
-```r
-##Install keras3
-install.packages("keras3")
-
-##Setting up Tensor Flow
-library(reticulate)
-use_condaenv(condaenv = "r-reticulate", required = TRUE)
-library(keras3)
-install_keras()
-```
 
 # Installation
 
