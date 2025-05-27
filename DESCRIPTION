@@ -17,6 +17,7 @@ Imports:
 	immApex,
 	methods,
 	Matrix, 
+	reticulate,
 	rlang,
 	SeuratObject,
 	scRepertoire,

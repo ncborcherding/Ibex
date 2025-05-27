@@ -139,21 +139,17 @@ Ibex.matrix <- function(input.data,
     reduction <- basiliskRun(
       env = IbexEnv,
       fun = function(mpath, xmat) {
-        library(tensorflow)
+        keras <- reticulate::import("keras", delay_load = FALSE)
         
-        ## Use tf.keras directly
-        tf <- tensorflow::tf
-        model <- tf$keras$models$load_model(
-          mpath,
-          compile = FALSE
-        )
+        model <- keras$models$load_model(mpath)  
+        pred  <- model$predict(xmat)
         
-        ## keras predict returns a Tensor
-        as.array(model$predict(xmat))
+        as.array(pred)
       },
       mpath = model.path,
       xmat  = encoded.values
     )
+    
   } else if (method == "geometric") {
     if (verbose) print("Performing geometric transformation...")
     BCR[,2] <- gsub("-", "", BCR[,2])
