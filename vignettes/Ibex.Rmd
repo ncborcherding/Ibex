@@ -18,10 +18,6 @@ vignette: >
 ```{r, echo=FALSE, results="hide", message=FALSE}
 knitr::opts_chunk$set(error=FALSE, message=FALSE, warning=FALSE, tidy = FALSE)
 library(BiocStyle)
-
-# Check Python modules once at the start
-keras_installed <- reticulate::py_module_available("keras")
-numpy_installed <- reticulate::py_module_available("numpy")
 ```
 
 # Introduction
@@ -278,7 +274,7 @@ The idea behind **Ibex** is to combine BCR CDR3 amino acid information with phen
 - **theta**:  
   For the geometric transformation, defines the value of theta (default is π/3).
 
-```{r tidy = FALSE, eval = keras_installed && numpy_installed}
+```{r tidy = FALSE}
 Ibex_vectors <- Ibex.matrix(ibex_example, 
                             chain = "Heavy",
                             method = "encoder",
@@ -306,7 +302,7 @@ ggplot(as.data.frame(Ibex_vectors2), aes(x = Ibex_1, y = Ibex_2)) +
 
 Additionally, ```runIbex()``` can be used to append the Seurat or Single-cell Experiment object with the Ibex vectors and allow for further analysis. Importantly, ```runIbex()``` will remove single cells that do not have recovered BCR data in the metadata of the object. 
 
-```{r tidy = FALSE, eval = keras_installed && numpy_installed}
+```{r tidy = FALSE}
 ibex_example <- runIbex(ibex_example, 
                         chain = "Heavy",
                         encoder.input = "kideraFactors", 
@@ -319,7 +315,7 @@ ibex_example <- runIbex(ibex_example,
 
 After ```runIbex()``` we have the encoded values stored under **"Ibex..."**. Using the Ibex dimensions, we can calculate a UMAP based solely on the embedded heavy chain values. Here we will visualize both the Heavy/Light Chain amino acid sequence (via **CTaa**) and normalized counts associated with the **Anti-Hen-Egg-Lysozyme** antigen.
 
-```{r tidy = FALSE, eval = keras_installed && numpy_installed}
+```{r tidy = FALSE}
 set.seed(123)
 #Generating UMAP from Ibex Neighbors
 ibex_example <- runUMAP(ibex_example, 
@@ -337,7 +333,7 @@ plot1 + plot2
 
 In this workflow, we can combine these three dimension reductions into a single, integrated UMAP embedding using the ```runMultiUMAP()``` function with a cosine metric. To further refine this integration, we apply ```rescaleByNeighbors()``` to align the nearest neighbors across modalities, followed by clustering with ```clusterRows()```, resulting in a “combined.clustering” that reflects all data types. Finally, we visualize this joint embedding as “MultiUMAP,” coloring points by expression of a specific protein marker (e.g., Anti-Hen-Egg-Lysozyme), the integrated cluster assignments, or other relevant annotations. The result is a holistic representation of cellular diversity that leverages shared and unique signals from RNA, protein, and Ibex IGH latent features.
 
-```{r tidy = FALSE, eval = keras_installed && numpy_installed}
+```{r tidy = FALSE}
 #Multimodal UMAP
 ibex_example <- mumosa::runMultiUMAP(ibex_example, 
                                      dimreds=c("pca", "apca", "Ibex.KF"))
@@ -366,7 +362,7 @@ plot3 + plot4 + plot5
 
 We can also look at the differences in the UMAP generated from RNA, ADT, or Ibex as individual components. Remember, the clusters that we are displaying in UMAP are based on clusters defined by the weighted nearest neighbors calculated above. 
 
-```{r tidy = FALSE, eval = keras_installed && numpy_installed}
+```{r tidy = FALSE}
 ibex_example <- runUMAP(ibex_example, 
                         dimred = 'pca', 
                         name = "pcaUMAP")
@@ -406,7 +402,7 @@ A challenge arises, however, when a clonotype contains multiple cells (e.g., 10 
 * Simply take the average (mean) expression across all cells in the same clonotype.
 * Conceptually, you collapse a multi-cell clone into one “virtual cell” representing its average expression.
 
-```{r tidy = FALSE, eval = keras_installed && numpy_installed}
+```{r tidy = FALSE}
 CoNGA.sce <- CoNGAfy(ibex_example, 
                      method = "mean", 
                      assay = c("RNA", "BEAM"))

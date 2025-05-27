@@ -9,13 +9,11 @@
 #'
 #' @examples
 #' # Using the encoder method with a variational autoencoder
-#' if(reticulate::py_module_available("keras")) {  
 #' ibex_example <- runIbex(ibex_example, 
 #'                         chain = "Heavy",
 #'                         method = "encoder",
 #'                         encoder.model = "VAE",
 #'                         encoder.input = "atchleyFactors")
-#' }
 #'
 #' # Using the geometric method with a specified angle
 #' ibex_example <- runIbex(ibex_example, 
