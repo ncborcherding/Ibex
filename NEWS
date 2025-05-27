@@ -1,3 +1,7 @@
+CHANGES IN VERSION 0.99.12
+------------------------
+* Basilisk conversion
+
 CHANGES IN VERSION 0.99.11
 ------------------------
 * Switched keras python check to chunk-specific for vignette  

@@ -60,6 +60,7 @@
 #' @importFrom SeuratObject CreateDimReducObject
 #' @importFrom immApex propertyEncoder onehotEncoder geometricEncoder getIR
 #' @importFrom stats complete.cases
+#' @importFrom tensorflow tf
 #' 
 #' @seealso 
 #' \code{\link[immApex]{propertyEncoder}}, 
@@ -130,19 +131,25 @@ Ibex.matrix <- function(input.data,
     }
     if (verbose) print("Calculating Latent Dimensions...")
     # Getting Model
-    model.path <- aa.model.loader(species      = species,   # CHANGE
+    model.path <- aa.model.loader(species      = species,  
                                   chain        = chain,
                                   encoder.input = encoder.input,
-                                  encoder.model = encoder.model,
-                                  return_path   = TRUE)
+                                  encoder.model = encoder.model)
     #Getting Reduction 
     reduction <- basiliskRun(
-      env = IbexEnv,                                    
+      env = IbexEnv,
       fun = function(mpath, xmat) {
         library(tensorflow)
-        library(keras)
-        mdl <- keras::load_model_hdf5(mpath, compile = FALSE)
-        keras::predict(mdl, xmat)
+        
+        ## Use tf.keras directly
+        tf <- tensorflow::tf
+        model <- tf$keras$models$load_model(
+          mpath,
+          compile = FALSE
+        )
+        
+        ## keras predict returns a Tensor
+        as.array(model$predict(xmat))
       },
       mpath = model.path,
       xmat  = encoded.values

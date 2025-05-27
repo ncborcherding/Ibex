@@ -11,18 +11,8 @@ test_that("runIbex handles incorrect inputs gracefully", {
   expect_error(runIbex(sc.data = ibex_example, chain = "Heavy", method = "geometric", geometric.theta = "not_numeric"),
                "non-numeric argument to mathematical function")
 })
-
-keras_installed <- reticulate::py_module_available("keras")
-numpy_installed <- reticulate::py_module_available("numpy")
-
-# 2. If not installed, skip everything:
-if (!keras_installed || !numpy_installed) {
-  test_that("Skipping runIbex tests", {
-    skip("Required Python modules (Keras, NumPy) are not available.")
-  })
-} else {
     
-  test_that("runIbex works with Seurat object", {
+test_that("runIbex works with Seurat object", {
     suppressWarnings(sc_example <- CreateSeuratObject(counts = matrix(rnorm(1000), nrow = 10, ncol = 100)))
     sc_example[["CTaa"]] <- sample(c("CASSL", "CASST", NA, "NA_IGHV1", "None_IGHV2"), 100, replace = TRUE)
     sc_example[["CTgene"]] <- sample(c("NA_IGHV1.IGD1.IGJ1.IGM", "NA_IGHV1.IGD1.IGJ1.IGM", NA, "NA_IGHV1.IGD1.IGJ1.IGM", "None_IGHV1.IGD1.IGJ1.IGM"), 100, replace = TRUE)
@@ -39,7 +29,7 @@ if (!keras_installed || !numpy_installed) {
     expect_true(inherits(result, "Seurat"))
   })
   
-  test_that("runIbex works with geometric method", {
+test_that("runIbex works with geometric method", {
     sc_example <- suppressWarnings(SeuratObject::CreateSeuratObject(counts = matrix(rnorm(1000), nrow = 10, ncol = 100)))
     sc_example[["CTaa"]] <- sample(c("CASSL", "CASST", NA, "NA_IGHV1", "None_IGHV2"), 100, replace = TRUE)
     sc_example[["CTgene"]] <- sample(c("NA_IGHV1.IGD1.IGJ1.IGM", "NA_IGHV1.IGD1.IGJ1.IGM", NA, "NA_IGHV1.IGD1.IGJ1.IGM", "None_IGHV1.IGD1.IGJ1.IGM"), 100, replace = TRUE)
@@ -55,7 +45,7 @@ if (!keras_installed || !numpy_installed) {
     expect_true(inherits(result, "Seurat"))
   })
   
-  test_that("runIbex filters cells correctly", {
+test_that("runIbex filters cells correctly", {
     sc_example <- suppressWarnings(CreateSeuratObject(counts = matrix(rnorm(1000), nrow = 10, ncol = 100)))
     sc_example[["CTaa"]] <- c(rep("CASSL", 50), rep(NA, 50))
     sc_example[["CTgene"]] <- sample(c("NA_IGHV1.IGD1.IGJ1.IGM", "NA_IGHV1.IGD1.IGJ1.IGM", NA, "NA_IGHV1.IGD1.IGJ1.IGM", "None_IGHV1.IGD1.IGJ1.IGM"), 100, replace = TRUE)
@@ -71,7 +61,7 @@ if (!keras_installed || !numpy_installed) {
     expect_lt(ncol(result), 100)  # Ensures some cells were filtered out
   })
   
-  test_that("runIbex stops if amino acid sequences are missing", {
+test_that("runIbex stops if amino acid sequences are missing", {
     sc_example <- suppressWarnings(SeuratObject::CreateSeuratObject(counts = matrix(rnorm(1000), nrow = 10, ncol = 100)))
     
     expect_error(runIbex(sc_example, 
@@ -83,7 +73,7 @@ if (!keras_installed || !numpy_installed) {
                  "Amino acid sequences are not added to the single-cell object correctly.")
   })
   
-  test_that("runIbex works with different reduction names", {
+test_that("runIbex works with different reduction names", {
     sc_example <- suppressWarnings(SeuratObject::CreateSeuratObject(counts = matrix(rnorm(1000), nrow = 10, ncol = 100)))
     sc_example[["CTaa"]] <- sample(c("CASSL", "CASST", NA, "NA_IGHV1", "None_IGHV2"), 100, replace = TRUE)
     sc_example[["CTgene"]] <- sample(c("NA_IGHV1.IGD1.IGJ1.IGM", "NA_IGHV1.IGD1.IGJ1.IGM", NA, "NA_IGHV1.IGD1.IGJ1.IGM", "None_IGHV1.IGD1.IGJ1.IGM"), 100, replace = TRUE)
@@ -104,5 +94,5 @@ if (!keras_installed || !numpy_installed) {
     
     expect_true("Ibex1" %in% names(result1@reductions))
     expect_true("Ibex2" %in% names(result2@reductions))
-  })
-}
+})
+

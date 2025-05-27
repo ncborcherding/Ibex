@@ -63,62 +63,52 @@ checkLength <- function(x, expanded = NULL) {
 # Returns appropriate encoder model
 #' @importFrom utils download.file read.csv
 #' @importFrom tools R_user_dir
+#' @importFrom utils download.file read.csv
+#' @importFrom tools R_user_dir
 aa.model.loader <- function(species,
                             chain,
                             encoder.input,
-                            encoder.model,
-                            return_path = TRUE)     
-{
-  ## 1. expected filename 
-  model.name.base <- paste0(
+                            encoder.model) {
+
+  ## 1. Expected filename
+  file_name <- paste0(
     species, "_", chain, "_",
     encoder.model, "_", encoder.input,
     "_encoder.keras")
   
-  ##  2. metadata sanity check
-  meta_file <- system.file("extdata", "metadata.csv", package = "Ibex")
-  if (!file.exists(meta_file))
-    stop("Cannot find 'metadata.csv' in Ibex's 'inst/extdata' directory.")
+  ## 2. Sanity-check against metadata.csv 
+  meta <- read.csv(
+    system.file("extdata", "metadata.csv", package = "Ibex"),
+    stringsAsFactors = FALSE
+  )
   
-  model.meta <- read.csv(meta_file, stringsAsFactors = FALSE)
+  if (!file_name %in% meta[[1]])
+    stop("Model '", file_name, "' is not listed in metadata.csv.")
   
-  if (!model.name.base %in% model.meta[[1]])
-    stop("Model '", model.name.base, "' is not listed in metadata.csv.")
-  
-  ## 3. resolve Zenodo URL 
-  base_url     <- "https://zenodo.org/record/14919286/files"
-  download_url <- paste0(base_url, "/", model.name.base, "?download=1")
-  
-  ##  4. prepare cache 
+  ## 3. Cache directory 
   cache_dir <- tools::R_user_dir("Ibex", which = "cache")
-  if (!dir.exists(cache_dir)) dir.create(cache_dir, recursive = TRUE)
+  if (!dir.exists(cache_dir))
+    dir.create(cache_dir, recursive = TRUE, showWarnings = FALSE)
   
-  local_path <- file.path(cache_dir, model.name.base)
+  local_path <- file.path(cache_dir, file_name)
   
+  ## 4. Download if we have never seen this model before
   if (!file.exists(local_path)) {
-    message("Downloading model: ", model.name.base)
-    status <- utils::download.file(download_url,
-                                   destfile = local_path,
-                                   mode     = "wb")
+    message("Downloading model '", file_name, " ...")
+    base_url <- "https://zenodo.org/record/14919286/files"
+    status   <- utils::download.file(
+      url      = file.path(base_url, file_name),
+      destfile = local_path,
+      mode     = "wb",
+      quiet    = TRUE
+    )
     if (status != 0)
-      stop("Download failed with status code ", status, ".")
+      stop("Download of model '", file_name,
+           "' failed (status ", status, ").")
   }
   
-  ## 5. return 
-  if (return_path)
-    return(local_path)
-  
-  ##  (optional) load via basilisk 
-  model <- basilisk::basiliskRun(
-    env = IbexEnv,
-    fun = function(mpath) {
-      library(tensorflow)
-      library(keras)
-      keras::load_model_hdf5(mpath, compile = FALSE)
-    },
-    mpath = local_path
-  )
-  model
+  ## 5. Done return the path for use in basiliskRun()
+  normalizePath(local_path, winslash = "/")
 }
 
 
