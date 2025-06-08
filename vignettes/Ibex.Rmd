@@ -37,6 +37,14 @@ suppressMessages(library(viridis))
 suppressMessages(library(utils))
 ```
 
+```{r include = FALSE}
+# This forces TensorFlow/Keras to initialize in a controlled way.
+basilisk::basiliskRun(env = Ibex:::IbexEnv, fun = function() {
+  keras <- reticulate::import("keras")
+  invisible(NULL)
+})
+```
+
 ## The Data Set
 
 The data used here are derived from 10x Genomics’ 2k BEAM-Ab Mouse HEL data set, consisting of splenocytes from transgenic mice engineered to recognize Hen Egg Lysozyme (HEL). These splenocytes were labeled with a small antigen panel: SARS-TRI-S, gp120, H5N1, and a negative control.

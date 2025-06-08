@@ -74,7 +74,7 @@ Ibex.matrix <- function(input.data,
                         geometric.theta = pi/3, 
                         species = "Human",
                         verbose = TRUE) {
-
+  
   # Match arguments for better validation
   chain <- match.arg(chain)
   method <- match.arg(method)
@@ -96,10 +96,8 @@ Ibex.matrix <- function(input.data,
   
   # Determine dictionary for sequence encoding
   if (expanded.sequences) {
-    #Quick Check to see if there are - corresponding to CDR1-CDR2-CDR3
     if (all(grepl("-", BCR[,2]))) {
-      stop("Expanded sequences are not properly formated, please use 
-           combineExpandedBCR().")
+      stop("Expanded sequences are not properly formated, please use combineExpandedBCR().")
     }
     BCR[,2] <- gsub("-", "_", BCR[,2])
     dictionary <- c(amino.acids, "_")
@@ -115,39 +113,46 @@ Ibex.matrix <- function(input.data,
   length.to.use <- if (expanded.sequences) 90 else 45
   
   if (method == "encoder") {
-    if (verbose) print("Encoding Sequences...")
-    
-    if(encoder.input == "OHE") {
-      encoded.values <- suppressMessages(onehotEncoder(BCR[,2],
-                                         max.length = length.to.use,
-                                         convert.to.matrix = TRUE,
-                                         sequence.dictionary = dictionary,
-                                         padding.symbol = "."))
-    } else {
-      encoded.values <- suppressMessages(propertyEncoder(BCR[,2], 
-                                         max.length = length.to.use,
-                                         method.to.use = encoder.input,
-                                         convert.to.matrix = TRUE))
-    }
-    if (verbose) print("Calculating Latent Dimensions...")
-    # Getting Model
+    # Getting Model Path
     model.path <- aa.model.loader(species      = species,  
                                   chain        = chain,
                                   encoder.input = encoder.input,
                                   encoder.model = encoder.model)
-    #Getting Reduction 
+    
+    if (verbose) print("Encoding sequences and calculating latent dimensions...")
+    
+    # Run ENCODING and PREDICTION inside the basilisk environment
     reduction <- basiliskRun(
       env = IbexEnv,
-      fun = function(mpath, xmat) {
+      fun = function(sequences, enc.input, max.len, seq.dict, mpath, verbose.fun) {
+        
+        # 1. Encode sequences inside the correct environment
+        if(enc.input == "OHE") {
+          encoded.values <- immApex::onehotEncoder(sequences,
+                                                   max.length = max.len,
+                                                   convert.to.matrix = TRUE,
+                                                   sequence.dictionary = seq.dict,
+                                                   padding.symbol = ".")
+        } else {
+          encoded.values <- immApex::propertyEncoder(sequences, 
+                                                     max.length = max.len,
+                                                     method.to.use = enc.input,
+                                                     convert.to.matrix = TRUE)
+        }
+        
+        # 2. Load model and predict
         keras <- reticulate::import("keras", delay_load = FALSE)
-        
         model <- keras$models$load_model(mpath)  
-        pred  <- model$predict(xmat)
+        pred  <- model$predict(encoded.values)
         
-        as.array(pred)
+        return(as.array(pred))
       },
-      mpath = model.path,
-      xmat  = encoded.values
+      # Pass arguments to the function inside basiliskRun
+      sequences = BCR[,2],
+      enc.input = encoder.input,
+      max.len   = length.to.use,
+      seq.dict  = dictionary,
+      mpath     = model.path
     )
     
   } else if (method == "geometric") {
@@ -155,6 +160,7 @@ Ibex.matrix <- function(input.data,
     BCR[,2] <- gsub("-", "", BCR[,2])
     reduction <- suppressMessages(geometricEncoder(BCR[,2], theta = geometric.theta))
   }
+  
   reduction <- as.data.frame(reduction)
   barcodes <- BCR[,1]
   rownames(reduction) <- barcodes

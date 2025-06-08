@@ -1,3 +1,7 @@
+CHANGES IN VERSION 0.99.14
+------------------------
+* Adding proper wrapper to ```ibex.matrix()```
+
 CHANGES IN VERSION 0.99.12
 ------------------------
 * Basilisk conversion
