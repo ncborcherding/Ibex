@@ -1,3 +1,7 @@
+CHANGES IN VERSION 0.99.15
+------------------------
+* defining system env for basilisk in vignette
+
 CHANGES IN VERSION 0.99.14
 ------------------------
 * Adding proper wrapper to ```ibex.matrix()```
