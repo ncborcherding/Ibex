@@ -15,6 +15,11 @@ vignette: >
   %\usepackage[UTF-8]{inputenc}
 ---
 
+```{r include=FALSE}
+# Set a temporary, writable directory for ALL basilisk operations.
+Sys.setenv(BASILISK_CACHE_DIR = tempdir())
+```
+
 ```{r, echo=FALSE, results="hide", message=FALSE}
 knitr::opts_chunk$set(error=FALSE, message=FALSE, warning=FALSE, tidy = FALSE)
 library(BiocStyle)
@@ -38,9 +43,6 @@ suppressMessages(library(utils))
 ```
 
 ```{r include = FALSE}
-# Set a temporary, writable directory for ALL basilisk operations.
-Sys.setenv(BASILISK_CACHE_DIR = tempdir())
-
 # Now, trigger the one-time build of the Python environment.
 basilisk::basiliskRun(env = Ibex:::IbexEnv, fun = function() {
   keras <- reticulate::import("keras")

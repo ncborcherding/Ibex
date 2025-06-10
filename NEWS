@@ -1,3 +1,7 @@
+CHANGES IN VERSION 0.99.16
+------------------------
+* flanking library(ibex) with basilisk creation
+
 CHANGES IN VERSION 0.99.15
 ------------------------
 * defining system env for basilisk in vignette
