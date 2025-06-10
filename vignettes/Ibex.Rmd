@@ -16,10 +16,11 @@ vignette: >
 ---
 
 ```{r include=FALSE}
-# Set a temporary, writable directory for ALL basilisk operations.
+# Create and set a temporary,
 temp_cache <- file.path(tempdir(), "basilisk_cache")
 dir.create(temp_cache, recursive = TRUE, showWarnings = FALSE)
-Sys.setenv(BASILISK_CACHE_DIR = temp_cache)
+Sys.setenv("BASILISK_CACHE_DIR" = temp_cache)
+do.call(Sys.setenv, list(BASILISK_CACHE_DIR = temp_cache))
 
 knitr::opts_chunk$set(error=FALSE, message=FALSE, warning=FALSE, tidy = FALSE)
 library(BiocStyle)
