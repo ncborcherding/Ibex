@@ -123,7 +123,7 @@ Ibex.matrix <- function(input.data,
     
     # Run ENCODING and PREDICTION inside the basilisk environment
     reduction <- basiliskRun(
-      env = IbexEnv,
+      env = .get_ibex_env(),
       fun = function(sequences, enc.input, max.len, seq.dict, mpath, verbose.fun) {
         
         # 1. Encode sequences inside the correct environment
