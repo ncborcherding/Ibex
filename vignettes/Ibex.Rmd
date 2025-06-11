@@ -15,15 +15,17 @@ vignette: >
   %\usepackage[UTF-8]{inputenc}
 ---
 
-```{r include=FALSE}
-# Create and set a temporary,
-temp_cache <- file.path(tempdir(), "basilisk_cache")
-dir.create(temp_cache, recursive = TRUE, showWarnings = FALSE)
-Sys.setenv("BASILISK_CACHE_DIR" = temp_cache)
-do.call(Sys.setenv, list(BASILISK_CACHE_DIR = temp_cache))
+```{r setup, include=FALSE}
+# Set a temporary, writable cache directory for basilisk
+# This is essential for build environments where default paths are read-only.
+cache <- file.path(tempdir(), "basilisk_cache")
+if (!dir.exists(cache)) {
+    dir.create(cache, recursive = TRUE)
+}
+Sys.setenv(BASILISK_CACHE_DIR = cache)
 
+# Set standard knitr options
 knitr::opts_chunk$set(error=FALSE, message=FALSE, warning=FALSE, tidy = FALSE)
-library(BiocStyle)
 ```
 
 # Introduction
@@ -41,37 +43,6 @@ suppressMessages(library(patchwork))
 suppressMessages(library(scater))
 suppressMessages(library(viridis))
 suppressMessages(library(utils))
-```
-
-```{r include = FALSE}
-# Defensive Basilisk environment setup for vignette building
-setup_basilisk_env <- function() {
-  # Double-check cache directory setup
-  cache_dir <- Sys.getenv("BASILISK_CACHE_DIR")
-  if (nzchar(cache_dir) && !dir.exists(cache_dir)) {
-    dir.create(cache_dir, recursive = TRUE, showWarnings = FALSE)
-  }
-  
-  # Only attempt initialization if not in CHECK mode
-  if (!identical(Sys.getenv("_R_CHECK_PACKAGE_NAME_"), "Ibex") && 
-      !identical(Sys.getenv("R_CMD"), "check")) {
-    
-    tryCatch({
-      basilisk::basiliskRun(env = Ibex:::IbexEnv, fun = function() {
-        keras <- reticulate::import("keras")
-        invisible(NULL)
-      })
-    }, error = function(e) {
-      message("Basilisk environment initialization skipped during build: ", e$message)
-      return(NULL)
-    })
-  } else {
-    message("Skipping Basilisk initialization during package check/build")
-  }
-}
-
-# Run the setup
-setup_basilisk_env()
 ```
 
 ## The Data Set
