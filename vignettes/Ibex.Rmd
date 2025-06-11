@@ -16,14 +16,7 @@ vignette: >
 ---
 
 ```{r setup, include=FALSE}
-# Set a temporary, writable cache directory for basilisk
-# This is essential for build environments where default paths are read-only.
-cache <- file.path(tempdir(), "basilisk_cache")
-if (!dir.exists(cache)) {
-    dir.create(cache, recursive = TRUE)
-}
-Sys.setenv(BASILISK_CACHE_DIR = cache)
-
+library(BiocStyle)
 # Set standard knitr options
 knitr::opts_chunk$set(error=FALSE, message=FALSE, warning=FALSE, tidy = FALSE)
 ```
