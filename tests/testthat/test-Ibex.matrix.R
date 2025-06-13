@@ -13,7 +13,17 @@ test_that("Ibex.matrix handles incorrect inputs gracefully", {
                "non-numeric argument to mathematical function")
 })
 
-test_that("Ibex.matrix returns expected output format", {
+keras_installed <- reticulate::py_module_available("keras")
+numpy_installed <- reticulate::py_module_available("numpy")
+
+# 2. If not installed, skip everything:
+if (!keras_installed || !numpy_installed) {
+  test_that("Skipping Ibex.matrix tests", {
+    skip("Required Python modules (Keras, NumPy) are not available.")
+  })
+} else {
+    
+  test_that("Ibex.matrix returns expected output format", {
     result <- Ibex.matrix(input.data = ibex_example, 
                           chain = "Heavy", 
                           method = "encoder",
@@ -24,9 +34,9 @@ test_that("Ibex.matrix returns expected output format", {
     expect_true(all(grepl("^Ibex_", colnames(result))))
     expect_gt(nrow(result), 0)
     expect_gt(ncol(result), 0)
-})
+  })
   
-test_that("Ibex.matrix works with encoder method", {
+  test_that("Ibex.matrix works with encoder method", {
     result <- Ibex.matrix(input.data = ibex_example, 
                           chain = "Light", 
                           method = "encoder",
@@ -35,9 +45,9 @@ test_that("Ibex.matrix works with encoder method", {
                           verbose = FALSE)
     expect_true(is.data.frame(result))
     expect_true(all(grepl("^Ibex_", colnames(result))))
-})
+  })
   
-test_that("Ibex.matrix works with geometric method", {
+  test_that("Ibex.matrix works with geometric method", {
     result <- Ibex.matrix(input.data = ibex_example, 
                           chain = "Heavy", 
                           method = "geometric",
@@ -45,9 +55,9 @@ test_that("Ibex.matrix works with geometric method", {
                           verbose = FALSE)
     expect_true(is.data.frame(result))
     expect_true(all(grepl("^Ibex_", colnames(result))))
-})
+  })
   
-test_that("Ibex.matrix handles different species options", {
+  test_that("Ibex.matrix handles different species options", {
     result1 <- Ibex.matrix(input.data = ibex_example, 
                            chain = "Heavy", 
                            method = "encoder",
@@ -66,5 +76,5 @@ test_that("Ibex.matrix handles different species options", {
     expect_true(is.data.frame(result2))
     expect_true(all(grepl("^Ibex_", colnames(result1))))
     expect_true(all(grepl("^Ibex_", colnames(result2))))
-})
-
+  })
+}
