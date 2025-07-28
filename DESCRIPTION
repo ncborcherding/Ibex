@@ -31,7 +31,7 @@ Suggests:
 	bluster,
 	dplyr,
 	ggplot2,
-        kableExtra,
+    kableExtra,
 	knitr, 
 	markdown,
 	mumosa,
@@ -39,8 +39,8 @@ Suggests:
 	rmarkdown, 
 	scater,
 	spelling,
-        testthat (>= 3.0.0),
-        utils,
+	testthat (>= 3.0.0),
+	utils,
 	viridis
 SystemRequirements: Python (via basilisk)
 VignetteBuilder: knitr
