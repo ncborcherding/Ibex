@@ -47,3 +47,4 @@ VignetteBuilder: knitr
 Language: en-US
 URL: https://github.com/BorchLab/Ibex/
 BugReports: https://github.com/BorchLab/Ibex/issues
+Roxygen: list(markdown = TRUE)

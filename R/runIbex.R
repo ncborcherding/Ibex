@@ -3,7 +3,7 @@
 #' This function applies the Ibex algorithm to single-cell data, integrating 
 #' seamlessly with Seurat or SingleCellExperiment pipelines. The algorithm 
 #' generates latent dimensions using deep learning or geometric transformations,
-#' storing the results in the dimensional reduction slot. \code{runIbex} will
+#' storing the results in the dimensional reduction slot. `runIbex` will
 #' automatically subset the single-cell object based on amino acid sequences 
 #' present for the given chain selection. 
 #'
@@ -22,35 +22,24 @@
 #'                         geometric.theta = pi)
 #'
 #' @param sc.data A single-cell dataset, which can be:
-#'   \itemize{
-#'     \item A Seurat object
-#'     \item A SingleCellExperiment object
-#'   }
+#'   - A Seurat object
+#'   - A SingleCellExperiment object
 #' @param chain Character. Specifies the chain to analyze:
-#'   \itemize{
-#'     \item "Heavy" for the heavy chain
-#'     \item "Light" for the light chain
-#'   }
+#'   - "Heavy" for the heavy chain
+#'   - "Light" for the light chain
 #' @param method Character. Algorithm to use for generating latent dimensions:
-#'   \itemize{
-#'     \item "encoder" - Uses deep learning autoencoders
-#'     \item "geometric" - Uses geometric transformations based on the BLOSUM62 matrix
-#'   }
+#'   - "encoder" - Uses deep learning autoencoders
+#'   - "geometric" - Uses geometric transformations based on the BLOSUM62 matrix
 #' @param encoder.model Character. The type of autoencoder model to use:
-#'   \itemize{
-#'     \item "CNN" - CDR3 Convolutional Neural Network-based autoencoder
-#'     \item "VAE" - CDR3 Variational Autoencoder
-#'     \item "CNN.EXP" - CDR1/2/3 CNN
-#'     \item "VAE.EXP" - CDR1/2/3 VAE
-#'   }
+#'   - "CNN" - CDR3 Convolutional Neural Network-based autoencoder
+#'   - "VAE" - CDR3 Variational Autoencoder
+#'   - "CNN.EXP" - CDR1/2/3 CNN
+#'   - "VAE.EXP" - CDR1/2/3 VAE
 #' @param encoder.input Character. Input features for the encoder model:
-#'   \itemize{
-#'     \item Amino Acid Properties: "atchleyFactors", "crucianiProperties",
-#'      "kideraFactors", "MSWHIM", "tScales"
-#'     \item "OHE" - One Hot Encoding 
-#'   }
+#'   - Amino Acid Properties: "atchleyFactors", "crucianiProperties", "kideraFactors", "MSWHIM", "tScales"
+#'   - "OHE" - One Hot Encoding 
 #' @param geometric.theta Numeric. Angle (in radians) for geometric transformation. 
-#'   Used only when \code{method = "geometric"}.
+#'   Used only when `method = "geometric"`.
 #' @param reduction.name Character. The name to assign to the dimensional reduction. 
 #'   This is useful for running Ibex with multiple parameter settings and saving results 
 #'   under different names.

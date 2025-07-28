@@ -17,8 +17,8 @@ CoNGAfy(
 
 \item{method}{Character. Specifies the method to reduce the dataset:
 \itemize{
-  \item "mean" - Computes the mean expression of selected features across cells in each clonotype.
-  \item "dist" - Uses PCA reduction to identify the cell with the minimal Euclidean distance within each clonotype group.
+\item "mean" - Computes the mean expression of selected features across cells in each clonotype.
+\item "dist" - Uses PCA reduction to identify the cell with the minimal Euclidean distance within each clonotype group.
 }}
 
 \item{features}{Character vector. Selected genes for the reduction. If \code{NULL} (default), all genes are used.}
@@ -31,11 +31,11 @@ CoNGAfy(
 A reduced single-cell object where each clonotype is represented by a single cell.
 }
 \description{
-This function generates a single-cell object with a reduced representation 
-of RNA expression by clone. The approach is inspired by the method introduced 
-in \href{https://pubmed.ncbi.nlm.nih.gov/34426704/}{CoNGA}. Users can 
-generate either a mean representation of features by clone or identify a 
-representative cell using count-based minimal Euclidean distance. 
+This function generates a single-cell object with a reduced representation
+of RNA expression by clone. The approach is inspired by the method introduced
+in \href{https://pubmed.ncbi.nlm.nih.gov/34426704/}{CoNGA}. Users can
+generate either a mean representation of features by clone or identify a
+representative cell using count-based minimal Euclidean distance.
 Please read and cite the original work by the authors of CoNGA.
 }
 \examples{
