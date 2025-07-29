@@ -3,10 +3,10 @@
 #' This function enhances BCR processing by incorporating additional 
 #' sequence information from CDR1 and CDR2 regions before applying the BCR 
 #' combination logic. The function depends on 
-#' \code{\link[scRepertoire]{combineBCR}} from the scRepertoire package.
+#' [scRepertoire::combineBCR()].
 #' 
 #' @examples
-#' combined.BCR <- combineExpandedBCR(list(ibex_vdj), 
+#' combined.BCR <- combineExpandedBCR(list(ibex_vdj),
 #'                                    samples = "Sample1",
 #'                                    filterNonproductive = TRUE)
 #'
@@ -28,7 +28,7 @@
 #'
 #'@return A list of consolidated BCR clones with expanded CDR sequences.
 #' @seealso 
-#' \code{\link[scRepertoire]{combineBCR}}
+#' [scRepertoire::combineBCR()]
 #'
 #' @importFrom scRepertoire combineBCR
 #' @export

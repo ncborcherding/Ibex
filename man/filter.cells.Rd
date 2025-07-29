@@ -15,6 +15,6 @@ filter.cells(sc.obj, chain)
 A filtered Seurat or SingleCellExperiment object.
 }
 \description{
-This function subsets a Seurat or SingleCellExperiment object, 
-removing cells where the `CTaa` column is missing or contains unwanted patterns.
+This function subsets a Seurat or SingleCellExperiment object,
+removing cells where the \code{CTaa} column is missing or contains unwanted patterns.
 }

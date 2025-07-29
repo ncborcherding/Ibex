@@ -23,39 +23,39 @@ combineExpandedBCR(
 
 \item{ID}{Character vector. Additional sample labeling (optional).}
 
-\item{call.related.clones}{Logical. Whether to call related clones based on 
-nucleotide sequence and V gene. Default is `TRUE`.}
+\item{call.related.clones}{Logical. Whether to call related clones based on
+nucleotide sequence and V gene. Default is \code{TRUE}.}
 
-\item{threshold}{Numeric. Normalized edit distance for clone clustering. 
-Default is `0.85`.}
+\item{threshold}{Numeric. Normalized edit distance for clone clustering.
+Default is \code{0.85}.}
 
-\item{removeNA}{Logical. Whether to remove any chain without values. Default 
-is `FALSE`.}
+\item{removeNA}{Logical. Whether to remove any chain without values. Default
+is \code{FALSE}.}
 
-\item{removeMulti}{Logical. Whether to remove barcodes with more than two 
-chains. Default is `FALSE`.}
+\item{removeMulti}{Logical. Whether to remove barcodes with more than two
+chains. Default is \code{FALSE}.}
 
-\item{filterMulti}{Logical. Whether to select the highest-expressing light 
-and heavy chains. Default is `TRUE`.}
+\item{filterMulti}{Logical. Whether to select the highest-expressing light
+and heavy chains. Default is \code{TRUE}.}
 
-\item{filterNonproductive}{Logical. Whether to remove nonproductive chains. 
-Default is `TRUE`.}
+\item{filterNonproductive}{Logical. Whether to remove nonproductive chains.
+Default is \code{TRUE}.}
 }
 \value{
 A list of consolidated BCR clones with expanded CDR sequences.
 }
 \description{
-This function enhances BCR processing by incorporating additional 
-sequence information from CDR1 and CDR2 regions before applying the BCR 
-combination logic. The function depends on 
-\code{\link[scRepertoire]{combineBCR}} from the scRepertoire package.
+This function enhances BCR processing by incorporating additional
+sequence information from CDR1 and CDR2 regions before applying the BCR
+combination logic. The function depends on
+\code{\link[scRepertoire:combineBCR]{scRepertoire::combineBCR()}}.
 }
 \examples{
-combined.BCR <- combineExpandedBCR(list(ibex_vdj), 
+combined.BCR <- combineExpandedBCR(list(ibex_vdj),
                                    samples = "Sample1",
                                    filterNonproductive = TRUE)
 
 }
 \seealso{
-\code{\link[scRepertoire]{combineBCR}}
+\code{\link[scRepertoire:combineBCR]{scRepertoire::combineBCR()}}
 }
