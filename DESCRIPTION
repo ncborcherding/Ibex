@@ -42,6 +42,8 @@ Suggests:
 	testthat (>= 3.0.0),
 	utils,
 	viridis
+Remotes:
+    	BorchLab/immApex
 SystemRequirements: Python (via basilisk)
 VignetteBuilder: knitr
 Language: en-US
