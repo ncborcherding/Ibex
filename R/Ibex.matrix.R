@@ -95,7 +95,7 @@ Ibex.matrix <- function(input.data,
   }
   
   # Filter by gene locus
-  BCR <- BCR[grepl(paste0(loci, collapse = "|"), BCR[, "v"]), ]
+  #BCR <- BCR[grepl(paste0(loci, collapse = "|"), BCR[, "v"]), ]
   
   # Ensure sequences meet length criteria
   checkLength(x = BCR[,"cdr3_aa"], expanded = expanded.sequences)
@@ -127,11 +127,20 @@ Ibex.matrix <- function(input.data,
       env = IbexEnv,
       fun = function(mpath, xmat) {
         keras <- reticulate::import("keras", delay_load = FALSE)
+        model <- NULL 
+        pred <- NULL  
         
-        model <- keras$models$load_model(mpath)  
-        pred  <- model$predict(xmat)
-        
-        as.array(pred)
+        tryCatch({
+          model <- keras$models$load_model(mpath)  
+          pred  <- model$predict(xmat)
+          as.array(pred) # This will be the return value
+        }, finally = {
+          rm(pred)
+          rm(model)
+          # Clear the Keras/TensorFlow backend session
+          keras$backend$clear_session()
+          gc()
+        })
       },
       mpath = model.path,
       xmat  = encoded.values
