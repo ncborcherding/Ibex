@@ -20,6 +20,7 @@ if (inherits(x=sc, what ="Seurat")) {
 
 # This is to grab the metadata from a Seurat or SCE object
 #' @importFrom SingleCellExperiment colData 
+#' @importFrom methods slot
 grabMeta <- function(sc) {
   if (inherits(x=sc, what ="Seurat")) {
     meta <- data.frame(sc[[]], slot(sc, "active.ident"))
@@ -52,6 +53,7 @@ checkSingleObject <- function(sc) {
 }
 
 # This is to check that all the CDR3 sequences are < 45 residues or < 90 for CDR1/2/3
+#' @importFrom stats na.omit
 checkLength <- function(x, expanded = NULL) {
   cutoff <- ifelse( expanded == FALSE || is.null(expanded), 45, 90)
   if(any(na.omit(nchar(x)) > cutoff)) {

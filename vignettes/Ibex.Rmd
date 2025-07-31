@@ -17,6 +17,7 @@ vignette: >
 
 ```{r setup, include=FALSE}
 library(BiocStyle)
+library(Peptides)
 # Set standard knitr options
 knitr::opts_chunk$set(error=FALSE, message=FALSE, warning=FALSE, tidy = FALSE)
 ```
@@ -354,7 +355,8 @@ plot4 <- plotUMAP(ibex_example,
 plot5 <- plotUMAP(ibex_example, 
                   dimred = "MultiUMAP", 
                   color_by = "CTaa") + 
-  scale_color_manual(values = viridis_pal(option = "B")(length(unique(ibex_example$CTaa)))) 
+  scale_color_manual(values = viridis_pal(option = "B")(length(unique(ibex_example$CTaa)))) +
+  guides(color = "none")
 
 plot3 + plot4 + plot5
 ```

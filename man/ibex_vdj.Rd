@@ -3,47 +3,47 @@
 \docType{data}
 \name{ibex_vdj}
 \alias{ibex_vdj}
-\title{Full filtered_annotated_contig.csv from the 10x 
+\title{Full filtered_annotated_contig.csv from the 10x
 2k_BEAM-Ab_Mouse_HEL_5pv2}
 \format{
 A data frame with 6 rows and 35 columns:
 \describe{
-  \item{barcode}{Character. Unique cell barcode.}
-  \item{is_cell}{Logical. Whether the barcode is identified as a cell.}
-  \item{contig_id}{Character. Unique identifier for each contig.}
-  \item{high_confidence}{Logical. Whether the contig is high confidence.}
-  \item{length}{Integer. Length of the contig.}
-  \item{chain}{Character. Chain type (e.g., IGH, IGK).}
-  \item{v_gene}{Character. V gene annotation.}
-  \item{d_gene}{Character. D gene annotation.}
-  \item{j_gene}{Character. J gene annotation.}
-  \item{c_gene}{Character. C gene annotation.}
-  \item{full_length}{Logical. Whether the contig is full-length.}
-  \item{productive}{Logical. Whether the contig is productive.}
-  \item{fwr1}{Character. Amino acid sequence for Framework Region 1.}
-  \item{fwr1_nt}{Character. Nucleotide sequence for FWR1.}
-  \item{cdr1}{Character. Amino acid sequence for CDR1.}
-  \item{cdr1_nt}{Character. Nucleotide sequence for CDR1.}
-  \item{fwr2}{Character. Amino acid sequence for FWR2.}
-  \item{fwr2_nt}{Character. Nucleotide sequence for FWR2.}
-  \item{cdr2}{Character. Amino acid sequence for CDR2.}
-  \item{cdr2_nt}{Character. Nucleotide sequence for CDR2.}
-  \item{fwr3}{Character. Amino acid sequence for FWR3.}
-  \item{fwr3_nt}{Character. Nucleotide sequence for FWR3.}
-  \item{cdr3}{Character. Amino acid sequence for CDR3.}
-  \item{cdr3_nt}{Character. Nucleotide sequence for CDR3.}
-  \item{fwr4}{Character. Amino acid sequence for FWR4.}
-  \item{fwr4_nt}{Character. Nucleotide sequence for FWR4.}
-  \item{reads}{Integer. Number of reads supporting the contig.}
-  \item{umis}{Integer. Number of UMIs supporting the contig.}
-  \item{raw_clonotype_id}{Character. Clonotype ID from 10x output.}
-  \item{raw_consensus_id}{Character. Consensus ID from 10x output.}
-  \item{exact_subclonotype_id}{Integer. Exact subclonotype grouping.}
+\item{barcode}{Character. Unique cell barcode.}
+\item{is_cell}{Logical. Whether the barcode is identified as a cell.}
+\item{contig_id}{Character. Unique identifier for each contig.}
+\item{high_confidence}{Logical. Whether the contig is high confidence.}
+\item{length}{Integer. Length of the contig.}
+\item{chain}{Character. Chain type (e.g., IGH, IGK).}
+\item{v_gene}{Character. V gene annotation.}
+\item{d_gene}{Character. D gene annotation.}
+\item{j_gene}{Character. J gene annotation.}
+\item{c_gene}{Character. C gene annotation.}
+\item{full_length}{Logical. Whether the contig is full-length.}
+\item{productive}{Logical. Whether the contig is productive.}
+\item{fwr1}{Character. Amino acid sequence for Framework Region 1.}
+\item{fwr1_nt}{Character. Nucleotide sequence for FWR1.}
+\item{cdr1}{Character. Amino acid sequence for CDR1.}
+\item{cdr1_nt}{Character. Nucleotide sequence for CDR1.}
+\item{fwr2}{Character. Amino acid sequence for FWR2.}
+\item{fwr2_nt}{Character. Nucleotide sequence for FWR2.}
+\item{cdr2}{Character. Amino acid sequence for CDR2.}
+\item{cdr2_nt}{Character. Nucleotide sequence for CDR2.}
+\item{fwr3}{Character. Amino acid sequence for FWR3.}
+\item{fwr3_nt}{Character. Nucleotide sequence for FWR3.}
+\item{cdr3}{Character. Amino acid sequence for CDR3.}
+\item{cdr3_nt}{Character. Nucleotide sequence for CDR3.}
+\item{fwr4}{Character. Amino acid sequence for FWR4.}
+\item{fwr4_nt}{Character. Nucleotide sequence for FWR4.}
+\item{reads}{Integer. Number of reads supporting the contig.}
+\item{umis}{Integer. Number of UMIs supporting the contig.}
+\item{raw_clonotype_id}{Character. Clonotype ID from 10x output.}
+\item{raw_consensus_id}{Character. Consensus ID from 10x output.}
+\item{exact_subclonotype_id}{Integer. Exact subclonotype grouping.}
 }
 }
 \description{
-This dataset contains single-cell V(D)J sequencing annotations 
-from the 10x Genomics BEAM-Ab Mouse dataset. It includes V(D)J 
-gene calls, CDR regions, productivity information, and clonotype 
+This dataset contains single-cell V(D)J sequencing annotations
+from the 10x Genomics BEAM-Ab Mouse dataset. It includes V(D)J
+gene calls, CDR regions, productivity information, and clonotype
 assignments for each contig.
 }

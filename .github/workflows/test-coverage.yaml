@@ -25,8 +25,11 @@ jobs:
 
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
-          extra-packages: any::covr, any::xml2, rcmdcheck, bioc::basilisk, bioc::basilisk.utils 
-          needs: cran, bioc, coverage
+          extra-packages: any::covr, any::xml2, rcmdcheck, keras3 
+          needs: coverage
+
+      - name: Install Keras Python dependencies
+        run: R -e 'keras3::install_keras()'  # This runs the install_keras function from R
 
       - name: Test coverage
         run: |

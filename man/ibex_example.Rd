@@ -9,18 +9,17 @@ B cells with BCR sequences from the 10x Genomics
 \format{
 A \code{SingleCellExperiment} object with 32,285 genes (rows) and 200 cells (columns).
 \describe{
-  \item{assays}{List of matrices containing expression values: \code{counts} (raw counts) and \code{logcounts} (log-transformed).}
-  \item{rowData}{Empty in this example (no gene-level annotations).}
-  \item{colData}{A \code{DataFrame} with 14 columns of cell metadata, including:}
-    \itemize{
-      \item orig.identOriginal sample identity.
-      \item nCount_RNA Total number of counts per cell.
-      \item nFeature_RNA Number of detected genes per cell.
-      \item cloneSize Size of each clone.
-      \item ident Cluster assignment.
-    }
-  \item{reducedDims}{Contains dimensionality reductions: \code{PCA}, \code{pca}, and \code{apca}.}
-  \item{altExp}{One alternative experiment named \code{BEAM} containing additional expression data.}
+\item{assays}{List of matrices containing expression values: \code{counts} (raw counts) and \code{logcounts} (log-transformed).}
+\item{rowData}{Empty in this example (no gene-level annotations).}
+\item{colData}{A \code{DataFrame} with 14 columns of cell metadata, including:
+- orig.ident: Original sample identity.
+- nCount_RNA: Total number of counts per cell.
+- nFeature_RNA: Number of detected genes per cell.
+- cloneSize: Size of each clone.
+- ident: Cluster assignment.
+}
+\item{reducedDims}{Contains dimensionality reductions: \code{PCA}, \code{pca}, and \code{apca}.}
+\item{altExp}{One alternative experiment named \code{BEAM} containing additional expression data.}
 }
 }
 \description{

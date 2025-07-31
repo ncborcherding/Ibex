@@ -1,5 +1,5 @@
-# .github/workflows/R-CMD-check.yaml
-# Simplified for basilisk-based Ibex (no global Keras install required)
+# Workflow derived from https://github.com/r-lib/actions/tree/v2/examples
+# Need help debugging build failures? Start at https://github.com/r-lib/actions#where-to-find-help
 on:
   push:
     branches: [main, master]
@@ -11,18 +11,20 @@ name: R-CMD-check
 jobs:
   R-CMD-check:
     runs-on: ${{ matrix.config.os }}
+
     name: ${{ matrix.config.os }} (${{ matrix.config.r }})
 
     strategy:
       fail-fast: false
       matrix:
         config:
-          - {os: ubuntu-latest, r: 'release'}
+          - {os: ubuntu-latest,   r: 'release'}
 
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
       R_KEEP_PKG_SOURCE: yes
 
+   
     steps:
       - uses: actions/checkout@v3
 
@@ -31,23 +33,17 @@ jobs:
       - uses: r-lib/actions/setup-r@v2
         with:
           r-version: ${{ matrix.config.r }}
+          http-user-agent: ${{ matrix.config.http-user-agent }}
           use-public-rspm: true
-
-      # Optional: cache basilisk's miniconda to speed up repeated runs
-      - uses: actions/cache@v4
-        with:
-          path: ${{ runner.tool_cache }}/basilisk
-          key: ${{ runner.os }}-basilisk-${{ hashFiles('DESCRIPTION') }}
 
       - name: Install R dependencies
         uses: r-lib/actions/setup-r-dependencies@v2
         with:
-          extra-packages: |
-            any::rcmdcheck
-            bioc::basilisk
-            bioc::basilisk.utils
-          needs: cran, bioc
+            extra-packages: rcmdcheck, keras3  # Add keras to the list of extra packages
 
+      - name: Install Keras Python dependencies
+        run: R -e 'keras3::install_keras()'  # This runs the install_keras function from R
+          
       - uses: r-lib/actions/check-r-package@v2
         with:
           upload-snapshots: true
