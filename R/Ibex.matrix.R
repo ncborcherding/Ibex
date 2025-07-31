@@ -46,7 +46,6 @@
 #' @importFrom basilisk basiliskRun
 #' @importFrom SeuratObject CreateDimReducObject
 #' @importFrom immApex propertyEncoder onehotEncoder geometricEncoder getIR
-#' @importFrom stats complete.cases
 #' @importFrom tensorflow tf
 #' 
 #' @seealso 
@@ -79,7 +78,7 @@ Ibex.matrix <- function(input.data,
   
   #Getting Sequences
   BCR <- getIR(input.data, chain, sequence.type = "aa")
-  BCR <- BCR[complete.cases(BCR[["cdr3_aa"]]), ]
+  #BCR <- BCR[complete.cases(BCR[["cdr3_aa"]]), ]
   
   # Determine dictionary for sequence encoding
   if (expanded.sequences) {
