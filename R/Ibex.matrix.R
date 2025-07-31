@@ -78,17 +78,17 @@ Ibex.matrix <- function(input.data,
   loci <- if (chain == "Heavy") "IGH" else c("IGK", "IGL")
   
   #Getting Sequences
-  BCR <- getIR(input.data, chain, sequence.type = "aa")[[1]]
-  BCR <- BCR[complete.cases(BCR[,2]), ]
+  BCR <- getIR(input.data, chain, sequence.type = "aa")
+  BCR <- BCR[complete.cases(BCR[,"cdr3_aa"]), ]
   
   # Determine dictionary for sequence encoding
   if (expanded.sequences) {
     #Quick Check to see if there are - corresponding to CDR1-CDR2-CDR3
-    if (all(grepl("-", BCR[,2]))) {
+    if (all(grepl("-", BCR[,"cdr3_aa"]))) {
       stop("Expanded sequences are not properly formated, please use 
            combineExpandedBCR().")
     }
-    BCR[,2] <- gsub("-", "_", BCR[,2])
+    BCR[,"cdr3_aa"] <- gsub("-", "_", BCR[,"cdr3_aa"])
     dictionary <- c(amino.acids, "_")
   } else  {
     dictionary <- amino.acids
@@ -98,23 +98,23 @@ Ibex.matrix <- function(input.data,
   BCR <- BCR[grepl(paste0(loci, collapse = "|"), BCR[, "v"]), ]
   
   # Ensure sequences meet length criteria
-  checkLength(x = BCR[,2], expanded = expanded.sequences)
+  checkLength(x = BCR[,"cdr3_aa"], expanded = expanded.sequences)
   length.to.use <- if (expanded.sequences) 90 else 45
   
   if (method == "encoder") {
     if (verbose) print("Encoding Sequences...")
     
     if(encoder.input == "OHE") {
-      encoded.values <- suppressMessages(onehotEncoder(BCR[,2],
+      encoded.values <- suppressMessages(onehotEncoder(BCR[,"cdr3_aa"],
                                          max.length = length.to.use,
                                          convert.to.matrix = TRUE,
                                          sequence.dictionary = dictionary,
-                                         padding.symbol = "."))
+                                         padding.symbol = "."))[[2]]
     } else {
-      encoded.values <- suppressMessages(propertyEncoder(BCR[,2], 
+      encoded.values <- suppressMessages(propertyEncoder(BCR[,"cdr3_aa"], 
                                          max.length = length.to.use,
-                                         method.to.use = encoder.input,
-                                         convert.to.matrix = TRUE))
+                                         property.set = encoder.input,
+                                         convert.to.matrix = TRUE))[[2]]
     }
     if (verbose) print("Calculating Latent Dimensions...")
     # Getting Model
@@ -139,11 +139,11 @@ Ibex.matrix <- function(input.data,
     
   } else if (method == "geometric") {
     if (verbose) print("Performing geometric transformation...")
-    BCR[,2] <- gsub("-", "", BCR[,2])
-    reduction <- suppressMessages(geometricEncoder(BCR[,2], theta = geometric.theta))
+    BCR[,"cdr3_aa"] <- gsub("-", "", BCR[,"cdr3_aa"])
+    reduction <- suppressMessages(geometricEncoder(BCR[,"cdr3_aa"], theta = geometric.theta))[[3]]
   }
   reduction <- as.data.frame(reduction)
-  barcodes <- BCR[,1]
+  barcodes <- BCR[,"barcode"]
   rownames(reduction) <- barcodes
   colnames(reduction) <- paste0("Ibex_", seq_len(ncol(reduction)))
   return(reduction)
