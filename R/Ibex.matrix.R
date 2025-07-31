@@ -61,7 +61,7 @@ Ibex.matrix <- function(input.data,
                         geometric.theta = pi/3, 
                         species = "Human",
                         verbose = TRUE) {
-
+  
   # Match arguments for better validation
   chain <- match.arg(chain)
   method <- match.arg(method)
@@ -83,6 +83,7 @@ Ibex.matrix <- function(input.data,
   
   # Determine dictionary for sequence encoding
   if (expanded.sequences) {
+
     #Quick Check to see if there are - corresponding to CDR1-CDR2-CDR3
     if (all(grepl("-", BCR[,"cdr3_aa"]))) {
       stop("Expanded sequences are not properly formated, please use 
@@ -117,12 +118,15 @@ Ibex.matrix <- function(input.data,
                                          convert.to.matrix = TRUE))[[2]]
     }
     if (verbose) print("Calculating Latent Dimensions...")
-    # Getting Model
+    # Getting Model Path
     model.path <- aa.model.loader(species      = species,  
                                   chain        = chain,
                                   encoder.input = encoder.input,
                                   encoder.model = encoder.model)
-    #Getting Reduction 
+    
+    if (verbose) print("Encoding sequences and calculating latent dimensions...")
+    
+    # Run ENCODING and PREDICTION inside the basilisk environment
     reduction <- basiliskRun(
       env = IbexEnv,
       fun = function(mpath, xmat) {
@@ -145,12 +149,14 @@ Ibex.matrix <- function(input.data,
       mpath = model.path,
       xmat  = encoded.values
     )
+
     
   } else if (method == "geometric") {
     if (verbose) print("Performing geometric transformation...")
     BCR[,"cdr3_aa"] <- gsub("-", "", BCR[,"cdr3_aa"])
     reduction <- suppressMessages(geometricEncoder(BCR[,"cdr3_aa"], theta = geometric.theta))[[3]]
   }
+  
   reduction <- as.data.frame(reduction)
   barcodes <- BCR[,"barcode"]
   rownames(reduction) <- barcodes

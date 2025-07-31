@@ -15,9 +15,10 @@ vignette: >
   %\usepackage[UTF-8]{inputenc}
 ---
 
-```{r, echo=FALSE, results="hide", message=FALSE}
-knitr::opts_chunk$set(error=FALSE, message=FALSE, warning=FALSE, tidy = FALSE)
+```{r setup, include=FALSE}
 library(BiocStyle)
+# Set standard knitr options
+knitr::opts_chunk$set(error=FALSE, message=FALSE, warning=FALSE, tidy = FALSE)
 ```
 
 # Introduction
