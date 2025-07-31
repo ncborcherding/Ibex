@@ -17,6 +17,7 @@ vignette: >
 
 ```{r setup, include=FALSE}
 library(BiocStyle)
+library(Peptides)
 # Set standard knitr options
 knitr::opts_chunk$set(error=FALSE, message=FALSE, warning=FALSE, tidy = FALSE)
 ```
