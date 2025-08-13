@@ -418,7 +418,8 @@ CoNGA.sce <- runIbex(CoNGA.sce,
                      verbose = FALSE)
 
 CoNGA.sce <- CoNGA.sce %>%
-                  runUMAP(dimred = "Ibex.KF", name = "ibexUMAP", )
+                  runUMAP(dimred = "Ibex.KF", 
+                          name = "ibexUMAP")
 
 plot9 <- plotUMAP(CoNGA.sce, 
                   dimred = "ibexUMAP", 
