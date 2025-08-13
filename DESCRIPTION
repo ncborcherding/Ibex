@@ -44,8 +44,6 @@ Suggests:
 	utils,
 	viridis
 SystemRequirements: Python (via basilisk)
-Remotes:
-    	BorchLab/immApex
 VignetteBuilder: knitr
 Language: en-US
 URL: https://github.com/BorchLab/Ibex/
