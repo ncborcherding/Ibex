@@ -5,7 +5,7 @@ Using BCR sequences for graph embedding
 [![Codecov test coverage](https://codecov.io/gh/BorchLab/Ibex/graph/badge.svg)](https://app.codecov.io/gh/BorchLab/Ibex?branch=master)
 [![Documentation](https://img.shields.io/badge/docs-stable-blue.svg)](https://www.borch.dev/uploads/screpertoire/articles/ibex)
 
-<img align="right" src="https://github.com/BorchLab/Ibex/blob/main/www/ibex_hex.png" width="352" height="352">
+<img align="right" src="https://github.com/BorchLab/Ibex/blob/main/www/ibex_hex.png" width="305" height="352">
 
 ## Introduction
 Single-cell sequencing is an integral tool in immunology and oncology, enabling researchers to measure gene expression and immune cell receptor profiling at the level of individual cells. We developed the [scRepertoire](https://github.com/BorchLab/scRepertoire) R package to facilitate the integration of immune receptor and gene expression data. However, leveraging clonal indices for more complex analyses—such as using clonality in cell embedding—remains challenging.
