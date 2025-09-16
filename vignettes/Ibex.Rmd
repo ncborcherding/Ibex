@@ -17,26 +17,44 @@ vignette: >
 
 ```{r setup, include=FALSE}
 library(BiocStyle)
-library(Peptides)
 # Set standard knitr options
 knitr::opts_chunk$set(error=FALSE, message=FALSE, warning=FALSE, tidy = FALSE)
 ```
 
 # Introduction
 
+## Installation
+
+To run Ibex, open R and install Ibex from github:
+
+```{r eval = F}
+devtools::install_github("BorchLab/Ibex")
+```
+
+or via Bioconductor with 
+
+```{r eval = F}
+if (!require("BiocManager", quietly = TRUE))
+    install.packages("BiocManager")
+
+BiocManager::install("Ibex")
+```
+
 ## Load Libraries
 
 ```{r tidy = FALSE}
-suppressMessages(library(bluster))
-suppressMessages(library(dplyr))
-suppressMessages(library(ggplot2))
-suppressMessages(library(Ibex))
-suppressMessages(library(kableExtra))
-suppressMessages(library(mumosa))
-suppressMessages(library(patchwork))
-suppressMessages(library(scater))
-suppressMessages(library(viridis))
-suppressMessages(library(utils))
+suppressPackageStartupMessages({
+  library(bluster)
+  library(dplyr)
+  library(ggplot2)
+  library(Ibex)
+  library(kableExtra)
+  library(mumosa)
+  library(patchwork)
+  library(Peptides)
+  library(scater)
+  library(viridis)
+})
 ```
 
 ## The Data Set
@@ -186,7 +204,7 @@ model.meta.data %>%
 
 ```
 
-All the models are available via a [Zenodo repository](https://zenodo.org/records/14919286), which Ibex will pull automatically and cache for future use locally. There is no need to download the models independent of the ```runIbex()``` or ```ibex.matrix()``` calls. 
+All the models are available via a [Zenodo repository](https://zenodo.org/records/14919286), which Ibex will pull automatically and cache for future use locally. There is no need to download the models independent of the ```runIbex()``` or ```Ibex_matrix()``` calls. 
 
 ### Choosing Between CNN and VAE
 
@@ -241,9 +259,9 @@ All the models are available via a [Zenodo repository](https://zenodo.org/record
 
 The idea behind **Ibex** is to combine BCR CDR3 amino acid information with phenotypic RNA/protein data to direct the use of single-cell sequencing towards antigen-specific discoveries.  This is a growing field - specifically [TESSA](https://github.com/jcao89757/TESSA) uses amino acid characteristics and autoencoder as a means to get a dimensional reduction. Another option is [CoNGA](https://github.com/phbradley/conga), which produces an embedding using BCR and RNA. **Ibex** was designed to make a customizable approach to this combined approach using R.
 
-## Ibex.matrix Function
+## Ibex_matrix Function
 
-**Ibex** includes two primary functions: `Ibex.matrix()` and `runIbex()`. The `Ibex.matrix()` function serves as the backbone of the algorithm, returning encoded values based on user-selected parameters. In contrast to `runIbex()`, which filters input to include only B cells with attached BCR data, `Ibex.matrix()` operates on all provided data. Additionally, it is compatible with the list output from the `combineBCR()` function (from the [scRepertoire](https://github.com/BorchLab/scRepertoire) package), whereas `runIbex()` is designed for use with a single-cell object.
+**Ibex** includes two primary functions: `Ibex_matrix()` and `runIbex()`. The `Ibex_matrix()` function serves as the backbone of the algorithm, returning encoded values based on user-selected parameters. In contrast to `runIbex()`, which filters input to include only B cells with attached BCR data, `Ibex_matrix()` operates on all provided data. Additionally, it is compatible with the list output from the `combineBCR()` function (from the [scRepertoire](https://github.com/BorchLab/scRepertoire) package), whereas `runIbex()` is designed for use with a single-cell object.
 
 ### Parameters
 
@@ -277,7 +295,7 @@ The idea behind **Ibex** is to combine BCR CDR3 amino acid information with phen
   For the geometric transformation, defines the value of theta (default is π/3).
 
 ```{r tidy = FALSE}
-Ibex_vectors <- Ibex.matrix(ibex_example, 
+Ibex_vectors <- Ibex_matrix(ibex_example, 
                             chain = "Heavy",
                             method = "encoder",
                             encoder.model = "VAE", 
@@ -289,7 +307,7 @@ ggplot(data = as.data.frame(Ibex_vectors), aes(Ibex_1, Ibex_2)) +
   geom_point(color = "grey", alpha = 0.7, size = 2) + 
   theme_classic()
 
-Ibex_vectors2 <- Ibex.matrix(ibex_example, 
+Ibex_vectors2 <- Ibex_matrix(ibex_example, 
                              chain = "Heavy",
                              method = "geometric",
                              geometric.theta = pi, 
@@ -418,7 +436,8 @@ CoNGA.sce <- runIbex(CoNGA.sce,
                      verbose = FALSE)
 
 CoNGA.sce <- CoNGA.sce %>%
-                  runUMAP(dimred = "Ibex.KF", name = "ibexUMAP", )
+                  runUMAP(dimred = "Ibex.KF", 
+                          name = "ibexUMAP")
 
 plot9 <- plotUMAP(CoNGA.sce, 
                   dimred = "ibexUMAP", 

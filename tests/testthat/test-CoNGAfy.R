@@ -1,4 +1,6 @@
 # test script for CoNGAfy.R - testcases are NOT comprehensive!
+library(Ibex)
+ibex_example <- get(data("ibex_example"))
 
 test_that("CoNGAfy works with Seurat object", {
   result <- CoNGAfy(ibex_example, method = "mean")

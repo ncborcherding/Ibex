@@ -73,6 +73,9 @@ automatically subset the single-cell object based on amino acid sequences
 present for the given chain selection.
 }
 \examples{
+# Get Data
+ibex_example <- get(data("ibex_example"))
+
 # Using the encoder method with a variational autoencoder
 ibex_example <- runIbex(ibex_example, 
                         chain = "Heavy",

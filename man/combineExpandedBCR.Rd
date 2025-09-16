@@ -51,6 +51,9 @@ combination logic. The function depends on
 \code{\link[scRepertoire:combineBCR]{scRepertoire::combineBCR()}}.
 }
 \examples{
+#' # Get Data
+ibex_vdj <- get(data("ibex_vdj"))
+
 combined.BCR <- combineExpandedBCR(list(ibex_vdj),
                                    samples = "Sample1",
                                    filterNonproductive = TRUE)
