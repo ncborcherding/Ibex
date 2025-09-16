@@ -39,6 +39,9 @@ representative cell using count-based minimal Euclidean distance.
 Please read and cite the original work by the authors of CoNGA.
 }
 \examples{
+#' # Get Data
+ibex_example <- get(data("ibex_example"))
+
 ibex.clones <- CoNGAfy(ibex_example, 
                        method = "dist")
 

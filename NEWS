@@ -1,42 +1,10 @@
-CHANGES IN VERSION 0.99.21
+CHANGES IN VERSION 0.99.28
 ------------------------
-* Delayed Instantiation
-
-CHANGES IN VERSION 0.99.20
-------------------------
-* basilisk call onload
-
-CHANGES IN VERSION 0.99.19
-------------------------
-* removing basilisk sandwich 
-
-CHANGES IN VERSION 0.99.18
-------------------------
-* assigning current environment to basilisk environment
-
-CHANGES IN VERSION 0.99.17
-------------------------
-* basilisk is not intuitive
-
-CHANGES IN VERSION 0.99.16
-------------------------
-* flanking library(ibex) with basilisk creation
-
-CHANGES IN VERSION 0.99.15
-------------------------
-* defining system env for basilisk in vignette
-
-CHANGES IN VERSION 0.99.14
-------------------------
-* Adding proper wrapper to ```ibex.matrix()```
-
-CHANGES IN VERSION 0.99.12
-------------------------
-* Basilisk conversion
-
-CHANGES IN VERSION 0.99.11
-------------------------
-* Switched keras python check to chunk-specific for vignette  
+* Deprecated `quietBCRgenes()`
+* Converted `Ibex.matrix()` to `Ibex_matrix()`
+* Added Install Instructions for BioCondcutor on README and Vignette
+* Removed references to Keras3 Installation
+* Removed LazyData TRUE statement
 
 CHANGES IN VERSION 0.99.10
 ------------------------
