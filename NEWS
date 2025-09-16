@@ -1,3 +1,7 @@
+CHANGES IN VERSION 0.99.29
+------------------------
+* Adding internal .OnLoad() function to handle basilisk lock dir issue
+
 CHANGES IN VERSION 0.99.28
 ------------------------
 * Deprecated `quietBCRgenes()`
