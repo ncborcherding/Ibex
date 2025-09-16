@@ -17,19 +17,6 @@ Single-cell sequencing is an integral tool in immunology and oncology, enabling 
 # System Requirements 
 Ibex has been tested on R versions >= 4.0. For details on required R packages, refer to the package’s DESCRIPTION file. It is designed to work with single-cell objects containing BCR data generated using [scRepertoire](https://github.com/BorchLab/scRepertoire). Ibex has been tested on macOS and Linux.
 
-**keras3** is required for the immApex-based (deep learning) components of Ibex. Follow the steps below to install and configure `keras3` and TensorFlow:
-
-```r
-##Install keras3
-install.packages("keras3")
-
-##Setting up Tensor Flow
-library(reticulate)
-use_condaenv(condaenv = "r-reticulate", required = TRUE)
-library(keras3)
-install_keras()
-```
-
 # Installation
 
 Ibex relies on the [immApex](https://github.com/BorchLab/immApex) API can be installed directly from GitHub: 
@@ -53,6 +40,12 @@ After immApex installation, you can install Ibex with:
 devtools::install_github("BorchLab/Ibex")
 ```
 
+Or via Bioconductor (when it is accepted)
+
+```r
+BiocManager::install("Ibex")
+```
+
 The main version of Ibex is submitted to Bioconductor (installation instructions will be updated after review). By default, Ibex will automatically pull deep learning models from a [Zenodo repository](https://zenodo.org/records/14919286) and cache them locally.
 
 Alternatively, to install **Ibex** and all the required models at once:
@@ -72,11 +65,11 @@ See the [vignette](https://www.borch.dev/uploads/screpertoire/articles/ibex) for
 
 ## Autoencoded Matrix
 
-The Ibex algorithm allows users to select BCR-based metrics to return autoencoded values to be used in dimensional reduction. If single-cell objects are not filtered for B cells with BCR,  `Ibex.matrix()` will still return values, however IBEX_1 will be based on the disparity of BCR-containing and BCR-non-containing cells based on the Ibex algorithm. 
+The Ibex algorithm allows users to select BCR-based metrics to return autoencoded values to be used in dimensional reduction. If single-cell objects are not filtered for B cells with BCR,  `Ibex_matrix()` will still return values, however IBEX_1 will be based on the disparity of BCR-containing and BCR-non-containing cells based on the Ibex algorithm. 
 
 ```r
 library(Ibex)
-my_ibex <- Ibex.matrix(singleObject)
+my_ibex <- Ibex_matrix(singleObject)
 ```
 
 ## Seurat or Single-Cell Experiment

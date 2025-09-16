@@ -1,4 +1,7 @@
 # test script for runIbex.R - testcases are NOT comprehensive!
+library(Ibex)
+ibex_example <- get(data("ibex_example"))
+
 test_that("runIbex handles incorrect inputs gracefully", {
   expect_error(runIbex(sc.data = ibex_example, chain = "Middle", method = "encoder"),
                "'arg' should be one of \"Heavy\", \"Light\"")
