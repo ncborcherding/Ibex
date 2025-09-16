@@ -8,6 +8,9 @@
 #' present for the given chain selection. 
 #'
 #' @examples
+#' # Get Data
+#' ibex_example <- get(data("ibex_example"))
+#' 
 #' # Using the encoder method with a variational autoencoder
 #' ibex_example <- runIbex(ibex_example, 
 #'                         chain = "Heavy",
@@ -60,7 +63,7 @@ runIbex <- function(sc.data,
                     verbose = TRUE) {
     checkSingleObject(sc.data)
     sc.data <- filter.cells(sc.data, chain)
-    reduction <- Ibex.matrix(input.data = sc.data,
+    reduction <- Ibex_matrix(input.data = sc.data,
                              chain = chain, 
                              method = method,
                              encoder.model = encoder.model, 

@@ -1,4 +1,6 @@
 # test script for combineExpandedBCR.R - testcases are NOT comprehensive!
+library(Ibex)
+ibex_vdj <- get(data("ibex_vdj"))
 
 test_that("combineExpandedBCR handles incorrect input gracefully", {
   expect_error(combineExpandedBCR(NULL, samples = "Sample1"),
