@@ -1,8 +1,11 @@
+CHANGES IN VERSION 0.99.31
+------------------------
+* ibex_ensure_basilisk_external_dir no longer importsFrom basilisk.utils directly
+
 CHANGES IN VERSION 0.99.30
 ------------------------
 * Moved data processing script out of vignette to inst/scripts
 * Added ibex_ensure_basilisk_external_dir with basilisk.utils
-
 
 CHANGES IN VERSION 0.99.29
 ------------------------
