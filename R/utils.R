@@ -135,3 +135,12 @@ adding.DR <- function(sc, reduction, reduction.name) {
   return(sc)
 }
 
+#' @importFrom basilisk.utils getExternalDir
+.ibex_ensure_basilisk_external_dir <- function() {
+  # Ask basilisk where it wants to live
+  exdir <- basilisk.utils::getExternalDir()
+  # Create it if missing
+  dir.create(exdir, recursive = TRUE, showWarnings = FALSE)
+  # Return TRUE if writable
+  file.access(exdir, 2L) == 0L
+}
