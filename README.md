@@ -40,18 +40,13 @@ After immApex installation, you can install Ibex with:
 devtools::install_github("BorchLab/Ibex")
 ```
 
-Or via Bioconductor (when it is accepted)
+Or via Bioconductor 
 
 ```r
 BiocManager::install("Ibex")
 ```
 
 The main version of Ibex is submitted to Bioconductor (installation instructions will be updated after review). By default, Ibex will automatically pull deep learning models from a [Zenodo repository](https://zenodo.org/records/14919286) and cache them locally.
-
-Alternatively, to install **Ibex** and all the required models at once:
-```r
-devtools::install_github("BorchLab/Ibex@fullstack")
-```
 
 # Usage/Demos
 
