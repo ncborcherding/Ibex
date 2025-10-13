@@ -12,8 +12,6 @@ Single-cell sequencing is an integral tool in immunology and oncology, enabling 
 
 **Ibex** addresses this need by using deep learning to vectorize BCR sequences based on amino acid properties or their underlying order. Ibex is the sister package to [Trex](https://github.com/BorchLab/Trex), which focuses on TCR sequence data.
 
----
-
 # System Requirements 
 Ibex has been tested on R versions >= 4.0. For details on required R packages, refer to the package’s DESCRIPTION file. It is designed to work with single-cell objects containing BCR data generated using [scRepertoire](https://github.com/BorchLab/scRepertoire). Ibex has been tested on macOS and Linux.
 
