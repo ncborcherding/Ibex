@@ -100,6 +100,10 @@ Ibex_matrix <- function(input.data,
   length.to.use <- if (expanded.sequences) 90 else 45
   
   if (method == "encoder") {
+    if (!.ibex_ensure_external_dir()) {
+      stop("Basilisk external directory is not writable; cannot run encoder in this session.")
+    }
+    
     if (verbose) print("Encoding Sequences...")
     
     if(encoder.input == "OHE") {
@@ -155,3 +159,5 @@ Ibex_matrix <- function(input.data,
   colnames(reduction) <- paste0("Ibex_", seq_len(ncol(reduction)))
   return(reduction)
 }
+
+

@@ -57,9 +57,8 @@ checkSingleObject <- function(sc) {
 checkLength <- function(x, expanded = NULL) {
   cutoff <- ifelse( expanded == FALSE || is.null(expanded), 45, 90)
   if(any(na.omit(nchar(x)) > cutoff)) {
-    stop(paste0("Models have been trained on sequences 
-         less than ", cutoff, " amino acid residues. Please
-         filter the larger sequences before running"))
+    stop("Models have been trained on sequences less than ", cutoff, 
+         " amino acid residues. Please filter the larger sequences before running")
   }
 }
 # Returns appropriate encoder model
@@ -135,3 +134,21 @@ adding.DR <- function(sc, reduction, reduction.name) {
   return(sc)
 }
 
+# Get the external dir in a way that won't explode during lazy-load on older builders.
+.ibex_get_external_dir <- function() {
+  if (requireNamespace("basilisk.utils", quietly = TRUE)) {
+    ns <- asNamespace("basilisk.utils")
+    if (exists("getExternalDir", envir = ns, inherits = FALSE)) {
+      return(get("getExternalDir", envir = ns)())
+    }
+  }
+  # Fallback that works on the build farm without env vars.
+  file.path(tempdir(), "Ibex", "basilisk")
+}
+
+# Ensure the directory exists & is writable; return logical.
+.ibex_ensure_external_dir <- function() {
+  exdir <- .ibex_get_external_dir()
+  dir.create(exdir, recursive = TRUE, showWarnings = FALSE)
+  file.access(exdir, 2L) == 0L
+}
